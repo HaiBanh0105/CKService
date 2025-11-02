@@ -1,0 +1,24 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h3>Thêm Máy Tính Mới</h3>
+    </div>
+    <div class="form-group">
+        <label>Mã Máy</label>
+        <input type="text" id="computerCode" placeholder="PC-001">
+    </div>
+    <div class="form-group">
+        <label>Loại Máy</label>
+        <select id="computerType">
+            <option value="VIP">VIP</option>
+            <option value="Thường">Thường</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Cấu Hình</label>
+        <textarea id="computerSpec" placeholder="Core i5, RAM 16GB, GTX 1660..."></textarea>
+    </div>
+    <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('computerModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="addComputer()">Thêm</button>
+    </div>
+</div>
