@@ -51,43 +51,42 @@ try {
             http_response_code(401);
             echo json_encode(['status' => 'error', 'message' => 'Email hoặc mật khẩu không đúng.']);
         }
-    }
-    elseif ($method === 'GET' && $action === 'all') {
+    } elseif ($method === 'GET' && $action === 'all') {
         // --- ROUTE: /users?action=all (LẤY TẤT CẢ KHÁCH HÀNG) ---
-        
+
         // Gọi hàm DAO đã join users và membership_accounts
-        $customers = dao_select_all_membership_accounts(); 
-        
+        $customers = dao_select_all_membership_accounts();
+
         http_response_code(200);
         echo json_encode([
             'status' => 'success',
             'data' => $customers
         ]);
+    } elseif ($method === 'POST' && $action === 'register') {
+        // --- ROUTE: /users?action=register (THÊM KHÁCH HÀNG MỚI) ---
+        $full_name = $input_data['full_name'] ?? '';
+        $phone_number = $input_data['phone_number'] ?? '';
+        $email = $input_data['email'] ?? '';
+        $password = $input_data['password'] ?? '';
+        $initial_balance = $input_data['initial_balance'] ?? 0.00;
 
-    }
+        // Kiểm tra dữ liệu đầu vào
+        if (empty($full_name) || empty($phone_number) || empty($password)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu thông tin bắt buộc.']);
+            exit;
+        }
 
-    //Xử lý action thêm khách hàng mới
-    else if ($method === 'POST' && $action === 'register') {
         try {
-            // GỌI HÀM LOGIC NGHIỆP VỤ ĐIỀU PHỐI
-            $new_user_id = register_new_user(
-                $full_name,
-                $phone_number,
-                $email,
-                $password,
-                'customer',
-                0.00
-            );
+            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'customer', $initial_balance);
 
-            // Phản hồi thành công
             http_response_code(201);
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay.',
-                'user_id' => $new_user_id
+                'message' => 'Khách hàng đã được tạo thành công.',
+                'user_id' => $user_id
             ]);
         } catch (Exception $e) {
-            // Phản hồi lỗi từ lớp BL
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }

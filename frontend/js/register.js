@@ -1,22 +1,51 @@
 // TÊN FILE: frontend/js/register.js
-// Mục đích: Xử lý logic nghiệp vụ CRUD Khách Hàng
+// Mục đích: Chứa toàn bộ logic API và nghiệp vụ cho phần Khách hàng (CRUD)
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. CONFIGURATION ---
     const API_BASE_URL = '/NetMaster/getway/users/'; 
     
-    // --- 2. HÀM TẢI DỮ LIỆU TOÀN CỤC (Giữ nguyên) ---
-    window.fetchCustomers = async () => { 
-        // ... (Logic API và cập nhật window.appData) ... 
+    // --- 2. LOGIC TẢI DỮ LIỆU KHÁCH HÀNG THỰC TẾ (Ghi đè fetchCustomers) ---
+    window.fetchCustomers = async () => {
+        try {
+            const response = await fetch(API_BASE_URL + 'all'); 
+            
+            if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status} khi tải danh sách.`);
+
+            const result = await response.json();
+            
+            if (result.status === 'success' && window.appData && window.renderCustomers) {
+                // CẬP NHẬT GLOBAL STATE
+                window.appData.customers = result.data.map(user => ({
+                    id: user.user_id,
+                    code: 'KH' + String(user.user_id).padStart(3, '0'),
+                    name: user.full_name,
+                    phone: user.phone_number,
+                    email: user.email,
+                    balance: parseFloat(user.current_balance || 0), 
+                    status: user.role_name === 'customer' ? 'offline' : user.role_name
+                }));
+                
+                window.renderCustomers(); 
+            }
+        } catch (error) {
+            console.error('Fetch Customers Error:', error);
+            if(window.renderCustomers) window.renderCustomers();
+        }
     };
     
-    // --- 3. LOGIC THÊM KHÁCH HÀNG (Logic nghiệp vụ chính) ---
-    const addCustomerLogic = async (addBtn) => {
-        // Tìm Form gần nhất (DÙNG CHO VIỆC RESET)
-        const modalContent = addBtn.closest('.modal-content');
-        const modalForm = modalContent ? modalContent.querySelector('form') : null;
+    // --- 3. LOGIC THÊM KHÁCH HÀNG MỚI (Ghi đè addCustomer) ---
+    window.addCustomer = async (e) => {
+        if(e) e.preventDefault();
         
-        // Lấy dữ liệu
+        const modalForm = document.getElementById('addCustomerForm');
+        const addBtn = document.getElementById('addCustomerSubmitBtn');
+        
+        if (!modalForm || !addBtn) {
+            console.error("Lỗi DOM: addCustomer được gọi nhưng Form hoặc Nút không tồn tại.");
+            return;
+        }
+        
         const full_name = document.getElementById('customerName').value.trim();
         const phone_number = document.getElementById('customerPhone').value.trim();
         const email = document.getElementById('customerEmail').value.trim();
@@ -49,9 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.status === 'success') {
                 alert(result.message || "Thêm khách hàng thành công!");
                 
-                if (modalForm) modalForm.reset(); // RESET FORM
+                modalForm.reset();
                 window.closeModal('customerModal'); 
-                await window.fetchCustomers(); 
+                await window.fetchCustomers(); // Tải lại dữ liệu
 
             } else {
                 alert("Lỗi: " + (result.message || 'Không thể thêm khách hàng.'));
@@ -62,35 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Lỗi kết nối máy chủ khi thêm khách hàng.');
         } finally {
             addBtn.disabled = false;
-            addBtn.textContent = 'Thêm';
+            addBtn.textContent = 'Thêm Khách Hàng';
         }
     };
     
-    // --- 4. HÀM GẮN EVENT (Chạy sau khi tải động) ---
-    const attachCustomerEvents = () => {
-        const addBtn = document.getElementById('addCustomerSubmitBtn');
-        
-        if (addBtn) {
-            // Lắng nghe sự kiện click trên nút
-            addBtn.addEventListener('click', (e) => {
-                 e.preventDefault(); 
-                 addCustomerLogic(addBtn); // Chỉ truyền nút
-            });
+    // ----------------------------------------------------
+    // LOGIC GẮN EVENT VÀ KHỞI ĐỘNG (FIX LỖI TIMING)
+    // ----------------------------------------------------
+    
+    /**
+     * Hàm đệ quy kiểm tra và gắn Event Listener sau khi modal được load bởi main.js
+     */
+    const attachRegisterEvents = () => {
+        const modalForm = document.getElementById('addCustomerForm');
+
+        if (modalForm) {
+            // GẮN LISTENER LÊN FORM SUBMIT CHUẨN
+            modalForm.addEventListener('submit', window.addCustomer);
             
-            // Ghi đè hàm placeholder cũ (để đảm bảo tính tương thích)
-            window.addCustomer = (e) => {
-                if(e) e.preventDefault();
-                addCustomerLogic(addBtn);
-            };
-
-            // Khởi chạy tải dữ liệu lần đầu
+            console.log("✅ Register Events Attached to addCustomerForm.");
+            
+            // 🚨 GỌI API LẦN ĐẦU (Chỉ gọi sau khi đảm bảo hàm đã được định nghĩa)
             window.fetchCustomers();
-
+            
         } else {
-            console.warn("Lỗi DOM: Không tìm thấy #addCustomerSubmitBtn. Event listener không được gắn.");
+            // Nếu chưa tìm thấy, chờ 100ms và thử lại
+            setTimeout(attachRegisterEvents, 100); 
         }
     };
 
-    // Chạy logic gắn event sau một khoảng trễ an toàn
-    setTimeout(attachCustomerEvents, 500); 
+    // Khởi động quá trình gắn Listener
+    attachRegisterEvents();
 });
