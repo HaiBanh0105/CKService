@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Hệ thống thanh toán học phí</title>
+    <link rel="stylesheet" href="../css/login.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="logo">
+        <h1>NetMaster</h1>
+        <p>Hệ thống quản lý</p>
+      </div>
+
+      <div class="error-message" id="errorMessage" style="display: none"></div>
+      <div
+        class="success-message"
+        id="successMessage"
+        style="display: none"
+      ></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email đăng nhập</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Nhập Email của bạn"
+            required
+          />
+        </div>
+
+        <div class="form-group" style="position: relative">
+          <label for="password">Mật khẩu</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Nhập mật khẩu"
+            required
+          />
+          <span class="password-toggle" id="passwordToggle">👁️</span>
+        </div>
+
+        <div class="forgot-password">
+          <a href="#" id="forgotPasswordLink">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span id="loginBtnText">Đăng nhập</span>
+        </button>
+      </form>
+    </div>
+    <script src="../js/login.js"></script>
+  </body>
+</html>
