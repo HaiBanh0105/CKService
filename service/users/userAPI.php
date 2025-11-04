@@ -90,6 +90,50 @@ try {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
+    } elseif ($method === 'GET' && $action === 'transactions') {
+        $user_id = $_GET['user_id'] ?? null;
+
+        if (!$user_id || !is_numeric($user_id)) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu hoặc sai user_id.'
+            ]);
+            exit;
+        }
+
+        try {
+            // Lấy account_id từ user_id
+            error_log("Gọi lịch sử giao dịch cho user_id = " . $user_id);
+            $sql = "SELECT account_id FROM membership_accounts WHERE user_id = ?";
+            $account = user_db_query_one($sql, $user_id);
+
+            if (!$account) {
+                http_response_code(404);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy tài khoản thành viên cho user_id này.'
+                ]);
+                exit;
+            }
+
+            $account_id = $account['account_id'];
+
+            // Gọi DAO để lấy lịch sử giao dịch
+            $transactions = dao_get_transaction_history($account_id);
+
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'data' => $transactions
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Lỗi khi lấy lịch sử giao dịch: ' . $e->getMessage()
+            ]);
+        }
     } else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);

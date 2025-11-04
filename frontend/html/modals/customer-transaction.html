@@ -1,0 +1,28 @@
+<div id="transactionModal" class="modal active">
+  <div class="modal-content modal-wide">
+    <div class="modal-header">
+      <h3>Lịch sử giao dịch</h3>
+    </div>
+    <div class="modal-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Mã GD</th>
+            <th>Số tiền</th>
+            <th>Loại giao dịch</th>
+            <th>Thời gian</th>
+          </tr>
+        </thead>
+        <tbody id="transactionHistoryBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button
+        class="btn btn-secondary"
+        onclick="closeModal('transactionModal')"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>

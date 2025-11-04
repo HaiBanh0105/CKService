@@ -107,3 +107,14 @@ function dao_insert_transaction($account_id, $amount, $type = 'topup')
             VALUES (?, ?, ?, NOW())";
     user_db_execute($sql, $account_id, $amount, $type);
 }
+
+// Hàm lấy lịch sử giao dịch của một tài khoản thành viên
+function dao_get_transaction_history($account_id)
+{
+    error_log("Truy vấn lịch sử cho account_id = " . $account_id);
+    $sql = "SELECT transaction_id, amount, transaction_type, transaction_date
+            FROM transactions
+            WHERE account_id = ?
+            ORDER BY transaction_date DESC";
+    return user_db_query($sql, $account_id);
+}

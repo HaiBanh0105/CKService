@@ -17,10 +17,22 @@ function loadCustomerList() {
             <td>${c.email}</td>
             <td>${c.current_balance.toLocaleString()} đ</td>
             <td>${c.status}</td>
-            <td><button class="btn btn-sm btn-info">Chi tiết</button></td>
-          `;
+            <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Xem lịch sử</button>`;
           tableBody.appendChild(row);
         });
+
+        document.querySelectorAll(".view-history-btn").forEach(button => {
+          button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-id");
+            console.log("Đã click nút xem lịch sử, userId =", userId);
+
+            openModal('transactionModal', () => {
+              openTransactionHistory(userId);
+            });
+          });
+        });
+
+
       } else {
         alert("Không thể tải danh sách khách hàng.");
       }
@@ -31,6 +43,7 @@ function loadCustomerList() {
 }
 
 
+// Hàm xử lý khi nhấn nút thêm khách hàng
 function handleAddCustomer() {
   const data = {
     full_name: document.getElementById("customerName").value,
@@ -60,6 +73,50 @@ function handleAddCustomer() {
       console.error("Lỗi khi gọi API:", err);
     });
 }
+
+// Hàm mở modal lịch sử giao dịch của khách hàng
+function openTransactionHistory(userId) {
+  console.log("Gọi API lịch sử cho user_id =", userId);
+
+  const url = `http://localhost/NetMaster/getway/users/transactions?user_id=${userId}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        const transactions = response.data;
+        const historyBody = document.getElementById("transactionHistoryBody");
+        historyBody.innerHTML = "";
+
+        if (transactions.length === 0) {
+          historyBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Không có giao dịch nào.</td></tr>`;
+          return;
+        }
+
+        transactions.forEach(t => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${t.transaction_id}</td>
+            <td>${t.amount.toLocaleString()} đ</td>
+            <td>${t.transaction_type}</td>
+            <td>${new Date(t.transaction_date).toLocaleString()}</td>
+          `;
+          historyBody.appendChild(row);
+        });
+
+        // // Hiển thị modal
+        // $("#transactionHistoryModal").modal("show");
+      } else {
+        alert("Không thể tải lịch sử giao dịch: " + response.message);
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi gọi API lịch sử giao dịch:", err);
+      alert("Đã xảy ra lỗi khi tải lịch sử giao dịch.");
+    });
+}
+
+
 
 
 

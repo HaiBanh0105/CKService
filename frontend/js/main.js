@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   showSection("dashboard");
 });
 
-function openModal(modalId) {
+function openModal(modalId, callback) {
   const modalContainer = document.getElementById(modalId);
   if (!modalContainer) return;
 
@@ -93,6 +93,9 @@ function openModal(modalId) {
     case "serviceModal":
       modalPath = "/NetMaster/frontend/html/modals/service-modal.html";
       break;
+    case "transactionModal":
+      modalPath = "/NetMaster/frontend/html/modals/customer-transaction.html";
+      break;
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";
       return;
@@ -103,6 +106,7 @@ function openModal(modalId) {
     .then(html => {
       modalContainer.innerHTML = html;
       modalContainer.classList.add("active");
+      if (typeof callback === "function") callback(); // Gọi sau khi modal đã gắn xong
     })
     .catch(err => {
       modalContainer.innerHTML = `<p style="color:red;">Lỗi khi tải modal: ${err.message}</p>`;

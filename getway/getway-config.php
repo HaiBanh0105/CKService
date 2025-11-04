@@ -16,7 +16,10 @@ return [
             'path' => 'userAPI.php',
             'dir' => 'users',
             'action' => 'register'
-        ]
+        ],
+
+        // endpoint lấy lịch sử giao dịch của khách hàng
+        '/users/transactions' => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'transactions'],      
     ],
     'ports' => [
         // Chỉ cần định nghĩa port cho service 'users'
