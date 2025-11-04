@@ -371,13 +371,11 @@ tr:hover {
 }
 
 .computer-card {
-  background: white;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  padding: 20px;
+  border: 2px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
   text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .computer-card:hover {
@@ -385,16 +383,17 @@ tr:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.computer-card.online {
+.computer-card.available {
   border-color: #38ef7d;
 }
-
-.computer-card.busy {
+.computer-card.in-use {
   border-color: #ffc107;
 }
-
 .computer-card.offline {
   border-color: #f5576c;
+}
+.computer-card.maintenance {
+  border-color: #6c757d;
 }
 
 .computer-icon {
@@ -402,14 +401,17 @@ tr:hover {
   margin-bottom: 15px;
 }
 
-.computer-card.online .computer-icon {
+.computer-card.available .computer-icon {
   color: #38ef7d;
 }
-.computer-card.busy .computer-icon {
+.computer-card.in-use .computer-icon {
   color: #ffc107;
 }
 .computer-card.offline .computer-icon {
   color: #f5576c;
+}
+.computer-card.maintenance .computer-icon {
+  color: #6c757d;
 }
 
 .computer-name {

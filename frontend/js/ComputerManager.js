@@ -37,3 +37,59 @@ function handleAddComputer() {
       alert("❌ Đã xảy ra lỗi khi thêm máy.");
     });
 }
+
+
+function loadComputers() {
+  fetch("http://localhost/NetMaster/getway/computers/all")
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        const computers = response.data;
+        const grid = document.getElementById("computerGrid");
+        grid.innerHTML = "";
+
+        computers.forEach(pc => {
+          const card = document.createElement("div");
+          card.className = `computer-card ${pc.current_status}`;
+
+          const statusClass =
+            pc.current_status === "available"
+                ? "available"
+                : pc.current_status === "in_use"
+                ? "in-use"
+                : pc.current_status === "offline"
+                ? "offline"
+                : "maintenance";
+
+            card.className = `computer-card ${statusClass}`;
+
+          card.innerHTML = `
+            <div class="computer-icon">
+              <i class="fas fa-desktop"></i>
+            </div>
+            <div class="computer-name">${pc.computer_name}</div>
+            <div class="computer-status">
+              ${
+                pc.current_status === "available"
+                  ? "Trống"
+                  : pc.current_status === "in_use"
+                  ? "Đang sử dụng"
+                  : pc.current_status === "offline"
+                  ? "Tắt máy"
+                  : "Bảo trì"
+              }
+            </div>
+          `;
+
+          grid.appendChild(card);
+        });
+      } else {
+        alert("Không thể tải danh sách máy tính.");
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi gọi API máy tính:", err);
+      alert("Đã xảy ra lỗi khi tải máy tính.");
+    });
+}
+

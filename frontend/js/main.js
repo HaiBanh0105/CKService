@@ -43,9 +43,11 @@ function showSection(sectionName) {
         requestAnimationFrame(() => {
           loadCustomerList();
         });
-}
-
-      
+      } else if(sectionName === "computers") {
+        requestAnimationFrame(() => {
+          loadComputers();
+        });
+      }
     })
     
     .catch(err => {

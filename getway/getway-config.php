@@ -28,6 +28,14 @@ return [
             'dir' => 'computer_station',
             'action' => 'add'
         ]
+
+        //Endpoint lấy tất cả máy tính
+        ,'/computers/all' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'all'
+        ],
     ],
     'ports' => [
         // Chỉ cần định nghĩa port cho service 'users'
