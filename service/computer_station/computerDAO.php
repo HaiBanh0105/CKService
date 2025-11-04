@@ -1,0 +1,79 @@
+<?php
+// Điều chỉnh đường dẫn tương đối đến file pdo.php
+require_once('../../core/pdo.php');
+
+// Định nghĩa tên DB chính xác DỰA TRÊN CẤU TRÚC THỰC TẾ CỦA BẠN
+const COMPUTER_DB_NAME = 'computer_management';
+
+// ------------------------------------
+// Phần 1: WRAPPER PDO (DAO Adapter)
+// ------------------------------------
+
+/**
+ * Wrapper cho pdo_execute, tự động truyền tên DB 
+ */
+function computer_db_execute($sql)
+{
+    $args = array_slice(func_get_args(), 1);
+    return pdo_execute(COMPUTER_DB_NAME, $sql, $args);
+}
+
+/**
+ * Wrapper cho pdo_query (truy vấn nhiều bản ghi), tự động truyền tên DB 
+ */
+function computer_db_query($sql)
+{
+    $args = array_slice(func_get_args(), 1);
+    return pdo_query(COMPUTER_DB_NAME, $sql, $args);
+}
+
+/**
+ * Wrapper cho truy vấn một bản ghi, tự động truyền tên DB 
+ */
+function computer_db_query_one($sql)
+{
+    $args = array_slice(func_get_args(), 1);
+    return pdo_query_one(COMPUTER_DB_NAME, $sql, $args);
+}
+
+/**
+ * Wrapper cho truy vấn một giá trị, tự động truyền tên DB 
+ */
+function computer_db_query_value($sql)
+{
+    $args = array_slice(func_get_args(), 1);
+    return pdo_query_value(COMPUTER_DB_NAME, $sql, $args);
+}
+
+
+// ------------------------------------
+// Phần 2: HÀM NGHIỆP VỤ (BUSINESS LOGIC)
+// ------------------------------------
+// Hàm lấy danh sách tất cả các máy tính
+function get_all_computers()
+{
+    $sql = "SELECT * FROM computers";
+    return computer_db_query($sql);
+}
+
+//Hàm lấy kiểm tra tên máy tính đã tồn tại
+function is_computer_name_exists($computer_name)
+{
+    $sql = "SELECT COUNT(*) FROM computers WHERE computer_name = ?";
+    $count = computer_db_query_value($sql, $computer_name);
+    return $count > 0;
+}
+
+//Hàm lấy config_id theo config_name
+function get_config_id_by_name($config_name)
+{
+    $sql = "SELECT config_id FROM computer_configs WHERE config_name = ?";
+    return computer_db_query_value($sql, $config_name);
+}
+
+//Hàm thêm máy tính mới
+function add_computer($computer_name, $config_id)
+{
+    $sql = "INSERT INTO computers (computer_name, config_id, current_status) VALUES (?, ?, 'available')";
+    return computer_db_execute($sql, $computer_name, $config_id);
+}

@@ -19,11 +19,21 @@ return [
         ],
 
         // endpoint lấy lịch sử giao dịch của khách hàng
-        '/users/transactions' => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'transactions'],      
+        '/users/transactions' => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'transactions'],
+
+        // Endpoint thêm máy tính mới
+        '/computers/add' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'add'
+        ]
     ],
     'ports' => [
         // Chỉ cần định nghĩa port cho service 'users'
         'users'    => '8001',
+
+        'computers' => '8002',
         // Loại bỏ 'auth' và 'user' cũ
         // 'auth' => '8001',
         // 'user' => '8001',
