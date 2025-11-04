@@ -41,3 +41,12 @@ CREATE TABLE transactions (
     INDEX idx_account_id (account_id),
     INDEX idx_staff_id (staff_id)
 );
+
+INSERT INTO users (role_name, full_name, phone_number, email, password_hash)
+VALUES (
+  'admin',
+  'Admin Chính',
+  '0900000000',
+  'vodathai91thcsduclap@gmail.com',
+  '$2y$10$cmkRPvk2P6y1n4ZZpzOAmuTpajA.lqgOxWuE6dQTzD1EH128KFJBe'  // hai123456
+);

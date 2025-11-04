@@ -9,26 +9,32 @@
  */
 function pdo_get_connection($db_name)
 {
-    // Cấu hình kết nối cơ bản (HOST, User, Password)
-    $host = 'localhost';
-    $username = 'root';
-    $password = ''; // Nếu có password, điền vào đây
+    static $connections = [];
 
-    // DSN sẽ sử dụng tên DB được truyền vào
-    $dburl = "mysql:host={$host};dbname={$db_name};charset=utf8";
+    if (!isset($connections[$db_name])) {
+        $host = 'localhost';
+        $username = 'root';
+        $password = ''; // Cập nhật nếu có
 
-    try {
-        $conn = new PDO($dburl, $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        $conn->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES 'utf8'");
-        $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        return $conn;
-    } catch (PDOException $e) {
-        error_log("Database Connection Error to {$db_name}: " . $e->getMessage());
-        throw new Exception("Không thể kết nối đến cơ sở dữ liệu ({$db_name}). Vui lòng kiểm tra cấu hình.");
+        $dburl = "mysql:host={$host};dbname={$db_name};charset=utf8";
+
+        try {
+            $conn = new PDO($dburl, $username, $password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $conn->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES 'utf8'");
+            $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+            $connections[$db_name] = $conn; // Lưu lại kết nối
+        } catch (PDOException $e) {
+            error_log("Database Connection Error to {$db_name}: " . $e->getMessage());
+            throw new Exception("Không thể kết nối đến cơ sở dữ liệu ({$db_name}). Vui lòng kiểm tra cấu hình.");
+        }
     }
+
+    return $connections[$db_name]; // Trả về kết nối đã lưu
 }
+
 
 /**
  * Thực thi câu lệnh sql thao tác dữ liệu (INSERT, UPDATE, DELETE)
@@ -123,9 +129,8 @@ function pdo_query_one($db_name, $sql)
 function pdo_query_value($db_name, $sql)
 {
     $sql_args = func_num_args() > 2 ? (is_array(func_get_arg(2)) ? func_get_arg(2) : array_slice(func_get_args(), 2)) : [];
-    $conn = null;
     try {
-        $conn = pdo_get_connection($db_name);
+        $conn = pdo_get_connection($db_name); // phải là kết nối dùng chung
         $stmt = $conn->prepare($sql);
         $stmt->execute($sql_args);
         $row = $stmt->fetch(PDO::FETCH_NUM);
@@ -133,9 +138,5 @@ function pdo_query_value($db_name, $sql)
     } catch (PDOException $e) {
         error_log("SQL Query Value Error on {$db_name}: " . $e->getMessage() . " SQL: " . $sql);
         throw $e;
-    } finally {
-        if ($conn) {
-            unset($conn);
-        }
     }
 }
