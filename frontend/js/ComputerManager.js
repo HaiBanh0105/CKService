@@ -140,7 +140,7 @@ function submitComputerUpdate() {
     remote_locked: locked
   };
 
-  fetch("http://localhost/NetMaster/getway/computers/update", {
+  fetch("http://localhost/NetMaster/getway/computers/update_computer", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(payload)
@@ -162,5 +162,66 @@ function submitComputerUpdate() {
 }
 
 
+
+function loadConfigDetails() {
+  const configName = document.getElementById("configSelector").value;
+  if (!configName) return;
+
+  fetch("http://localhost/NetMaster/getway/computers/config_detail?name=" + encodeURIComponent(configName))
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        const cfg = response.data;
+        document.getElementById("cpuSpec").value = cfg.cpu_spec || "";
+        document.getElementById("gpuSpec").value = cfg.gpu_spec || "";
+        document.getElementById("ramSpec").value = cfg.ram_spec || "";
+      } else {
+        alert("❌ Không tìm thấy cấu hình.");
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi gọi API cấu hình:", err);
+      alert("❌ Đã xảy ra lỗi khi tải cấu hình.");
+    });
+}
+
+
+function submitConfigUpdate() {
+  const configName = document.getElementById("configSelector").value;
+  const cpu = document.getElementById("cpuSpec").value.trim();
+  const gpu = document.getElementById("gpuSpec").value.trim();
+  const ram = document.getElementById("ramSpec").value.trim();
+
+  if (!configName || !cpu || !gpu || !ram) {
+    alert("Vui lòng nhập đầy đủ thông tin.");
+    return;
+  }
+
+  const payload = {
+    config_name: configName,
+    cpu_spec: cpu,
+    gpu_spec: gpu,
+    ram_spec: ram
+  };
+
+  fetch("http://localhost/NetMaster/getway/computers/update_config", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        alert("✅ Cấu hình đã được cập nhật!");
+        closeModal("configModal");
+      } else {
+        alert("❌ Lỗi: " + response.message);
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi cập nhật cấu hình:", err);
+      alert("❌ Đã xảy ra lỗi khi cập nhật.");
+    });
+}
 
 

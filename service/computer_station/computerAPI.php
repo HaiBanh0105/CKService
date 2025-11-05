@@ -42,7 +42,7 @@ try {
         $computers = get_all_computers();
         http_response_code(200);
         echo json_encode(['status' => 'success', 'data' => $computers]);
-    } elseif ($method === 'POST' && $action === 'update') {
+    } elseif ($method === 'POST' && $action === 'update_computer') {
         // --- ROUTE: /computers/update ---
         $computer_id = $input_data['computer_id'] ?? null;
         $name = $input_data['computer_name'] ?? '';
@@ -64,7 +64,35 @@ try {
                 'message' => $e->getMessage()
             ]);
         }
-    } else {
+    }
+    elseif ($method === 'GET' && $action === 'config_detail') {
+        $config_name = $_GET['name'] ?? '';
+
+        try {
+            $config = handle_get_config_detail($config_name);
+            echo json_encode(['status' => 'success', 'data' => $config]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    elseif ($method === 'POST' && $action === 'update_config') {
+        $input = json_decode(file_get_contents("php://input"), true);
+        $config_name = $input['config_name'] ?? '';
+        $cpu = $input['cpu_spec'] ?? '';
+        $gpu = $input['gpu_spec'] ?? '';
+        $ram = $input['ram_spec'] ?? '';
+
+        try {
+            handle_update_config($config_name, $cpu, $gpu, $ram);
+            echo json_encode(['status' => 'success', 'message' => 'Cấu hình đã được cập nhật.']);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+    else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

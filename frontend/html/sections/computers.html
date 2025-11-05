@@ -1,7 +1,14 @@
 <div class="section-header">
-    <h2>Quản Lý Máy Tính</h2>
-    <button class="btn btn-primary" onclick="openModal('computerModal')">
+  <h2>Quản Lý Máy Tính</h2>
+  <div class="section-header">
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="openModal('computerModal')">
         <i class="fas fa-plus"></i> Thêm Máy
-    </button>
+      </button>
+      <button class="btn btn-secondary" onclick="openModal('configModal')">
+        <i class="fas fa-cogs"></i> Tùy chỉnh cấu hình
+      </button>
+    </div>
+  </div>
 </div>
 <div class="computer-grid" id="computerGrid"></div>

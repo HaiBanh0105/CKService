@@ -39,11 +39,27 @@ return [
         ],
 
         //Endpoint cập nhật máy tính
-        '/computers/update' => [
+        '/computers/update_computer' => [
             'service' => 'computers',
             'path' => 'computerAPI.php',
             'dir' => 'computer_station',
-            'action' => 'update'
+            'action' => 'update_computer'
+        ],
+
+        //Endpoint cập nhật config
+        '/computers/update_config' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'update_config'
+        ],
+
+        //Endpoint lấy chi tiết config theo tên
+        '/computers/config_detail' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'config_detail'
         ]
 
     ],

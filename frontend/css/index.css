@@ -197,6 +197,16 @@ body {
 .section-header h2 {
   color: #333;
   font-size: 22px;
+  margin: 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.button-group .btn {
+  white-space: nowrap;
 }
 
 .btn {

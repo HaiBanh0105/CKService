@@ -101,6 +101,9 @@ function openModal(modalId, callback) {
     case "editComputerModal":
       modalPath = "/NetMaster/frontend/html/modals/edit-computer.html";
       break;  
+    case "configModal":
+      modalPath = "/NetMaster/frontend/html/modals/config-modal.html";
+      break;   
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";
       return;

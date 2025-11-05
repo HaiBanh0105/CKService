@@ -94,3 +94,22 @@ function dao_update_computer($computer_id, $name, $config_id, $status, $locked)
             WHERE computer_id = ?";
     return computer_db_execute($sql, $name, $config_id, $status, $locked ? 1 : 0, $computer_id);
 }
+
+//lấy thông tin cấu hình theo tên
+function dao_get_config_by_name($config_name)
+{
+    $sql = "SELECT config_id, config_name, cpu_spec, gpu_spec, ram_spec 
+            FROM computer_configs 
+            WHERE config_name = ?";
+    return computer_db_query_one($sql, $config_name);
+}
+
+//cập nhật cấu hình theo tên
+function dao_update_config_by_name($config_name, $cpu, $gpu, $ram)
+{
+    $sql = "UPDATE computer_configs 
+            SET cpu_spec = ?, gpu_spec = ?, ram_spec = ?
+            WHERE config_name = ?";
+    return computer_db_execute($sql, $cpu, $gpu, $ram, $config_name);
+}
+

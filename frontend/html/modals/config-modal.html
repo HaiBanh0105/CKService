@@ -1,0 +1,35 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h3>Chỉnh Sửa Cấu Hình Máy Tính</h3>
+  </div>
+
+  <div class="form-group">
+    <label for="configSelector">Chọn cấu hình</label>
+    <select id="configSelector" onchange="loadConfigDetails()">
+      <option value="">-- Chọn cấu hình --</option>
+      <option value="Basic">Basic</option>
+      <option value="Gaming">Gaming</option>
+      <option value="Workstation">Workstation</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="cpuSpec">CPU</label>
+    <input type="text" id="cpuSpec" placeholder="Nhập thông số CPU" />
+  </div>
+
+  <div class="form-group">
+    <label for="gpuSpec">GPU</label>
+    <input type="text" id="gpuSpec" placeholder="Nhập thông số GPU" />
+  </div>
+
+  <div class="form-group">
+    <label for="ramSpec">RAM</label>
+    <input type="text" id="ramSpec" placeholder="Nhập thông số RAM" />
+  </div>
+
+  <div class="modal-actions">
+    <button class="btn btn-secondary" onclick="closeModal('configModal')">Đóng</button>
+    <button class="btn btn-primary" onclick="submitConfigUpdate()">Lưu</button>
+  </div>
+</div>

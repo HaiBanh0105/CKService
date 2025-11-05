@@ -55,3 +55,31 @@ function handle_update_computer($computer_id, $name, $config_name, $status, $loc
 
     return dao_update_computer($computer_id, $name, $config_id, $status, $locked);
 }
+
+// Hàm xử lý lấy chi tiết cấu hình theo tên
+function handle_get_config_detail($config_name)
+{
+    if (!$config_name) {
+        throw new Exception("Thiếu tên cấu hình.");
+    }
+
+    $config = dao_get_config_by_name($config_name);
+
+    if (!$config) {
+        throw new Exception("Không tìm thấy cấu hình: " . $config_name);
+    }
+
+    return $config;
+}
+
+// Hàm xử lý cập nhật cấu hình
+function handle_update_config($config_name, $cpu, $gpu, $ram)
+{
+    if (!$config_name || !$cpu || !$gpu || !$ram) {
+        throw new Exception("Thiếu thông tin cấu hình.");
+    }
+
+    return dao_update_config_by_name($config_name, $cpu, $gpu, $ram);
+}
+
+
