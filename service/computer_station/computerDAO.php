@@ -64,16 +64,33 @@ function is_computer_name_exists($computer_name)
     return $count > 0;
 }
 
-//Hàm lấy config_id theo config_name
-function get_config_id_by_name($config_name)
-{
-    $sql = "SELECT config_id FROM computer_configs WHERE config_name = ?";
-    return computer_db_query_value($sql, $config_name);
-}
-
 //Hàm thêm máy tính mới
 function add_computer($computer_name, $config_id)
 {
     $sql = "INSERT INTO computers (computer_name, config_id, current_status) VALUES (?, ?, 'available')";
     return computer_db_execute($sql, $computer_name, $config_id);
+}
+
+//Hàm lấy config_id theo config_name
+function get_config_id_by_name($config_name)
+{
+    $sql = "SELECT config_id FROM computer_configs WHERE config_name = ?";
+    $config_id = computer_db_query_value($sql, $config_name);
+
+    if (!$config_id) {
+        throw new Exception("Không tìm thấy cấu hình: " . $config_name);
+    }
+
+    return $config_id;
+}
+
+
+
+//Hàm cập nhật máy tính
+function dao_update_computer($computer_id, $name, $config_id, $status, $locked)
+{
+    $sql = "UPDATE computers 
+            SET computer_name = ?, config_id = ?, current_status = ?, is_remote_locked = ?
+            WHERE computer_id = ?";
+    return computer_db_execute($sql, $name, $config_id, $status, $locked ? 1 : 0, $computer_id);
 }

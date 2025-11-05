@@ -30,12 +30,22 @@ return [
         ]
 
         //Endpoint lấy tất cả máy tính
-        ,'/computers/all' => [
+        ,
+        '/computers/all' => [
             'service' => 'computers',
             'path' => 'computerAPI.php',
             'dir' => 'computer_station',
             'action' => 'all'
         ],
+
+        //Endpoint cập nhật máy tính
+        '/computers/update' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'update'
+        ]
+
     ],
     'ports' => [
         // Chỉ cần định nghĩa port cho service 'users'

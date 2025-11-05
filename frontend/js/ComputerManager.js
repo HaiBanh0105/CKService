@@ -53,6 +53,7 @@ function loadComputers() {
           card.className = `computer-card ${pc.current_status}`;
 
           const statusClass =
+            (Boolean(pc.is_remote_locked)) ? "offline" :
             pc.current_status === "available"
                 ? "available"
                 : pc.current_status === "in_use"
@@ -63,24 +64,36 @@ function loadComputers() {
 
             card.className = `computer-card ${statusClass}`;
 
+            let statusText = "Bảo trì";
+
+            if (Boolean(pc.is_remote_locked)) {
+              statusText = "Bị khóa";
+            } else {
+              switch (pc.current_status) {
+                case "available":
+                  statusText = "Trống";
+                  break;
+                case "in_use":
+                  statusText = "Đang sử dụng";
+                  break;
+                case "offline":
+                  statusText = "Tắt máy";
+                  break;
+              }
+            }
+
           card.innerHTML = `
             <div class="computer-icon">
               <i class="fas fa-desktop"></i>
             </div>
             <div class="computer-name">${pc.computer_name}</div>
-            <div class="computer-status">
-              ${
-                pc.current_status === "available"
-                  ? "Trống"
-                  : pc.current_status === "in_use"
-                  ? "Đang sử dụng"
-                  : pc.current_status === "offline"
-                  ? "Tắt máy"
-                  : "Bảo trì"
-              }
-            </div>
+            <div class="computer-status">${statusText}</div>
           `;
-
+          card.addEventListener("click", () => {
+            openModal('editComputerModal', () => {
+              openEditComputerModal(pc);
+            });
+            });
           grid.appendChild(card);
         });
       } else {
@@ -92,4 +105,62 @@ function loadComputers() {
       alert("Đã xảy ra lỗi khi tải máy tính.");
     });
 }
+
+
+function openEditComputerModal(pc) {
+document.getElementById("editComputerName").value = pc.computer_name;
+const configMap = {
+  1: "Basic",
+  2: "Gaming",
+  3: "Workstation"
+};
+
+document.getElementById("editConfigName").value = configMap[pc.config_id];
+document.getElementById("editStatus").value = pc.current_status;
+document.getElementById("editRemoteLock").checked = Boolean(pc.is_remote_locked)
+
+
+
+  // Lưu ID máy để cập nhật
+  document.getElementById("editComputerModal").dataset.computerId = pc.computer_id;
+}
+
+function submitComputerUpdate() {
+  const id = document.getElementById("editComputerModal").dataset.computerId;
+  const name = document.getElementById("editComputerName").value.trim();
+  const config = document.getElementById("editConfigName").value;
+  const status = document.getElementById("editStatus").value;
+  const locked = document.getElementById("editRemoteLock").checked;
+
+  const payload = {
+    computer_id: id,
+    computer_name: name,
+    config_name: config,
+    current_status: status,
+    remote_locked: locked
+  };
+
+  fetch("http://localhost/NetMaster/getway/computers/update", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+})
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        alert("Cập nhật thành công!");
+        closeModal("editComputerModal");
+        loadComputers();
+      } else {
+        alert("Lỗi: " + response.message);
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi cập nhật máy:", err);
+      alert("Đã xảy ra lỗi khi cập nhật.");
+    });
+}
+
+
+
 

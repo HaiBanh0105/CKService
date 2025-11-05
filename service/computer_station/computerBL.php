@@ -40,3 +40,18 @@ function handle_add_computer($computer_name, $config_name)
         ];
     }
 }
+
+// Hàm xử lý cập nhật máy tính
+function handle_update_computer($computer_id, $name, $config_name, $status, $locked)
+{
+
+
+    if (!$computer_id || !$name || !$config_name || !$status) {
+        throw new Exception("Thiếu thông tin bắt buộc.");
+    }
+    $config_id = get_config_id_by_name($config_name);
+
+    error_log("Đang cập nhật máy: $computer_id với cấu hình $config_name → ID: $config_id");
+
+    return dao_update_computer($computer_id, $name, $config_id, $status, $locked);
+}

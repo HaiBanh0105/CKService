@@ -42,16 +42,29 @@ try {
         $computers = get_all_computers();
         http_response_code(200);
         echo json_encode(['status' => 'success', 'data' => $computers]);
+    } elseif ($method === 'POST' && $action === 'update') {
+        // --- ROUTE: /computers/update ---
+        $computer_id = $input_data['computer_id'] ?? null;
+        $name = $input_data['computer_name'] ?? '';
+        $config_name = $input_data['config_name'] ?? '';
+        $status = $input_data['current_status'] ?? '';
+        $locked = $input_data['remote_locked'] ?? false;
 
-        // --- ROUTE: /computers?action=configs ---
-    }
-    // elseif ($method === 'GET' && $action === 'configs') {
-    //     $configs = get_all_configs();
-    //     http_response_code(200);
-    //     echo json_encode(['status' => 'success', 'data' => $configs]);
-
-    // } 
-    else {
+        try {
+            handle_update_computer($computer_id, $name, $config_name, $status, $locked);
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Máy tính đã được cập nhật.'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    } else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }
