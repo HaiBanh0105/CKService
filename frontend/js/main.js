@@ -39,7 +39,15 @@ function showSection(sectionName) {
     .then(res => res.text())
     .then(html => {
       targetContainer.innerHTML = html;
-      if (sectionName === "customers") {
+      if (sectionName === "dashboard") {
+        requestAnimationFrame(() => {
+          loadComputerStats();
+          loadComputerActive();
+          loadMaintenanceComputers();
+          loadLockedComputers();
+        });
+      }
+      else if (sectionName === "customers") {
         requestAnimationFrame(() => {
           loadCustomerList();
         });
@@ -102,8 +110,11 @@ function openModal(modalId, callback) {
       modalPath = "/NetMaster/frontend/html/modals/edit-computer.html";
       break;  
     case "configModal":
-      modalPath = "/NetMaster/frontend/html/modals/config-modal.html";
+      modalPath = "/NetMaster/frontend/html/modals/update-config.html";
       break;   
+    case "addConfig":
+      modalPath = "/NetMaster/frontend/html/modals/add-config.html";
+      break;    
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";
       return;

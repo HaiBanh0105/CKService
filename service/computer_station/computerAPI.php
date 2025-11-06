@@ -64,8 +64,7 @@ try {
                 'message' => $e->getMessage()
             ]);
         }
-    }
-    elseif ($method === 'GET' && $action === 'config_detail') {
+    } elseif ($method === 'GET' && $action === 'config_detail') {
         $config_name = $_GET['name'] ?? '';
 
         try {
@@ -75,9 +74,7 @@ try {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-    }
-
-    elseif ($method === 'POST' && $action === 'update_config') {
+    } elseif ($method === 'POST' && $action === 'update_config') {
         $input = json_decode(file_get_contents("php://input"), true);
         $config_name = $input['config_name'] ?? '';
         $cpu = $input['cpu_spec'] ?? '';
@@ -91,7 +88,81 @@ try {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
+    } elseif ($method === 'GET' && $action === 'config_names') {
+        try {
+            $configs = get_all_config_names();
+            echo json_encode(['status' => 'success', 'data' => $configs]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    } elseif ($method === 'GET' && $action === 'config_names') {
+        try {
+            $configs = get_all_config_names();
+            echo json_encode(['status' => 'success', 'data' => $configs]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    } elseif ($method === 'POST' && $action === 'add_config_name') {
+        $input = json_decode(file_get_contents("php://input"), true);
+        $config_name = $input['config_name'] ?? '';
+
+        if (!$config_name) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu tên cấu hình.']);
+            exit;
+        }
+
+        try {
+            dao_add_new_config($config_name);
+            echo json_encode(['status' => 'success', 'message' => 'Cấu hình mới đã được thêm.']);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi thêm cấu hình: ' . $e->getMessage()]);
+        }
     }
+    elseif ($method === 'POST' && $action === 'total_computers') {
+        try {
+            $total = get_total_computers();
+            echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
+        }
+    }
+
+    elseif ($method === 'POST' && $action === 'total_in_use') {
+        try {
+            $total = get_total_active_computers();
+            echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
+        }
+    }
+
+    elseif ($method === 'POST' && $action === 'total_maintenance') {
+        try {
+            $total = get_total_maintenance_computers();
+            echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
+        }
+    }
+
+    elseif ($method === 'POST' && $action === 'total_locked') {
+        try {
+            $total = get_total_remote_locked_computers();
+            echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
+        }
+    }
+
+
     else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);

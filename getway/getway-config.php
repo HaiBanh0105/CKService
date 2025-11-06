@@ -60,7 +60,53 @@ return [
             'path' => 'computerAPI.php',
             'dir' => 'computer_station',
             'action' => 'config_detail'
-        ]
+        ],
+
+        //Endpoint lấy danh sách tên cấu hình
+        '/computers/config_names' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'config_names'
+        ],
+        //Endpoint thêm tên cấu hình mới
+        '/computers/add_config_name' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'add_config_name'
+        ],
+
+        // Endpoint lấy tổng số máy tính
+        '/computers/total_computers' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'total_computers'
+        ],
+
+        // Endpoint lấy tổng số máy tính đang sử dụng
+        '/computers/total_in_use' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'total_in_use'
+        ],
+
+        // End lấy tổng máy tính đang bảo trì
+        '/computers/total_maintenance' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'total_maintenance'
+        ],
+        // Endpoint lấy tổng số máy tính đang bị khóa từ xa
+        '/computers/total_locked' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'total_locked'
+        ],
 
     ],
     'ports' => [

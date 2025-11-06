@@ -104,7 +104,7 @@ function dao_get_config_by_name($config_name)
     return computer_db_query_one($sql, $config_name);
 }
 
-//cập nhật cấu hình theo tên
+//Cập nhật cấu hình theo tên
 function dao_update_config_by_name($config_name, $cpu, $gpu, $ram)
 {
     $sql = "UPDATE computer_configs 
@@ -113,3 +113,53 @@ function dao_update_config_by_name($config_name, $cpu, $gpu, $ram)
     return computer_db_execute($sql, $cpu, $gpu, $ram, $config_name);
 }
 
+//lấy danh sách config name 
+function get_all_config_names()
+{
+    $sql = "SELECT config_name FROM computer_configs ORDER BY config_id ASC";
+    return computer_db_query($sql);
+}
+
+//Thêm tên cấu hình mới
+function dao_add_new_config($config_name)
+{
+    $sql = "INSERT INTO computer_configs (config_name)
+            VALUES (?)";
+    return computer_db_execute($sql, $config_name);
+}
+
+// Kiểm tra tên cấu hình đã tồn tại
+function is_config_name_exists($config_name)
+{
+    $sql = "SELECT COUNT(*) FROM computer_configs WHERE config_name = ?";
+    $count = computer_db_query_value($sql, $config_name);
+    return $count > 0;
+}
+
+// Tính tổng số máy tính
+function get_total_computers()
+{
+    $sql = "SELECT COUNT(*) FROM computers";
+    return computer_db_query_value($sql);
+}
+
+// Tính tổng máy đang sử dụng
+function get_total_active_computers()
+{
+    $sql = "SELECT COUNT(*) FROM computers WHERE current_status = 'in_use' and is_remote_locked = 0";
+    return computer_db_query_value($sql);
+}
+
+//Tính tổng máy đang bảo trì
+function get_total_maintenance_computers()
+{
+    $sql = "SELECT COUNT(*) FROM computers WHERE current_status = 'maintenance'";
+    return computer_db_query_value($sql);
+}
+
+//Tính tổng mấy bị khóa từ xa
+function get_total_remote_locked_computers()
+{
+    $sql = "SELECT COUNT(*) FROM computers WHERE is_remote_locked = 1";
+    return computer_db_query_value($sql);
+}

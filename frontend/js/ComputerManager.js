@@ -1,6 +1,6 @@
 function handleAddComputer() {
   const name = document.getElementById("computerName").value.trim();
-  const configName = document.getElementById("configName").value;
+  const configName = document.getElementById("configSelector").value;
 
   if (!name || !configName) {
     alert("Vui lòng nhập đầy đủ thông tin.");
@@ -223,5 +223,34 @@ function submitConfigUpdate() {
       alert("❌ Đã xảy ra lỗi khi cập nhật.");
     });
 }
+
+function loadConfigOptions() {
+  const select = document.getElementById("configSelector");
+  select.innerHTML = `<option value="">-- Chọn cấu hình --</option>`;
+
+  fetch("http://localhost/NetMaster/getway/computers/config_names")
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        response.data.forEach(cfg => {
+          const opt = document.createElement("option");
+          opt.value = cfg.config_name;
+          opt.textContent = cfg.config_name;
+          select.appendChild(opt);
+        });
+      } else {
+        alert("Không thể tải danh sách cấu hình.");
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi tải config_name:", err);
+      alert("Đã xảy ra lỗi khi tải cấu hình.");
+    });
+}
+
+
+
+
+
 
 

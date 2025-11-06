@@ -82,4 +82,17 @@ function handle_update_config($config_name, $cpu, $gpu, $ram)
     return dao_update_config_by_name($config_name, $cpu, $gpu, $ram);
 }
 
+// Hàm xử lý thêm tên cấu hình mới
+function handle_add_new_config($config_name)
+{
+    // Kiểm tra xem cấu hình đã tồn tại chưa
+    if (is_config_name_exists($config_name)) {
+        throw new Exception("Tên cấu hình '" . $config_name . "' đã tồn tại.");
+    }
 
+    dao_add_new_config($config_name);
+    return [
+        "status" => "success",
+        "message" => "Cấu hình mới đã được thêm thành công."
+    ];
+}
