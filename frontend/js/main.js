@@ -4,7 +4,7 @@ const sectionMap = {
   dashboard: "dashboard-container",
   computers: "computers-container",
   customers: "customers-container",
-  services: "services-container",
+  staff: "staff-container",
   revenue: "revenue-container",
   settings: "settings-container"
 };
@@ -13,7 +13,7 @@ const viewMap = {
   dashboard: "/NetMaster/frontend/html/sections/dashboard.html",
   computers: "/NetMaster/frontend/html/sections/computers.html",
   customers: "/NetMaster/frontend/html/sections/customers.html",
-  services: "/NetMaster/frontend/html/sections/services.html",
+  staff: "/NetMaster/frontend/html/sections/staff.html",
   revenue: "/NetMaster/frontend/html/sections/revenue.html",
   settings: "/NetMaster/frontend/html/sections/settings.html"
 };
@@ -75,7 +75,7 @@ function getTitle(sectionName) {
     case "dashboard": return "Dashboard";
     case "computers": return "Quản Lý Máy";
     case "customers": return "Khách Hàng";
-    case "services": return "Dịch Vụ";
+    case "staff": return "Nhân viên";
     case "revenue": return "Doanh Thu";
     case "settings": return "Cài Đặt";
     default: return "Cyber Gaming";
@@ -100,8 +100,8 @@ function openModal(modalId, callback) {
     case "computerModal":
       modalPath = "/NetMaster/frontend/html/modals/computer-modal.html";
       break;
-    case "serviceModal":
-      modalPath = "/NetMaster/frontend/html/modals/service-modal.html";
+    case "staffModal":
+      modalPath = "/NetMaster/frontend/html/modals/staff-modal.html";
       break;
     case "transactionModal":
       modalPath = "/NetMaster/frontend/html/modals/customer-transaction.html";
