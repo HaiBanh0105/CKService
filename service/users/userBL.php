@@ -16,7 +16,7 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
 
         // 1. Tạo người dùng
         $user_id = dao_insert_user($role_name, $full_name, $phone_number, $email, $password_hash);
-        error_log("user_id sau insert: " . var_export($user_id, true));
+        // error_log("user_id sau insert: " . var_export($user_id, true));
         if (!$user_id) {
             throw new Exception("Không thể tạo người dùng.");
         }
@@ -33,7 +33,6 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
                 dao_insert_transaction($account_id, $initial_balance, 'topup');
             }
         }
-
         // Commit nếu mọi thứ OK
         user_db_execute("COMMIT");
         return $user_id;
@@ -53,3 +52,5 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
         throw $e;
     }
 }
+
+

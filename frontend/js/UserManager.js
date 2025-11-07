@@ -1,6 +1,6 @@
 // Hàm tải danh sách khách hàng từ API và hiển thị trong bảng
 function loadCustomerList() {
-  fetch("http://localhost/NetMaster/getway/users/all")
+  fetch("http://localhost/NetMaster/getway/users/load_customers")
     .then(res => res.json())
     .then(response => {
       if (response.status === "success") {
@@ -42,6 +42,38 @@ function loadCustomerList() {
     });
 }
 
+// Hàm tải danh sách nhân viên từ API và hiển thị trong bảng
+function loadStaffList() {
+  fetch("http://localhost/NetMaster/getway/users/load_staff")
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        const staffs = response.data;
+        const tableBody = document.getElementById("staffTable");
+        tableBody.innerHTML = "";
+
+        staffs.forEach(c => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${c.user_id}</td>
+            <td>${c.full_name}</td>
+            <td>${c.phone_number}</td>
+            <td>${c.email}</td>
+            
+            // <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Chỉnh sửa</button>`;
+          tableBody.appendChild(row);
+        });
+
+      
+      } else {
+        alert("Không thể tải danh sách nhân viên.");
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi gọi API:", err);
+    });
+}
+
 
 // Hàm xử lý khi nhấn nút thêm khách hàng
 function handleAddCustomer() {
@@ -53,7 +85,7 @@ function handleAddCustomer() {
     initial_balance: parseFloat(document.getElementById("customerBalance").value || "0")
   };
 
-  fetch("http://localhost/NetMaster/getway/users/register", {
+  fetch("http://localhost/NetMaster/getway/users/add_customer", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -117,6 +149,35 @@ function openTransactionHistory(userId) {
 }
 
 
+// Hàm xử lý khi nhấn nút thêm nhân viên
+function handleAddStaff() {
+  const data = {
+    full_name: document.getElementById("staffName").value,
+    phone_number: document.getElementById("staffPhone").value,
+    email: document.getElementById("staffEmail").value,
+    password: document.getElementById("staffPassword").value,
+  };
+
+  fetch("http://localhost/NetMaster/getway/users/add_staff", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+    .then(res => res.json())
+    .then(response => {
+      console.log("Phản hồi từ API:", response);
+      if (response.status === "success") {
+        alert("Thêm nhân viên thành công!");
+        loadStaffList();
+        closeModal("staffModal");
+      } else {
+        alert("Lỗi: " + response.message);
+      }
+    })
+    .catch(err => {
+      console.error("Lỗi khi gọi API:", err);
+    });
+}
 
 
 

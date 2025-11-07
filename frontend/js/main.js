@@ -50,10 +50,15 @@ function showSection(sectionName) {
       else if (sectionName === "customers") {
         requestAnimationFrame(() => {
           loadCustomerList();
-        });
+        });  
       } else if(sectionName === "computers") {
         requestAnimationFrame(() => {
           loadComputers();
+        });
+      }
+      else if(sectionName === "staff") {
+        requestAnimationFrame(() => {
+          loadStaffList()
         });
       }
     })

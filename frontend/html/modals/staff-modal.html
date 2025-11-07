@@ -5,21 +5,17 @@
 
   <div class="form-group">
     <label>Họ và Tên</label>
-    <input type="text" id="staffName" placeholder="Nguyễn Văn A" />
+    <input type="text" id="staffName" placeholder="Nhập tên nhân viên" />
+  </div>
+
+  <div class="form-group">
+    <label>Số điện thoại</label>
+    <input type="email" id="staffPhone" placeholder="Nhập số điện thoại" />
   </div>
 
   <div class="form-group">
     <label>Email</label>
-    <input type="email" id="staffEmail" placeholder="nhanvien@example.com" />
-  </div>
-
-  <div class="form-group">
-    <label>Chức Vụ</label>
-    <select id="staffRole">
-      <option value="admin">Quản trị viên</option>
-      <option value="staff">Nhân viên</option>
-      <option value="technician">Kỹ thuật</option>
-    </select>
+    <input type="email" id="staffEmail" placeholder="Nhập email nhân viên" />
   </div>
 
   <div class="form-group">
@@ -31,6 +27,6 @@
     <button class="btn btn-secondary" onclick="closeModal('staffModal')">
       Hủy
     </button>
-    <button class="btn btn-primary" onclick="addStaff()">Thêm</button>
+    <button class="btn btn-primary" onclick="handleAddStaff()">Thêm</button>
   </div>
 </div>

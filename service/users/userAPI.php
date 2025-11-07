@@ -51,7 +51,7 @@ try {
             http_response_code(401);
             echo json_encode(['status' => 'error', 'message' => 'Email hoặc mật khẩu không đúng.']);
         }
-    } elseif ($method === 'GET' && $action === 'all') {
+    } elseif ($method === 'GET' && $action === 'load_customers') {
         // --- ROUTE: /users?action=all (LẤY TẤT CẢ KHÁCH HÀNG) ---
 
         // Gọi hàm DAO đã join users và membership_accounts
@@ -62,7 +62,17 @@ try {
             'status' => 'success',
             'data' => $customers
         ]);
-    } elseif ($method === 'POST' && $action === 'register') {
+    }
+    elseif ($method === 'GET' && $action === 'load_staff') {
+        $staff = dao_select_all_staff();
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $staff
+        ]);
+    } 
+    elseif ($method === 'POST' && $action === 'add_customer') {
         // --- ROUTE: /users?action=register (THÊM KHÁCH HÀNG MỚI) ---
         $full_name = $input_data['full_name'] ?? '';
         $phone_number = $input_data['phone_number'] ?? '';
@@ -84,6 +94,34 @@ try {
             echo json_encode([
                 'status' => 'success',
                 'message' => 'Khách hàng đã được tạo thành công.',
+                'user_id' => $user_id
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    } elseif ($method === 'POST' && $action === 'add_staff') {
+        // --- ROUTE: /users?action=register (THÊM KHÁCH HÀNG MỚI) ---
+        $full_name = $input_data['full_name'] ?? '';
+        $phone_number = $input_data['phone_number'] ?? '';
+        $email = $input_data['email'] ?? '';
+        $password = $input_data['password'] ?? '';
+
+
+        // Kiểm tra dữ liệu đầu vào
+        if (empty($full_name) || empty($phone_number) || empty($password)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu thông tin bắt buộc.']);
+            exit;
+        }
+
+        try {
+            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'staff', 0);
+
+            http_response_code(201);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Nhân viên đã được tạo thành công.',
                 'user_id' => $user_id
             ]);
         } catch (Exception $e) {

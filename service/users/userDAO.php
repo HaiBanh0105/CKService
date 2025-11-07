@@ -82,6 +82,17 @@ function dao_select_all_membership_accounts()
     return user_db_query($sql);
 }
 
+// Hàm load tất cả user nhân viên
+function dao_select_all_staff()
+{
+    $sql = "SELECT user_id, role_name, full_name, phone_number, email 
+            FROM users 
+            WHERE role_name = 'staff'
+            ORDER BY user_id DESC";
+
+    return user_db_query($sql);
+}
+
 // Thêm một bản ghi người dùng mới vào bảng users.
 function dao_insert_user($role_name, $full_name, $phone_number, $email, $password_hash)
 {
@@ -90,6 +101,8 @@ function dao_insert_user($role_name, $full_name, $phone_number, $email, $passwor
     user_db_execute($sql, $role_name, $full_name, $phone_number, $email, $password_hash);
     return user_db_query_value("SELECT LAST_INSERT_ID()");
 }
+
+
 
 // Thêm tài khoản thành viên và trả về account_id
 function dao_insert_membership_account($user_id, $balance)

@@ -7,15 +7,26 @@ return [
         // Endpoint Lấy thông tin (trỏ về service: 'users')
         '/users/info'        => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'info'],
 
-        // Endpoint Lấy tất cả user
-        '/users/all'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'all'],
+        // Endpoint Lấy tất cả khách hàng
+        '/users/load_customers'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'load_customers'],
+
+        // Endpoint Lấy tất cả nhân viên
+        '/users/load_staff'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'load_staff'],
 
         // Endpoint thêm khách hàng mới
-        '/users/register' => [
+        '/users/add_customer' => [
             'service' => 'users',
             'path' => 'userAPI.php',
             'dir' => 'users',
-            'action' => 'register'
+            'action' => 'add_customer'
+        ],
+
+        // Endpoint thêm nhân viên mới
+        '/users/add_staff' => [
+            'service' => 'users',
+            'path' => 'userAPI.php',
+            'dir' => 'users',
+            'action' => 'add_staff'
         ],
 
         // endpoint lấy lịch sử giao dịch của khách hàng
@@ -109,6 +120,8 @@ return [
         ],
 
     ],
+
+
     'ports' => [
         // Chỉ cần định nghĩa port cho service 'users'
         'users'    => '8001',
