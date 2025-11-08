@@ -71,15 +71,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userData = result.data;
                     
                     // Lưu Token và Role vào localStorage
-                    localStorage.setItem('userToken', userData.token);
-                    localStorage.setItem('userRole', userData.role);
+                    localStorage.setItem('userID', userData.user_id);
+                    localStorage.setItem('userName', userData.full_name);
+                    localStorage.setItem('userRole', userData.role_name);
                     
-                    showMessage(successMessage, `Chào mừng ${userData.full_name}! Đang chuyển hướng...`, false);
+                    showMessage(successMessage, `Chào mừng ${userData.full_name}!`, false);
                     
                     // Chuyển hướng đến trang Admin chính
+                    if(userData.role !== 'customer') {
                     setTimeout(() => {
                         window.location.href = './index.html'; 
                     }, 1000);
+                }else{
+
+                }
+
 
                 } else {
                     // Đăng nhập thất bại (401 Unauthorized hoặc lỗi API)

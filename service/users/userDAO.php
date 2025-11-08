@@ -72,6 +72,17 @@ function select_all_users()
     return user_db_query($sql);
 }
 
+//Lấy thông tin người dùng theo user_id
+function select_user_by_id($user_id)
+{
+    $sql = "SELECT user_id, role_name, full_name, phone_number, email 
+            FROM users 
+            WHERE user_id = ?";
+
+    return user_db_query_one($sql, $user_id);
+}
+
+
 //Hàm load tất cả user khách hàng
 function dao_select_all_membership_accounts()
 {
@@ -130,4 +141,13 @@ function dao_get_transaction_history($account_id)
             WHERE account_id = ?
             ORDER BY transaction_date DESC";
     return user_db_query($sql, $account_id);
+}
+
+//Hàm cập nhật thông tin người dùng
+function dao_update_user($user_id, $full_name, $phone_number, $email)
+{
+    $sql = "UPDATE users 
+            SET full_name = ?, phone_number = ?, email = ? 
+            WHERE user_id = ?";
+    user_db_execute($sql, $full_name, $phone_number, $email, $user_id);
 }

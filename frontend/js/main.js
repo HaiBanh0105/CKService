@@ -6,7 +6,7 @@ const sectionMap = {
   customers: "customers-container",
   staff: "staff-container",
   revenue: "revenue-container",
-  settings: "settings-container"
+  payment: "payment-container"
 };
 
 const viewMap = {
@@ -15,8 +15,9 @@ const viewMap = {
   customers: "/NetMaster/frontend/html/sections/customers.html",
   staff: "/NetMaster/frontend/html/sections/staff.html",
   revenue: "/NetMaster/frontend/html/sections/revenue.html",
-  settings: "/NetMaster/frontend/html/sections/settings.html"
+  payment: "/NetMaster/frontend/html/sections/payment.html"
 };
+
 
 function showSection(sectionName) {
   // 1. Cập nhật tiêu đề
@@ -61,6 +62,11 @@ function showSection(sectionName) {
           loadStaffList()
         });
       }
+      else if(sectionName === "payment") {
+        requestAnimationFrame(() => {
+          loadComputersToPayment()
+        });
+      }
     })
     
     .catch(err => {
@@ -73,6 +79,7 @@ function showSection(sectionName) {
   });
   const activeLink = document.querySelector(`.nav-link[onclick*="${sectionName}"]`);
   if (activeLink) activeLink.classList.add("active");
+
 }
 
 function getTitle(sectionName) {
@@ -83,6 +90,7 @@ function getTitle(sectionName) {
     case "staff": return "Nhân viên";
     case "revenue": return "Doanh Thu";
     case "settings": return "Cài Đặt";
+    case "payment": return "Thanh Toán";
     default: return "Cyber Gaming";
   }
 }
@@ -90,6 +98,22 @@ function getTitle(sectionName) {
 // 🚀 Tải giao diện mặc định khi mở trang
 document.addEventListener("DOMContentLoaded", () => {
   showSection("dashboard");
+  // Hiển thị nút Quản lý nhân viên nếu là Admin
+  
+  const userRole = localStorage.getItem("userRole");
+  const btnStaff = document.getElementById("BtnStaff");
+
+  if (btnStaff) {
+    btnStaff.style.display = userRole === "admin" ? "inline" : "none";
+  }
+  document.getElementById("userName").textContent = localStorage.getItem("userName");
+  if(userRole == "admin"){
+  document.getElementById("userRole").textContent = "Quản trị viên";
+  }else if(userRole == "staff"){
+    document.getElementById("userRole").textContent = "Nhân viên";
+  }else{
+    document.getElementById("userRole").textContent = "Khách hàng";
+  }
 });
 
 function openModal(modalId, callback) {
@@ -119,7 +143,10 @@ function openModal(modalId, callback) {
       break;   
     case "addConfig":
       modalPath = "/NetMaster/frontend/html/modals/add-config.html";
-      break;    
+      break;  
+    case "updateUser":
+      modalPath = "/NetMaster/frontend/html/modals/update-user.html";
+      break;   
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";
       return;

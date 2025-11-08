@@ -56,6 +56,13 @@ function get_all_computers()
     return computer_db_query($sql);
 }
 
+//Hàm lấy thông tin máy tính đang sử dụng
+function get_active_computers()
+{
+    $sql = "SELECT * FROM computers WHERE current_status = 'in_use' AND is_remote_locked = 0";
+    return computer_db_query($sql);
+}
+
 //Hàm lấy kiểm tra tên máy tính đã tồn tại
 function is_computer_name_exists($computer_name)
 {

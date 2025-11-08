@@ -17,7 +17,11 @@ function loadCustomerList() {
             <td>${c.email}</td>
             <td>${c.current_balance.toLocaleString()} đ</td>
             <td>${c.status}</td>
-            <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Xem lịch sử</button>`;
+            <td>
+            <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Xem lịch sử</button>
+            <button class="btn btn-sm btn-info updateUser" data-id="${c.user_id}">Chỉnh sửa</button>
+            </td> 
+            ` 
           tableBody.appendChild(row);
         });
 
@@ -29,6 +33,17 @@ function loadCustomerList() {
             openModal('transactionModal', () => {
               openTransactionHistory(userId);
             });
+          });
+        });
+
+        // Gắn sự kiện cho nút "Chỉnh sửa"
+        document.querySelectorAll(".updateUser").forEach(button => {
+          button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-id");
+            // Gọi hàm mở modal và truyền userId nếu cần 
+            openModal('updateUser', () => {
+                loadUserInfo(userId);
+              });
           });
         });
 
@@ -53,16 +68,29 @@ function loadStaffList() {
         tableBody.innerHTML = "";
 
         staffs.forEach(c => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${c.user_id}</td>
-            <td>${c.full_name}</td>
-            <td>${c.phone_number}</td>
-            <td>${c.email}</td>
-            
-            // <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Chỉnh sửa</button>`;
-          tableBody.appendChild(row);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${c.user_id}</td>
+          <td>${c.full_name}</td>
+          <td>${c.phone_number}</td>
+          <td>${c.email}</td>
+          <td>
+            <button class="btn btn-sm btn-info updateUser" data-id="${c.user_id}">Chỉnh sửa</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Gắn sự kiện cho nút "Chỉnh sửa"
+      document.querySelectorAll(".updateUser").forEach(button => {
+        button.addEventListener("click", function () {
+          const userId = this.getAttribute("data-id");
+          // Gọi hàm mở modal và truyền userId nếu cần 
+          openModal('updateUser', () => {
+              loadUserInfo(userId);
+            });
         });
+      });
 
       
       } else {
@@ -73,6 +101,39 @@ function loadStaffList() {
       console.error("Lỗi khi gọi API:", err);
     });
 }
+
+//Hàm load thông tin người dùng vào form cập nhật
+function loadUserInfo(userId) {
+  fetch(`http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Phản hồi không hợp lệ từ server");
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.status === "success") {
+        const user = data.data;
+        document.getElementById("fullname").value = user.full_name || "";
+        document.getElementById("phone").value = user.phone_number || "";
+        document.getElementById("email").value = user.email || "";
+
+      } else {
+        alert("Không thể tải thông tin người dùng: " + data.message);
+      }
+    })
+    .catch(error => {
+      console.error("Lỗi khi gọi API:", error);
+      alert("Đã xảy ra lỗi khi tải thông tin người dùng.");
+    });
+}
+
+
 
 
 // Hàm xử lý khi nhấn nút thêm khách hàng

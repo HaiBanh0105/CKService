@@ -7,6 +7,9 @@ return [
         // Endpoint Lấy thông tin (trỏ về service: 'users')
         '/users/info'        => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'info'],
 
+        // Endpoint lấy người dùng theo ID
+        '/users/get_by_id'   => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'get_by_id'],
+
         // Endpoint Lấy tất cả khách hàng
         '/users/load_customers'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'load_customers'],
 
@@ -47,6 +50,14 @@ return [
             'path' => 'computerAPI.php',
             'dir' => 'computer_station',
             'action' => 'all'
+        ],
+
+        // Endpoint lấy tất cả máy tính đang sử dụng
+        '/computers/active' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'active'
         ],
 
         //Endpoint cập nhật máy tính

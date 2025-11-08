@@ -62,8 +62,7 @@ try {
             'status' => 'success',
             'data' => $customers
         ]);
-    }
-    elseif ($method === 'GET' && $action === 'load_staff') {
+    } elseif ($method === 'GET' && $action === 'load_staff') {
         $staff = dao_select_all_staff();
 
         http_response_code(200);
@@ -71,8 +70,35 @@ try {
             'status' => 'success',
             'data' => $staff
         ]);
-    } 
-    elseif ($method === 'POST' && $action === 'add_customer') {
+    } elseif ($method === 'GET' && $action === 'get_by_id') {
+        $user_id = $_GET['user_id'] ?? ''; // Lấy từ query string, không phải body
+
+        if (empty($user_id)) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu user_id trong yêu cầu.'
+            ]);
+            exit;
+        }
+
+        $user = select_user_by_id($user_id);
+
+        if (!$user) {
+            http_response_code(404);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy người dùng với ID đã cho.'
+            ]);
+            exit;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $user
+        ]);
+    } elseif ($method === 'POST' && $action === 'add_customer') {
         // --- ROUTE: /users?action=register (THÊM KHÁCH HÀNG MỚI) ---
         $full_name = $input_data['full_name'] ?? '';
         $phone_number = $input_data['phone_number'] ?? '';

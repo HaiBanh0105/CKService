@@ -42,7 +42,13 @@ try {
         $computers = get_all_computers();
         http_response_code(200);
         echo json_encode(['status' => 'success', 'data' => $computers]);
-    } elseif ($method === 'POST' && $action === 'update_computer') {
+    } 
+    elseif ($method === 'GET' && $action === 'active') {
+        $computers = get_active_computers();
+        http_response_code(200);
+        echo json_encode(['status' => 'success', 'data' => $computers]);
+    } 
+    elseif ($method === 'POST' && $action === 'update_computer') {
         // --- ROUTE: /computers/update ---
         $computer_id = $input_data['computer_id'] ?? null;
         $name = $input_data['computer_name'] ?? '';

@@ -1,0 +1,61 @@
+<div class="modal-content p-4">
+  <div class="modal-header">
+    <h5 class="modal-title">Cập Nhật Người Dùng</h5>
+  </div>
+
+  <div class="modal-body">
+    <form id="updateUserForm">
+      <!-- Họ và Tên -->
+      <div class="form-group mb-3">
+        <label for="fullname" class="form-label">Họ và Tên</label>
+        <input
+          type="text"
+          id="fullname"
+          name="fullname"
+          class="form-control"
+          placeholder="Nhập họ và tên"
+          required
+        />
+      </div>
+
+      <!-- Số Điện Thoại -->
+      <div class="form-group mb-3">
+        <label for="phone" class="form-label">Số Điện Thoại</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phonen"
+          class="form-control"
+          placeholder="Nhập số điện thoại"
+          required
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="form-group mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          placeholder="Nhập địa chỉ email"
+          required
+        />
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      onclick="closeModal('updateUser')"
+    >
+      Đóng
+    </button>
+    <button type="button" class="btn btn-primary" onclick="submitUserUpdate()">
+      Lưu
+    </button>
+  </div>
+</div>

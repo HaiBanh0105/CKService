@@ -52,5 +52,3 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
         throw $e;
     }
 }
-
-
