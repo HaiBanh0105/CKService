@@ -102,6 +102,7 @@ function loadStaffList() {
     });
 }
 
+let originalUserData = {};
 //Hàm load thông tin người dùng vào form cập nhật
 function loadUserInfo(userId) {
   fetch(`http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`, {
@@ -121,7 +122,18 @@ function loadUserInfo(userId) {
         const user = data.data;
         document.getElementById("fullname").value = user.full_name || "";
         document.getElementById("phone").value = user.phone_number || "";
-        document.getElementById("email").value = user.email || "";
+        document.getElementById("email").value = user.email || "";0
+
+        // Lưu dữ liệu gốc để so sánh sau
+        originalUserData = {
+          user_id: user.user_id,
+          full_name: user.full_name,
+          phone_number: user.phone_number,
+          email: user.email
+        };
+
+        // Lưu userId vào modal để dùng khi cập nhật
+        document.getElementById("updateUserForm").dataset.userId = user.user_id;
 
       } else {
         alert("Không thể tải thông tin người dùng: " + data.message);
@@ -239,6 +251,64 @@ function handleAddStaff() {
       console.error("Lỗi khi gọi API:", err);
     });
 }
+
+// // Hàm xử lý nút updateUser
+function handleUpdateUser() {
+  const modal = document.getElementById("updateUserForm");
+  const userId = modal.dataset.userId;
+
+  const fullName = document.getElementById("fullname").value.trim();
+  const phoneNumber = document.getElementById("phone").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  // So sánh với dữ liệu gốc
+  const isUnchanged =
+    fullName === originalUserData.full_name &&
+    phoneNumber === originalUserData.phone_number &&
+    email === originalUserData.email;
+
+  if (isUnchanged) {
+    closeModal("updateUser");
+    return;
+  }
+
+  // Kiểm tra dữ liệu đầu vào
+  if (!fullName || !phoneNumber || !email) {
+    alert("Vui lòng điền đầy đủ thông tin.");
+    return;
+  }
+
+  const payload = {
+    user_id: userId,
+    full_name: fullName,
+    phone_number: phoneNumber,
+    email: email
+  };
+
+  fetch("http://localhost/NetMaster/getway/users/update_by_id", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        alert("Cập nhật thành công!");
+        closeModal("updateUser");
+        loadCustomerList();
+        loadStaffList();
+      } else {
+        alert("Cập nhật thất bại: " + data.message);
+      }
+    })
+    .catch(error => {
+      console.error("Lỗi khi cập nhật người dùng:", error);
+      alert("Đã xảy ra lỗi khi gửi yêu cầu cập nhật.");
+    });
+}
+
 
 
 

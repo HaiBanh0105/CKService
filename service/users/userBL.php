@@ -8,6 +8,15 @@ require_once 'userDAO.php';
  */
 function register_new_user($full_name, $phone_number, $email, $password, $role_name, $initial_balance)
 {
+    // Kiểm tra trùng lặp trước khi insert
+    if (is_phone_number_exists($phone_number)) {
+        throw new Exception("Số điện thoại này đã được đăng ký.");
+    }
+
+    if (is_email_exists($email)) {
+        throw new Exception("Địa chỉ email này đã được sử dụng.");
+    }
+
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     try {
@@ -16,7 +25,6 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
 
         // 1. Tạo người dùng
         $user_id = dao_insert_user($role_name, $full_name, $phone_number, $email, $password_hash);
-        // error_log("user_id sau insert: " . var_export($user_id, true));
         if (!$user_id) {
             throw new Exception("Không thể tạo người dùng.");
         }
@@ -33,22 +41,28 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
                 dao_insert_transaction($account_id, $initial_balance, 'topup');
             }
         }
+
         // Commit nếu mọi thứ OK
         user_db_execute("COMMIT");
         return $user_id;
-    } catch (PDOException $e) {
-        user_db_execute("ROLLBACK");
-
-        if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-            $msg = (strpos($e->getMessage(), 'phone_number') !== false)
-                ? "Số điện thoại này đã được đăng ký."
-                : "Địa chỉ email này đã được sử dụng.";
-            throw new Exception($msg);
-        }
-
-        throw new Exception("Lỗi Database: " . $e->getMessage());
     } catch (Exception $e) {
         user_db_execute("ROLLBACK");
         throw $e;
     }
 }
+
+
+// Câp nhật thông tin người dùng
+function update_user_info($user_id, $full_name, $phone_number, $email)
+{
+    if (is_email_exists($email, $user_id)) {
+        throw new Exception("Email đã được sử dụng bởi người dùng khác.");
+    }
+
+    if (is_phone_number_exists($phone_number, $user_id)) {
+        throw new Exception("Số điện thoại đã được sử dụng bởi người dùng khác.");
+    }
+
+    dao_update_user($user_id, $full_name, $phone_number, $email);
+}
+

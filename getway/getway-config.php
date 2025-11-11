@@ -10,6 +10,9 @@ return [
         // Endpoint lấy người dùng theo ID
         '/users/get_by_id'   => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'get_by_id'],
 
+        // Endpoint cập nhật người dùng theo ID
+        '/users/update_by_id'   => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'update_by_id'],
+
         // Endpoint Lấy tất cả khách hàng
         '/users/load_customers'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'load_customers'],
 
@@ -30,6 +33,14 @@ return [
             'path' => 'userAPI.php',
             'dir' => 'users',
             'action' => 'add_staff'
+        ],
+
+        // Endpoint cập nhật người dùng
+        '/users/update_user' => [
+            'service' => 'users',
+            'path' => 'userAPI.php',
+            'dir' => 'users',
+            'action' => 'update_user'
         ],
 
         // endpoint lấy lịch sử giao dịch của khách hàng
@@ -130,6 +141,13 @@ return [
             'action' => 'total_locked'
         ],
 
+        // Endpoint lấy user_id từ computer_id trong session đang active
+        '/session/user_id_by_computer' => [
+            'service' => 'session',
+            'path' => 'sessionAPI.php',
+            'dir' => 'session',
+            'action' => 'user_id_by_computer'],
+
     ],
 
 
@@ -138,6 +156,8 @@ return [
         'users'    => '8001',
 
         'computers' => '8002',
+
+        'session' => '8003',
         // Loại bỏ 'auth' và 'user' cũ
         // 'auth' => '8001',
         // 'user' => '8001',

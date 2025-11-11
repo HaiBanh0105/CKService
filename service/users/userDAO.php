@@ -151,3 +151,35 @@ function dao_update_user($user_id, $full_name, $phone_number, $email)
             WHERE user_id = ?";
     user_db_execute($sql, $full_name, $phone_number, $email, $user_id);
 }
+
+//Hàm kiểm tra email đã tồn tại
+function is_email_exists($email, $exclude_user_id = null)
+{
+    $sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+    $params = [$email];
+
+    if ($exclude_user_id !== null) {
+        $sql .= " AND user_id != ?";
+        $params[] = $exclude_user_id;
+    }
+
+    $count = user_db_query_value($sql, ...$params);
+    return $count > 0;
+}
+
+
+//Hàm kiểm tra số điện thoại đã tồn tại
+function is_phone_number_exists($phone_number, $exclude_user_id = null)
+{
+    $sql = "SELECT COUNT(*) FROM users WHERE phone_number = ?";
+    $params = [$phone_number];
+
+    if ($exclude_user_id !== null) {
+        $sql .= " AND user_id != ?";
+        $params[] = $exclude_user_id;
+    }
+
+    $count = user_db_query_value($sql, ...$params);
+    return $count > 0;
+}
+

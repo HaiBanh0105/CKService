@@ -11,7 +11,7 @@ CREATE TABLE users (
     role_name ENUM('admin', 'staff', 'customer') NOT NULL, 
     full_name VARCHAR(255) NOT NULL, 
     phone_number VARCHAR(20) UNIQUE NOT NULL, 
-    email VARCHAR(255), 
+    email VARCHAR(255) UNIQUE NOT NULL, 
     password_hash VARCHAR(255) NOT NULL, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 

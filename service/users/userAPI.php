@@ -98,7 +98,40 @@ try {
             'status' => 'success',
             'data' => $user
         ]);
-    } elseif ($method === 'POST' && $action === 'add_customer') {
+    } 
+    elseif ($method === 'POST' && $action === 'update_by_id') {
+        $user_id = $input_data['user_id'] ?? '';
+        $full_name = $input_data['full_name'] ?? '';
+        $phone_number = $input_data['phone_number'] ?? '';
+        $email = $input_data['email'] ?? '';
+
+        if (empty($user_id) || empty($full_name) || empty($phone_number) || empty($email)) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu thông tin bắt buộc.'
+            ]);
+            exit;
+        }
+
+        try {
+            update_user_info($user_id, $full_name, $phone_number, $email);
+
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Cập nhật thông tin người dùng thành công.'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+
+    }
+    elseif ($method === 'POST' && $action === 'add_customer') {
         // --- ROUTE: /users?action=register (THÊM KHÁCH HÀNG MỚI) ---
         $full_name = $input_data['full_name'] ?? '';
         $phone_number = $input_data['phone_number'] ?? '';
