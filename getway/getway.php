@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // 1. Phân tích URI để lấy route sau /getway/
 $uri = strtok($_SERVER['REQUEST_URI'], '?');
 // *** SỬA ĐỔI 1: Thay GKService bằng NetMaster trong đường dẫn base ***
-$base = '/NetMaster/getway/'; 
+$base = '/NetMaster/getway/';
 $route = substr($uri, strpos($uri, $base) + strlen($base));
 $route = '/' . trim($route, '/'); // Định dạng lại thành /users/login
 
@@ -38,8 +38,8 @@ $dir = $serviceInfo['dir'] ?? $serviceName;
 
 
 $port = $config['ports'][$serviceName];
-$targetUrl = "http://localhost:$port/NetMaster/service/$dir/{$serviceInfo['path']}"; 
-
+// $targetUrl = "http://localhost:$port/NetMaster/service/$dir/{$serviceInfo['path']}"; 
+$targetUrl = "http://localhost:$port/{$serviceInfo['path']}";
 
 // 3. Xử lý logic Action (Gắn tham số action vào query string)
 $query = $_SERVER['QUERY_STRING'];
