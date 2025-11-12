@@ -11,3 +11,7 @@ CREATE TABLE sessions (
   total_minutes_played INT DEFAULT 0 ,
   total_cost DECIMAL(10,2) DEFAULT 0.00, 
   status ENUM('active','ended') DEFAULT 'active')
+
+  INSERT INTO sessions (user_id, computer_id, start_time, status) VALUES
+  (2, 20, '2024-10-01 10:00:00', 'active')
+  

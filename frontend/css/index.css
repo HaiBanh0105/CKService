@@ -405,6 +405,9 @@ tr:hover {
 .computer-card.maintenance {
   border-color: #6c757d;
 }
+.computer-card.reserved {
+  border-color: #6f42c1;
+}
 
 .computer-icon {
   font-size: 48px;
@@ -422,6 +425,10 @@ tr:hover {
 }
 .computer-card.maintenance .computer-icon {
   color: #6c757d;
+}
+
+.computer-card.reserved .computer-icon {
+  color: #6f42c1;
 }
 
 .computer-name {
@@ -445,3 +452,22 @@ tr:hover {
   accent-color: #007bff;
   cursor: pointer;
 }
+
+.computer-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 6px;
+}
+.computer-status,
+.user-id {
+  font-size: 0.95em;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.computer-status::before {
+  content: "Trạng thái: ";
+  color: #666;
+  font-weight: 500;
+}
+

@@ -158,8 +158,6 @@ return [
         'computers' => '8002',
 
         'session' => '8003',
-        // Loại bỏ 'auth' và 'user' cũ
-        // 'auth' => '8001',
-        // 'user' => '8001',
+        
     ]
 ];

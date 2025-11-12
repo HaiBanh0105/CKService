@@ -20,7 +20,7 @@ CREATE TABLE computers (
     computer_id INT PRIMARY KEY AUTO_INCREMENT, 
     computer_name VARCHAR(50) UNIQUE NOT NULL, 
     config_id INT NOT NULL, 
-    current_status ENUM('available', 'in_use', 'maintenance') NOT NULL, 
+    current_status ENUM('available', 'in_use', 'maintenance','reserved') NOT NULL, 
     maintenance_notes TEXT, 
     is_remote_locked BOOLEAN DEFAULT 0, 
     last_control_time DATETIME, 

@@ -39,72 +39,96 @@ function handleAddComputer() {
 }
 
 
-function loadComputers() {
-  fetch("http://localhost/NetMaster/getway/computers/all")
-    .then(res => res.json())
-    .then(response => {
-      if (response.status === "success") {
-        const computers = response.data;
-        const grid = document.getElementById("computerGrid");
-        grid.innerHTML = "";
+async function loadComputers() {
+  try {
+    const res = await fetch("http://localhost/NetMaster/getway/computers/all");
+    const response = await res.json();
 
-        computers.forEach(pc => {
-          const card = document.createElement("div");
-          card.className = `computer-card ${pc.current_status}`;
+    if (response.status === "success") {
+      const computers = response.data;
+      const grid = document.getElementById("computerGrid");
+      grid.innerHTML = "";
 
-          const statusClass =
-            (Boolean(pc.is_remote_locked)) ? "offline" :
-            pc.current_status === "available"
-                ? "available"
-                : pc.current_status === "in_use"
-                ? "in-use"
-                : pc.current_status === "offline"
-                ? "offline"
-                : "maintenance";
+      for (const pc of computers) {
+        const card = document.createElement("div");
 
-            card.className = `computer-card ${statusClass}`;
+        const statusClass = Boolean(pc.is_remote_locked)
+          ? "offline"
+          : pc.current_status === "available"
+          ? "available"
+          : pc.current_status === "in_use"
+          ? "in-use"
+          : pc.current_status === "offline"
+          ? "offline"
+          : pc.current_status === "reserved"
+          ? "reserved"
+          : "maintenance";
 
-            let statusText = "Bảo trì";
+        card.className = `computer-card ${statusClass}`;
 
-            if (Boolean(pc.is_remote_locked)) {
-              statusText = "Bị khóa";
-            } else {
-              switch (pc.current_status) {
-                case "available":
-                  statusText = "Trống";
-                  break;
-                case "in_use":
-                  statusText = "Đang sử dụng";
-                  break;
-                case "offline":
-                  statusText = "Tắt máy";
-                  break;
-              }
-            }
+        let statusText = "Bảo trì";
+        if (Boolean(pc.is_remote_locked)) {
+          statusText = "Bị khóa";
+        } else {
+          switch (pc.current_status) {
+            case "available":
+              statusText = "Trống";
+              break;
+            case "in_use":
+              statusText = "Đang sử dụng";
+              break;
+            case "offline":
+              statusText = "Tắt máy";
+              break;
+            case "reserved":
+            statusText = "Đã đặt trước";
+            break;
+          }
+        }
 
-          card.innerHTML = `
-            <div class="computer-icon">
-              <i class="fas fa-desktop"></i>
-            </div>
-            <div class="computer-name">${pc.computer_name}</div>
-            <div class="computer-status">${statusText}</div>
-          `;
-          card.addEventListener("click", () => {
-            openModal('editComputerModal', () => {
-              openEditComputerModal(pc);
-            });
-            });
-          grid.appendChild(card);
+        // let userIdText = "";
+        // if (statusText === "Đang sử dụng" || statusText === "Đã đặt trước") {
+        //   const userId = await fetchUserIdByComputerId(pc.computer_id);
+        //   userIdText = userId ? `User ID: ${userId}` : "Không có người dùng";
+        // }
+        let userText = "";
+        if (statusText === "Đang sử dụng" || statusText === "Đã đặt trước") {
+          const userName = await fetchUserNameByComputerId(pc.computer_id);
+          userText = userName ? `${userName}` : "";
+        }
+        // Tạo nội dung HTML
+        let html = `
+          <div class="computer-icon"><i class="fas fa-desktop"></i></div>
+          <div class="computer-name">${pc.computer_name}</div>
+          <div class="computer-status">${statusText}</div>
+        `;
+
+        if (userText) {
+          html += `<div class="user-id" style="color: #666; font-weight: 500;">
+                    Người dùng: <span style="color: #000; font-weight: normal;">${userText}</span>
+                  </div>`;
+        }
+
+        card.innerHTML = html;
+      
+
+        card.addEventListener("click", () => {
+          openModal("editComputerModal", () => {
+            openEditComputerModal(pc);
+          });
         });
-      } else {
-        alert("Không thể tải danh sách máy tính.");
+
+        grid.appendChild(card);
       }
-    })
-    .catch(err => {
-      console.error("Lỗi khi gọi API máy tính:", err);
-      alert("Đã xảy ra lỗi khi tải máy tính.");
-    });
+    } else {
+      alert("Không thể tải danh sách máy tính.");
+    }
+  } catch (err) {
+    console.error("Lỗi khi gọi API máy tính:", err);
+    alert("Đã xảy ra lỗi khi tải máy tính.");
+  }
 }
+
 
 
 function openEditComputerModal(pc) {
@@ -144,7 +168,7 @@ function submitComputerUpdate() {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(payload)
-})
+  })
     .then(res => res.json())
     .then(response => {
       if (response.status === "success") {
@@ -247,6 +271,59 @@ function loadConfigOptions() {
       alert("Đã xảy ra lỗi khi tải cấu hình.");
     });
 }
+
+
+async function fetchUserIdByComputerId(computerId) {
+  const url = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === "success") {
+      return data.user_id;
+    } else {
+      console.warn("Không tìm thấy phiên hoạt động:", data.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+    return null;
+  }
+}
+
+
+async function fetchUserNameByComputerId(computerId) {
+  try {
+    // Bước 1: Lấy user_id từ computer_id
+    const sessionUrl = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
+    const sessionRes = await fetch(sessionUrl);
+    const sessionData = await sessionRes.json();
+
+    if (sessionData.status !== "success" || !sessionData.user_id) {
+      console.warn("Không tìm thấy phiên hoạt động:", sessionData.message);
+      return null;
+    }
+
+    const userId = sessionData.user_id;
+
+    // Bước 2: Lấy thông tin người dùng từ user_id
+    const userUrl = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`;
+    const userRes = await fetch(userUrl);
+    const userData = await userRes.json();
+
+    if (userData.status === "success" && userData.data && userData.data.full_name) {
+      return userData.data.full_name;
+    } else {
+      console.warn("Không tìm thấy người dùng:", userData.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+    return null;
+  }
+}
+
 
 
 
