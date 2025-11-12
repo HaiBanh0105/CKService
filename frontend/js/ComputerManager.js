@@ -92,8 +92,12 @@ async function loadComputers() {
         //   userIdText = userId ? `User ID: ${userId}` : "Không có người dùng";
         // }
         let userText = "";
-        if (statusText === "Đang sử dụng" || statusText === "Đã đặt trước") {
-          const userName = await fetchUserNameByComputerId(pc.computer_id);
+        if (statusText === "Đang sử dụng") {
+          const userName = await fetchUserNameByComputerId_Session(pc.computer_id);
+          userText = userName ? `${userName}` : "";
+        }
+        else if (statusText === "Đã đặt trước") {
+          const userName = await fetchUserNameByComputerId_Booking(pc.computer_id);
           userText = userName ? `${userName}` : "";
         }
         // Tạo nội dung HTML
@@ -143,7 +147,10 @@ document.getElementById("editConfigName").value = configMap[pc.config_id];
 document.getElementById("editStatus").value = pc.current_status;
 document.getElementById("editRemoteLock").checked = Boolean(pc.is_remote_locked)
 
-
+// Hiển thị nút "Bắt đầu" nếu máy tính đang ở trạng thái "Đã đặt trước"
+if ((pc.current_status === "reserved" || pc.current_status === "available") && !pc.is_remote_locked ) {
+  document.getElementById("btnStart").style.display = "inline";
+}
 
   // Lưu ID máy để cập nhật
   document.getElementById("editComputerModal").dataset.computerId = pc.computer_id;
@@ -185,7 +192,51 @@ function submitComputerUpdate() {
     });
 }
 
+// async function startSession(){
+//   const computerId = document.getElementById("editComputerModal").dataset.computerId;
+//   const status = await updateComputerStatus(computerId, "in_use");
+//   if (status) {
+//     const userName = await fetchUserNameByComputerId_Session(computerId);
+    
+  
+//     alert("✅ Phiên đã được bắt đầu!");
+//     closeModal("editComputerModal");
+//     loadComputers();
+//   }
+// }
 
+
+async function updateComputerStatus(computerId, status) {
+  const url = "http://localhost/NetMaster/getway/computers/update_status";
+
+  const payload = {
+    computer_id: computerId,
+    current_status: status
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.status === "success") {
+      console.log("✅ Trạng thái đã được cập nhật:", result.message);
+      return true;
+    } else {
+      console.warn("⚠️ Lỗi cập nhật trạng thái:", result.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("❌ Lỗi khi gọi API:", error);
+    return false;
+  }
+}
 
 function loadConfigDetails() {
   const configName = document.getElementById("configSelector").value;
@@ -293,10 +344,41 @@ async function fetchUserIdByComputerId(computerId) {
 }
 
 
-async function fetchUserNameByComputerId(computerId) {
+async function fetchUserNameByComputerId_Session(computerId) {
   try {
     // Bước 1: Lấy user_id từ computer_id
     const sessionUrl = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
+    const sessionRes = await fetch(sessionUrl);
+    const sessionData = await sessionRes.json();
+
+    if (sessionData.status !== "success" || !sessionData.user_id) {
+      console.warn("Không tìm thấy phiên hoạt động:", sessionData.message);
+      return null;
+    }
+
+    const userId = sessionData.user_id;
+
+    // Bước 2: Lấy thông tin người dùng từ user_id
+    const userUrl = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`;
+    const userRes = await fetch(userUrl);
+    const userData = await userRes.json();
+
+    if (userData.status === "success" && userData.data && userData.data.full_name) {
+      return userData.data.full_name;
+    } else {
+      console.warn("Không tìm thấy người dùng:", userData.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+    return null;
+  }
+}
+
+async function fetchUserNameByComputerId_Booking(computerId) {
+  try {
+    // Bước 1: Lấy user_id từ computer_id
+    const sessionUrl = `http://localhost/NetMaster/getway/booking/user_id_by_computer?computer_id=${computerId}`;
     const sessionRes = await fetch(sessionUrl);
     const sessionData = await sessionRes.json();
 

@@ -362,8 +362,8 @@ tr:hover {
 
 .modal-actions {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+  gap: 30px;
+  justify-content: center;
   margin-top: 25px;
 }
 
@@ -470,4 +470,3 @@ tr:hover {
   color: #666;
   font-weight: 500;
 }
-

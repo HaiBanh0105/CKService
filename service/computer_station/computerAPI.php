@@ -42,13 +42,11 @@ try {
         $computers = get_all_computers();
         http_response_code(200);
         echo json_encode(['status' => 'success', 'data' => $computers]);
-    } 
-    elseif ($method === 'GET' && $action === 'active') {
+    } elseif ($method === 'GET' && $action === 'active') {
         $computers = get_active_computers();
         http_response_code(200);
         echo json_encode(['status' => 'success', 'data' => $computers]);
-    } 
-    elseif ($method === 'POST' && $action === 'update_computer') {
+    } elseif ($method === 'POST' && $action === 'update_computer') {
         // --- ROUTE: /computers/update ---
         $computer_id = $input_data['computer_id'] ?? null;
         $name = $input_data['computer_name'] ?? '';
@@ -62,6 +60,25 @@ try {
             echo json_encode([
                 'status' => 'success',
                 'message' => 'Máy tính đã được cập nhật.'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    } elseif ($method === 'POST' && $action === 'update_status') {
+        // --- ROUTE: /computers/update_status ---
+        $computer_id = $input_data['computer_id'] ?? null;
+        $status = $input_data['current_status'] ?? '';
+
+        try {
+            dao_update_computer_status($computer_id, $status);
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Trạng thái máy tính đã được cập nhật.'
             ]);
         } catch (Exception $e) {
             http_response_code(400);
@@ -127,8 +144,7 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi thêm cấu hình: ' . $e->getMessage()]);
         }
-    }
-    elseif ($method === 'POST' && $action === 'total_computers') {
+    } elseif ($method === 'POST' && $action === 'total_computers') {
         try {
             $total = get_total_computers();
             echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
@@ -136,9 +152,7 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
         }
-    }
-
-    elseif ($method === 'POST' && $action === 'total_in_use') {
+    } elseif ($method === 'POST' && $action === 'total_in_use') {
         try {
             $total = get_total_active_computers();
             echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
@@ -146,9 +160,7 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
         }
-    }
-
-    elseif ($method === 'POST' && $action === 'total_maintenance') {
+    } elseif ($method === 'POST' && $action === 'total_maintenance') {
         try {
             $total = get_total_maintenance_computers();
             echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
@@ -156,9 +168,7 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
         }
-    }
-
-    elseif ($method === 'POST' && $action === 'total_locked') {
+    } elseif ($method === 'POST' && $action === 'total_locked') {
         try {
             $total = get_total_remote_locked_computers();
             echo json_encode(['status' => 'success', 'data' => ['total_computers' => $total]]);
@@ -166,10 +176,7 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy tổng số máy tính: ' . $e->getMessage()]);
         }
-    }
-
-
-    else {
+    } else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

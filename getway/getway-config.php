@@ -79,6 +79,14 @@ return [
             'action' => 'update_computer'
         ],
 
+        // Endpoint cập nhật trạng thái máy tính
+        '/computers/update_status' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'update_status'
+        ],
+
         //Endpoint cập nhật config
         '/computers/update_config' => [
             'service' => 'computers',
@@ -148,6 +156,13 @@ return [
             'dir' => 'session',
             'action' => 'user_id_by_computer'],
 
+        // Endpoint lấy user_id mới nhất từ computer_id trong booking  
+        '/booking/user_id_by_computer' => [
+            'service' => 'booking',
+            'path' => 'bookingAPI.php',
+            'dir' => 'booking',
+            'action' => 'user_id_by_computer'], 
+
     ],
 
 
@@ -158,6 +173,8 @@ return [
         'computers' => '8002',
 
         'session' => '8003',
+
+        'booking' => '8004',
         
     ]
 ];

@@ -102,6 +102,15 @@ function dao_update_computer($computer_id, $name, $config_id, $status, $locked)
     return computer_db_execute($sql, $name, $config_id, $status, $locked ? 1 : 0, $computer_id);
 }
 
+//Cập nhật trạng thái máy tính
+function dao_update_computer_status($computer_id, $status)
+{
+    $sql = "UPDATE computers 
+            SET current_status = ?
+            WHERE computer_id = ?";
+    return computer_db_execute($sql, $status, $computer_id);
+}
+
 //lấy thông tin cấu hình theo tên
 function dao_get_config_by_name($config_name)
 {
