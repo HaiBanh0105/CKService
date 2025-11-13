@@ -102,6 +102,12 @@ function dao_update_computer($computer_id, $name, $config_id, $status, $locked)
     return computer_db_execute($sql, $name, $config_id, $status, $locked ? 1 : 0, $computer_id);
 }
 
+//Hàm lấy thông tin máy tính theo ID
+function get_computer_by_id($computer_id){
+    $sql = "SELECT * FROM computers WHERE computer_id = ?";
+    return computer_db_query_one($sql, $computer_id);
+}
+
 //Cập nhật trạng thái máy tính
 function dao_update_computer_status($computer_id, $status)
 {

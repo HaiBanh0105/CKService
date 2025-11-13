@@ -37,7 +37,28 @@ try {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy phiên hoạt động cho computer_id đã cho.']);
         }
-    } else {
+    }
+    else if ($method === 'POST' && $action === 'add_session') {
+        $user_id = $input_data['user_id'] ?? null;
+        $computer_id = $input_data['computer_id'] ?? null;
+        $start_time = $input_data['start_time'] ?? null;
+        $status = $input_data['status'] ?? null;
+
+        if ($user_id === null || $computer_id === null || $start_time === null || $status === null) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu thông tin cần thiết để thêm phiên.']);
+            exit();
+        }
+
+        $result = add_session($user_id, $computer_id, $start_time, $status);
+        if ($result) {
+            echo json_encode(['status' => 'success', 'message' => 'Phiên mới đã được thêm thành công.']);
+        } else {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Không thể thêm phiên mới.']);
+        }
+    }
+    else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

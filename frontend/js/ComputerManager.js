@@ -192,18 +192,45 @@ function submitComputerUpdate() {
     });
 }
 
-// async function startSession(){
-//   const computerId = document.getElementById("editComputerModal").dataset.computerId;
-//   const status = await updateComputerStatus(computerId, "in_use");
-//   if (status) {
-//     const userName = await fetchUserNameByComputerId_Session(computerId);
-    
-  
-//     alert("✅ Phiên đã được bắt đầu!");
-//     closeModal("editComputerModal");
-//     loadComputers();
-//   }
-// }
+async function startSession(){
+  const computerId = document.getElementById("editComputerModal").dataset.computerId;
+  if (!computerId) {
+    alert("Không tìm thấy ID máy tính.");
+    return;
+  }
+   try {
+    const status = await getComputerStatus(computerId);
+
+    if (status === null) {
+      alert("Không thể lấy trạng thái máy tính. Vui lòng thử lại.");
+      return;
+    }
+
+    if (status === "reserved") {
+      const userName = await fetchUserNameByComputerId_Booking(computerId);
+      const userId = await fetchUserIdByComputerId_Booking(computerId);
+      
+      const startTime = getCurrentTimeICT();
+
+      const success = await addSession(userId, computerId, startTime, "active");
+
+      if (success) {
+        alert("Phiên đã được tạo thành công!");
+        const update_status = await updateComputerStatus(computerId, "in_use");
+        if (update_status) {
+          closeModal("editComputerModal");
+          loadComputers();
+        }
+      } else {
+        alert("Tạo phiên thất bại. Vui lòng kiểm tra lại.");
+      }
+    }
+
+  } catch (error) {
+    console.error("Lỗi khi bắt đầu phiên:", error);
+    alert("Đã xảy ra lỗi khi kiểm tra trạng thái máy tính.");
+  }
+}
 
 
 async function updateComputerStatus(computerId, status) {
@@ -344,65 +371,137 @@ async function fetchUserIdByComputerId(computerId) {
 }
 
 
+// Hàm lấy user_id từ computer_id qua session
+async function fetchUserIdByComputerId_Session(computerId) {
+  const url = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${encodeURIComponent(computerId)}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.user_id) {
+      return result.user_id;
+    } else {
+      console.warn("Không tìm thấy phiên hoạt động:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy user_id từ session:", error);
+    return null;
+  }
+}
+
+// Hàm lấy user_id từ computer_id qua booking
+async function fetchUserIdByComputerId_Booking(computerId) {
+  const url = `http://localhost/NetMaster/getway/booking/user_id_by_computer?computer_id=${encodeURIComponent(computerId)}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.user_id) {
+      return result.user_id;
+    } else {
+      console.warn("Không tìm thấy phiên hoạt động:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy user_id:", error);
+    return null;
+  }
+}
+
+// Hàm lấy full_name từ user_id
+async function fetchUserNameByUserId(userId) {
+  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(userId)}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.data?.full_name) {
+      return result.data.full_name;
+    } else {
+      console.warn("Không tìm thấy người dùng:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng:", error);
+    return null;
+  }
+}
+
+// Hàm lấy full_name từ computer_id qua session
 async function fetchUserNameByComputerId_Session(computerId) {
-  try {
-    // Bước 1: Lấy user_id từ computer_id
-    const sessionUrl = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
-    const sessionRes = await fetch(sessionUrl);
-    const sessionData = await sessionRes.json();
+  const userId = await fetchUserIdByComputerId_Session(computerId);
+  if (!userId) return null;
 
-    if (sessionData.status !== "success" || !sessionData.user_id) {
-      console.warn("Không tìm thấy phiên hoạt động:", sessionData.message);
-      return null;
-    }
-
-    const userId = sessionData.user_id;
-
-    // Bước 2: Lấy thông tin người dùng từ user_id
-    const userUrl = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`;
-    const userRes = await fetch(userUrl);
-    const userData = await userRes.json();
-
-    if (userData.status === "success" && userData.data && userData.data.full_name) {
-      return userData.data.full_name;
-    } else {
-      console.warn("Không tìm thấy người dùng:", userData.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-    return null;
-  }
+  const fullName = await fetchUserNameByUserId(userId);
+  return fullName;
 }
 
+// Hàm lấy full_name từ computer_id qua booking
 async function fetchUserNameByComputerId_Booking(computerId) {
+  const userId = await fetchUserIdByComputerId_Booking(computerId);
+  if (!userId) return null;
+
+  const fullName = await fetchUserNameByUserId(userId);
+  return fullName;
+}
+
+
+// Hàm lấy trạng thái máy tính theo computer_id
+async function getComputerStatus(computer_id) {
+  const url = `http://localhost/NetMaster/getway/computers/get_by_id?computer_id=${encodeURIComponent(computer_id)}`;
+
   try {
-    // Bước 1: Lấy user_id từ computer_id
-    const sessionUrl = `http://localhost/NetMaster/getway/booking/user_id_by_computer?computer_id=${computerId}`;
-    const sessionRes = await fetch(sessionUrl);
-    const sessionData = await sessionRes.json();
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    if (sessionData.status !== "success" || !sessionData.user_id) {
-      console.warn("Không tìm thấy phiên hoạt động:", sessionData.message);
-      return null;
-    }
-
-    const userId = sessionData.user_id;
-
-    // Bước 2: Lấy thông tin người dùng từ user_id
-    const userUrl = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${userId}`;
-    const userRes = await fetch(userUrl);
-    const userData = await userRes.json();
-
-    if (userData.status === "success" && userData.data && userData.data.full_name) {
-      return userData.data.full_name;
+    const result = await response.json();
+    if (result.status === 'success' && result.data?.current_status !== undefined) {
+      return result.data.current_status; // ✅ Lấy đúng trường trạng thái
     } else {
-      console.warn("Không tìm thấy người dùng:", userData.message);
-      return null;
+      throw new Error(result.message || "Không tìm thấy trạng thái.");
     }
   } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
+    console.error("Lỗi khi gọi API:", error.message);
     return null;
+  }
+}
+
+
+async function addSession(user_id, computer_id, start_time, status) {
+  const url = "http://localhost/NetMaster/getway/session/add_session";
+
+  const payload = {
+    user_id,
+    computer_id,
+    start_time,
+    status
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.status === "success") {
+      console.log("✅ Phiên mới đã được thêm:", result.message);
+      return true;
+    } else {
+      console.warn("❌ Không thể thêm phiên:", result.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API add_session:", error);
+    return false;
   }
 }
 
@@ -412,4 +511,23 @@ async function fetchUserNameByComputerId_Booking(computerId) {
 
 
 
+function getCurrentTimeICT() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
 
+  const parts = formatter.formatToParts(now).reduce((acc, part) => {
+    acc[part.type] = part.value;
+    return acc;
+  }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+}

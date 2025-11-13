@@ -68,7 +68,32 @@ try {
                 'message' => $e->getMessage()
             ]);
         }
-    } elseif ($method === 'POST' && $action === 'update_status') {
+    } 
+    elseif ($method === 'GET' && $action === 'get_by_id') {
+        // --- ROUTE: /computers/get_by_id ---
+        $computer_id = $_GET['computer_id'] ?? null;
+
+        if ($computer_id === null) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu computer_id.']);
+            exit();
+        }
+
+        try {
+            $computer = get_computer_by_id($computer_id);
+            if ($computer) {
+                echo json_encode(['status' => 'success', 'data' => $computer]);
+            } else {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy máy tính với ID đã cho.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy thông tin máy tính: ' . $e->getMessage()]);
+        }
+
+    }
+    elseif ($method === 'POST' && $action === 'update_status') {
         // --- ROUTE: /computers/update_status ---
         $computer_id = $input_data['computer_id'] ?? null;
         $status = $input_data['current_status'] ?? '';

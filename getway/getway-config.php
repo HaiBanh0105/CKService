@@ -46,6 +46,10 @@ return [
         // endpoint lấy lịch sử giao dịch của khách hàng
         '/users/transactions' => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'transactions'],
 
+
+        //--COMPUTER STATION SERVICE ENDPOINTS--//
+
+
         // Endpoint thêm máy tính mới
         '/computers/add' => [
             'service' => 'computers',
@@ -69,6 +73,14 @@ return [
             'path' => 'computerAPI.php',
             'dir' => 'computer_station',
             'action' => 'active'
+        ],
+
+        // Endpoint lấy thông tin máy tính theo ID
+        '/computers/get_by_id' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'get_by_id'
         ],
 
         //Endpoint cập nhật máy tính
@@ -155,6 +167,13 @@ return [
             'path' => 'sessionAPI.php',
             'dir' => 'session',
             'action' => 'user_id_by_computer'],
+
+        // Endpoint thêm phiên mới
+        '/session/add_session' => [
+            'service' => 'session',
+            'path' => 'sessionAPI.php',
+            'dir' => 'session',
+            'action' => 'add_session'],    
 
         // Endpoint lấy user_id mới nhất từ computer_id trong booking  
         '/booking/user_id_by_computer' => [
