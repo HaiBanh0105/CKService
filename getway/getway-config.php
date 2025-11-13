@@ -13,6 +13,9 @@ return [
         // Endpoint cập nhật người dùng theo ID
         '/users/update_by_id'   => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'update_by_id'],
 
+        // Endpoint cập nhật người dùng theo tên
+        '/users/get_by_name'   => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'get_by_name'],
+
         // Endpoint Lấy tất cả khách hàng
         '/users/load_customers'         => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'load_customers'],
 
@@ -166,21 +169,24 @@ return [
             'service' => 'session',
             'path' => 'sessionAPI.php',
             'dir' => 'session',
-            'action' => 'user_id_by_computer'],
+            'action' => 'user_id_by_computer'
+        ],
 
         // Endpoint thêm phiên mới
         '/session/add_session' => [
             'service' => 'session',
             'path' => 'sessionAPI.php',
             'dir' => 'session',
-            'action' => 'add_session'],    
+            'action' => 'add_session'
+        ],
 
         // Endpoint lấy user_id mới nhất từ computer_id trong booking  
         '/booking/user_id_by_computer' => [
             'service' => 'booking',
             'path' => 'bookingAPI.php',
             'dir' => 'booking',
-            'action' => 'user_id_by_computer'], 
+            'action' => 'user_id_by_computer'
+        ],
 
     ],
 
@@ -194,6 +200,6 @@ return [
         'session' => '8003',
 
         'booking' => '8004',
-        
+
     ]
 ];

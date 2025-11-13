@@ -212,7 +212,7 @@ async function startSession(){
       
       const startTime = getCurrentTimeICT();
 
-      const success = await addSession(userId, computerId, startTime, "active");
+      const success = await addSession(userId, computerId, userName, startTime, "active");
 
       if (success) {
         alert("Phiên đã được tạo thành công!");
@@ -224,6 +224,32 @@ async function startSession(){
       } else {
         alert("Tạo phiên thất bại. Vui lòng kiểm tra lại.");
       }
+    }
+    else if (status === "available") {
+        closeModal("editComputerModal");
+        openModal("guestName", () => {
+          const confirmBtn = document.getElementById("confirmGuestName");
+          confirmBtn.onclick = async () => {
+            const fullName = document.getElementById("guestNameInput").value.trim();
+            if (!fullName) {
+              alert("Vui lòng nhập tên khách hàng.");
+              return;
+            }
+
+            const userId = await getUserIdByFullName(fullName); // Trả về user_id hoặc null
+            const startTime = getCurrentTimeICT();
+            const success = await addSession(userId, computerId, fullName, startTime, "active");
+
+            if (success) {
+              alert(`✅ Phiên đã được tạo cho khách hàng: ${fullName}`);
+              await updateComputerStatus(computerId, "in_use");
+              closeModal("guestName");
+              loadComputers();
+            } else {
+              alert("❌ Không thể tạo phiên mới.");
+            }
+          };
+        });
     }
 
   } catch (error) {
@@ -471,12 +497,13 @@ async function getComputerStatus(computer_id) {
 }
 
 
-async function addSession(user_id, computer_id, start_time, status) {
+async function addSession(user_id, computer_id, full_name ,start_time, status) {
   const url = "http://localhost/NetMaster/getway/session/add_session";
 
   const payload = {
     user_id,
     computer_id,
+    full_name,
     start_time,
     status
   };
@@ -506,8 +533,24 @@ async function addSession(user_id, computer_id, start_time, status) {
 }
 
 
+async function getUserIdByFullName(fullName) {
+  const url = `http://localhost/NetMaster/getway/users/get_by_name?full_name=${encodeURIComponent(fullName)}`;
 
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
 
+    if (result.status === "success" && Array.isArray(result.data) && result.data.length > 0) {
+      return result.data[0].user_id;
+    } else {
+      console.warn("Không tìm thấy người dùng:", result.message || "Không có dữ liệu.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API get_by_name:", error);
+    return null;
+  }
+}
 
 
 

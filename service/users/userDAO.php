@@ -82,6 +82,12 @@ function select_user_by_id($user_id)
     return user_db_query_one($sql, $user_id);
 }
 
+//Lấy thông tin người dùng theo full_name
+function get_user_by_full_name($full_name){
+    $sql = "SELECT * FROM users WHERE full_name = ?";
+    return user_db_query($sql, $full_name);
+}
+
 
 //Hàm load tất cả user khách hàng
 function dao_select_all_membership_accounts()

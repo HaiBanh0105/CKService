@@ -55,18 +55,17 @@ function get_user_id_by_computer_id($computer_id)
 {
     $sql = "SELECT user_id 
             FROM sessions 
-            WHERE computer_id = ? AND status = 'active' 
+            WHERE computer_id = ? AND status = 'actived' 
             ORDER BY start_time DESC 
             LIMIT 1";
-    
+
     return session_db_query_value($sql, $computer_id);
 }
 
 //Hàm thêm phiên mới
-function add_session($user_id, $computer_id, $start_time, $status)
+function add_session($user_id, $computer_id, $full_name, $start_time, $status)
 {
-    $sql = "INSERT INTO sessions (user_id, computer_id, start_time, status) 
-            VALUES (?, ?, ?, ?)";
-    return session_db_execute($sql, $user_id, $computer_id, $start_time, $status);
+    $sql = "INSERT INTO sessions (user_id, computer_id, full_name ,start_time, status) 
+            VALUES (?, ?, ? ,?, ?)";
+    return session_db_execute($sql, $user_id, $computer_id, $full_name, $start_time, 'actived');
 }
-

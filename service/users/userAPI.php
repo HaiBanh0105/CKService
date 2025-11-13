@@ -99,6 +99,25 @@ try {
             'data' => $user
         ]);
     } 
+
+    else if ($method === 'GET' && $action === 'get_by_name') {
+        $full_name = $_GET['full_name'] ?? null;
+
+        if ($full_name === null) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu tên người dùng.']);
+            exit();
+        }
+
+        $result = get_user_by_full_name($full_name); // Hàm truy vấn DB
+        if ($result) {
+            echo json_encode(['status' => 'success', 'data' => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy người dùng.']);
+        }
+    }
+
     elseif ($method === 'POST' && $action === 'update_by_id') {
         $user_id = $input_data['user_id'] ?? '';
         $full_name = $input_data['full_name'] ?? '';
