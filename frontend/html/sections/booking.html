@@ -1,0 +1,21 @@
+<div id="booking" class="tab-content active">
+  <h2>Đặt chỗ trước</h2>
+  <div class="form-group">
+    <label>Loại máy</label>
+    <select id="bookingType">
+      <option value="standard">Máy thường (15,000 VNĐ/giờ)</option>
+      <option value="vip">Máy VIP (20,000 VNĐ/giờ)</option>
+      <option value="gaming">Máy Gaming (30,000 VNĐ/giờ)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Thời gian bắt đầu</label>
+    <input type="datetime-local" id="bookingTime" />
+  </div>
+  <div class="form-group">
+    <label>Số giờ sử dụng</label>
+    <input type="number" id="bookingHours" value="2" min="1" max="12" />
+  </div>
+  <button class="btn" onclick="createBooking()">Đặt chỗ</button>
+  <div class="booking-list" id="bookingList"></div>
+</div>

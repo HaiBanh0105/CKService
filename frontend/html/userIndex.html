@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Quán Net</title>
+    <link rel="stylesheet" href="../css/user.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎮 Quản Lý Quán Net</h1>
+        <div class="user-info">
+          <div class="balance" id="userBalance">Số dư: 150,000 VNĐ</div>
+          <button class="btn" onclick="openModal('rechargeModal')">
+            Nạp tiền
+          </button>
+          <button class="btn btn-secondary" onclick="logout()">
+            Đăng xuất
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="nav-tab" onclick="showSection('session')">
+          ⏱️ Phiên sử dụng
+        </button>
+        <button class="nav-tab" onclick="showSection('booking')">
+          📅 Đặt chỗ
+        </button>
+        <button class="nav-tab" onclick="showSection('payment')">
+          💳 Lịch Sử Thanh toán
+        </button>
+        <button class="nav-tab" onclick="showSection('profile')">
+          👤 Thông tin cá nhân
+        </button>
+      </div>
+
+      <div class="content-area">
+        <div id="session-container" class="tab-content active"></div>
+        <div id="booking-container" class="tab-content"></div>
+        <div id="payment-container" class="tab-content"></div>
+        <div id="profile-container" class="tab-content"></div>
+      </div>
+
+      <!-- Modal containers -->
+      <div id="rechargeModal" class="modal"></div>
+      <div id="computerModal" class="modal"></div>
+    </div>
+
+    <script src="../js/user.js"></script>
+  </body>
+</html>
