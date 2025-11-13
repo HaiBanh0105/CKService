@@ -78,13 +78,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     showMessage(successMessage, `Chào mừng ${userData.full_name}!`, false);
                     
                     // Chuyển hướng đến trang Admin chính
-                    if(userData.role !== 'customer') {
-                    setTimeout(() => {
-                        window.location.href = './index.html'; 
-                    }, 1000);
-                }else{
-
-                }
+                    if (userData.role_name === 'admin' || userData.role_name === 'staff') {
+                        setTimeout(() => {
+                            window.location.href = './index.html';
+                        }, 1000);
+                    } else if (userData.role_name === 'customer') {
+                        setTimeout(() => {
+                            window.location.href = './userIndex.html';
+                        }, 1000);
+                    }
 
 
                 } else {

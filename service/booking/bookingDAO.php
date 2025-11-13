@@ -63,3 +63,12 @@ function get_user_id_by_computer_id_in_booking($computer_id)
 
     return booking_db_query_value($sql, $computer_id);
 }
+
+// Hàm đặt chổ mới
+function create_booking($user_id, $computer_id, $start_time, $end_time)
+{
+    $sql = "INSERT INTO reservations (user_id, computer_id, start_time, end_time, booking_time)
+            VALUES (?, ?, ?, ?, NOW())";
+    return booking_db_execute($sql, $user_id, $computer_id, $start_time, $end_time);
+}
+

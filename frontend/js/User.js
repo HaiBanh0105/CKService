@@ -12,45 +12,35 @@ const viewMap = {
   profile: "/NetMaster/frontend/html/sections/profile.html",
 };
 
-function showSection(sectionName) {
-  // 2. Ẩn tất cả section
+function showSection(sectionName, callback) {
+  // 1. Ẩn tất cả section
   Object.values(sectionMap).forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.remove("active");
   });
 
-  // 3. Hiển thị section được chọn
+  // 2. Hiển thị section được chọn
   const targetId = sectionMap[sectionName];
   const targetContainer = document.getElementById(targetId);
   if (targetContainer) targetContainer.classList.add("active");
 
-//   4. Tải nội dung HTML từ file tương ứng
+  // 3. Tải nội dung HTML từ file tương ứng
   const viewPath = viewMap[sectionName];
   fetch(viewPath)
     .then(res => res.text())
     .then(html => {
       if (targetContainer) targetContainer.innerHTML = html;
 
-        if (sectionName === "profile") {
-            requestAnimationFrame(() => {
-
-            });
-        }
-        else if (sectionName === "session") {
-            requestAnimationFrame(() => {
-                
-            });
-        }
-        else if (sectionName === "booking") {
-            requestAnimationFrame(() => {
-                
-            });
-        }
-        else if (sectionName === "payment") {
-            requestAnimationFrame(() => {
-                
-            });
-        }
+      // if (sectionName === "profile") {
+      //   requestAnimationFrame(() => {
+      //     loadUserInfo(localStorage.getItem('userID'));
+      //   });  
+      // }
+      
+      // 4. Gọi callback sau khi nội dung đã được gắn
+      if (typeof callback === "function") {
+        requestAnimationFrame(() => callback());
+      }
     })
     .catch(err => {
       if (targetContainer)
@@ -68,6 +58,7 @@ function showSection(sectionName) {
     }
   });
 }
+
 
 
 function openModal(modalId, callback) {
