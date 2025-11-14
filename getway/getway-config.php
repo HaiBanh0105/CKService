@@ -73,6 +73,14 @@ return [
             'action' => 'all'
         ],
 
+        //Endpoit lấy máy tính trống theo tên cấu hình
+        '/computers/get_available_by_config' => [
+            'service' => 'computers',
+            'path' => 'computerAPI.php',
+            'dir' => 'computer_station',
+            'action' => 'get_available_by_config'
+        ],
+        
         // Endpoint lấy tất cả máy tính đang sử dụng
         '/computers/active' => [
             'service' => 'computers',

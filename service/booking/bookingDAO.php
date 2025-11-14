@@ -65,10 +65,17 @@ function get_user_id_by_computer_id_in_booking($computer_id)
 }
 
 // Hàm đặt chổ mới
-function create_booking($user_id, $computer_id, $start_time, $end_time)
+function insert_reservation($user_id, $booking_time, $start_time, $total_duration_hours, $status, $deposit, $notes)
 {
-    $sql = "INSERT INTO reservations (user_id, computer_id, start_time, end_time, booking_time)
-            VALUES (?, ?, ?, ?, NOW())";
-    return booking_db_execute($sql, $user_id, $computer_id, $start_time, $end_time);
+    $sql = "INSERT INTO reservations (user_id, booking_time, start_time, total_duration_hours, status, deposit, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
+    return booking_db_execute($sql, $user_id, $booking_time, $start_time, $total_duration_hours, $status, $deposit, $notes);
 }
 
+// Hàm thêm chi tiết đặt chổ mới
+function insert_reservation_detail($reservation_id, $computer_id, $config_id)
+{
+    $sql = "INSERT INTO reservation_details (reservation_id, computer_id, config_id)
+            VALUES (?, ?, ?)";
+    return booking_db_execute($sql, $reservation_id, $computer_id, $config_id);
+}

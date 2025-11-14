@@ -93,6 +93,33 @@ try {
         }
 
     }
+
+
+    //Lấy máy tính trống theo tên cấu hình
+    elseif ($method === 'GET' && $action === 'get_available_by_config') {
+    // --- ROUTE: /computers/get_available_by_config ---
+    $config_name = $_GET['config_name'] ?? null;
+
+    if ($config_name === null) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Thiếu config_name.']);
+        exit();
+    }
+
+    try {
+        $computer = get_available_by_config($config_name);
+
+        if ($computer) {
+            echo json_encode(['status' => 'success', 'data' => $computer]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy máy trống phù hợp với cấu hình "' . $config_name . '".']);
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Lỗi xử lý: ' . $e->getMessage()]);
+    }
+}
     elseif ($method === 'POST' && $action === 'update_status') {
         // --- ROUTE: /computers/update_status ---
         $computer_id = $input_data['computer_id'] ?? null;

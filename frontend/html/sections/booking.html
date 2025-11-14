@@ -1,21 +1,54 @@
 <div id="booking" class="tab-content active">
-  <h2>Đặt chỗ trước</h2>
-  <div class="form-group">
-    <label>Loại máy</label>
-    <select id="bookingType">
-      <option value="standard">Máy thường (15,000 VNĐ/giờ)</option>
-      <option value="vip">Máy VIP (20,000 VNĐ/giờ)</option>
-      <option value="gaming">Máy Gaming (30,000 VNĐ/giờ)</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Thời gian bắt đầu</label>
-    <input type="datetime-local" id="bookingTime" />
-  </div>
-  <div class="form-group">
-    <label>Số giờ sử dụng</label>
-    <input type="number" id="bookingHours" value="2" min="1" max="12" />
-  </div>
-  <button class="btn" onclick="createBooking()">Đặt chỗ</button>
+  <h2>🖥️ Đặt chỗ sử dụng máy</h2>
+
+  <form id="bookingForm">
+    <div class="form-group">
+      <label for="bookingType">Chọn cấu hình máy</label>
+      <select id="bookingType" onchange="updateDeposit()">
+        <option value="" disabled selected>-- Chọn loại máy --</option>
+        <option value="basic">Máy thường (20,000 VNĐ/giờ)</option>
+        <option value="gaming">Máy Gaming (30,000 VNĐ/giờ)</option>
+        <option value="workstation">Máy chuyên dụng (35,000 VNĐ/giờ)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="bookingTime">Thời gian bắt đầu</label>
+      <input type="datetime-local" id="bookingTime" required />
+    </div>
+
+    <div class="form-group">
+      <label for="bookingHours">Số giờ sử dụng</label>
+      <input
+        type="number"
+        id="bookingHours"
+        value="2"
+        min="1"
+        max="12"
+        onchange="updateDeposit()"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="depositPreview">Tiền đặt cọc dự kiến (50%)</label>
+      <input type="text" id="depositPreview" disabled />
+    </div>
+
+    <div class="form-group">
+      <label for="bookingNotes">Ghi chú thêm (tuỳ chọn)</label>
+      <textarea
+        id="bookingNotes"
+        rows="2"
+        placeholder="Ví dụ: cần máy gần cửa sổ..."
+      ></textarea>
+    </div>
+
+    <button type="button" class="btn" onclick="createBooking()">Đặt chỗ</button>
+  </form>
+
+  <hr />
+
+  <h3>Lịch sử đặt chỗ</h3>
   <div class="booking-list" id="bookingList"></div>
 </div>

@@ -49,12 +49,29 @@ function computer_db_query_value($sql)
 // ------------------------------------
 // Phần 2: HÀM NGHIỆP VỤ (BUSINESS LOGIC)
 // ------------------------------------
+
 // Hàm lấy danh sách tất cả các máy tính
 function get_all_computers()
 {
     $sql = "SELECT * FROM computers";
     return computer_db_query($sql);
 }
+
+// Hàm lấy 1 máy trống theo config_name theo thứ tự
+function get_available_by_config($config_name)
+{
+    $sql = "
+        SELECT c.computer_id, c.computer_name, c.config_id
+        FROM computers c
+        JOIN computer_configs cfg ON c.config_id = cfg.config_id
+        WHERE cfg.config_name = ? AND c.current_status = 'available' and c.is_remote_locked = 0
+        ORDER BY c.computer_id ASC
+        LIMIT 1
+    ";
+
+    return computer_db_query_one($sql, $config_name);
+}
+
 
 //Hàm lấy thông tin máy tính đang sử dụng
 function get_active_computers()
@@ -103,7 +120,8 @@ function dao_update_computer($computer_id, $name, $config_id, $status, $locked)
 }
 
 //Hàm lấy thông tin máy tính theo ID
-function get_computer_by_id($computer_id){
+function get_computer_by_id($computer_id)
+{
     $sql = "SELECT * FROM computers WHERE computer_id = ?";
     return computer_db_query_one($sql, $computer_id);
 }

@@ -96,3 +96,5 @@ function handle_add_new_config($config_name)
         "message" => "Cấu hình mới đã được thêm thành công."
     ];
 }
+
+
