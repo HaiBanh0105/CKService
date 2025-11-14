@@ -7,6 +7,7 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Đường dẫn DAO: Nằm cùng thư mục
 require_once 'bookingDAO.php';
+require_once 'bookingBL.php';
 // require_once 'sessionrBL.php';
 
 // Xử lý OPTIONS
@@ -19,7 +20,7 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
 
     // Đọc input chỉ một lần
-    $input_data = json_decode(file_get_contents('php://input'), true);
+    $data = json_decode(file_get_contents('php://input'), true);
     $action = $_GET['action'] ?? null;
 
 
@@ -36,6 +37,59 @@ try {
             echo json_encode(['status' => 'success', 'user_id' => $user_id]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy user cho computer_id đã cho.']);
+        }
+    } elseif ($method === 'POST' && $action === 'create_booking') {
+        // --- ROUTE: /booking/create_full ---
+        $user_id = $data['user_id'] ?? null;
+        $computer_id = $data['computer_id'] ?? null;
+        $config_id = $data['config_id'] ?? null;
+        $start_time = $data['start_time'] ?? null;
+        $total_duration_hours = $data['total_duration_hours'] ?? null;
+        $deposit = $data['deposit'] ?? 0;
+        $notes = $data['notes'] ?? null;
+
+        if (!$user_id || !$computer_id || !$config_id || !$start_time || !$total_duration_hours) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu thông tin bắt buộc'
+            ]);
+            exit();
+        }
+
+
+        try {
+            // Gọi hàm BL xử lý logic
+            $reservation_id = create_full_booking(
+                $user_id,
+                $computer_id,
+                $config_id,
+                $start_time,
+                $total_duration_hours,
+                $deposit,
+                $notes
+            );
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Đặt chỗ thành công!',
+                'data' => [
+                    'reservation_id' => $reservation_id,
+                    'user_id' => $user_id,
+                    'computer_id' => $computer_id,
+                    'config_id' => $config_id,
+                    'start_time' => $start_time,
+                    'duration' => $total_duration_hours,
+                    'deposit' => $deposit,
+                    'notes' => $notes
+                ]
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Lỗi xử lý: ' . $e->getMessage()
+            ]);
         }
     } else {
         http_response_code(404);

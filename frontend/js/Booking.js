@@ -79,6 +79,7 @@ function loadCustomerInfo(userId) {
 }
 
 
+
 function updateDeposit() {
   const type = document.getElementById("bookingType").value;
   const hours = parseInt(document.getElementById("bookingHours").value);
@@ -95,34 +96,60 @@ function updateDeposit() {
 }
 
 
-function createBooking(){
-    const type = document.getElementById("bookingType").value;
-    
-    if (!type) {
-    alert("Vui lòng chọn loại máy.");
-    return;
-  }
 
-  // Gọi API lấy máy trống theo config_name
+function createBooking() {
+  const type = document.getElementById("bookingType").value;
+  const user_id = localStorage.getItem("customerID"); 
+  const start_time_raw = document.getElementById("bookingTime").value;
+  const start_time = start_time_raw ? start_time_raw.replace("T", " ") + ":00" : "";
+  const total_duration_hours = document.getElementById("bookingHours").value;
+  const notes = document.getElementById("bookingNotes").value;
+
+  // Lấy deposit từ giao diện (ô depositPreview)
+  const depositText = document.getElementById("depositPreview").value;
+  const deposit = parseInt(depositText.replace(/\D/g, "")) || 0;
+
+
+  // Gọi API lấy máy trống
   fetch(`http://localhost/NetMaster/getway/computers/get_available_by_config?config_name=${type}`)
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
       if (data.status === "success") {
         const computer = data.data;
-        
-        // Bạn có thể tiếp tục gọi API tạo đơn đặt chỗ tại đây
 
-        // hoặc lưu computer_id để dùng sau
-        alert(`Đã đặt thành công! Máy của bạn là: ${computer.computer_name}`);
-        
+        const payload = {
+          user_id,
+          computer_id: computer.computer_id,
+          config_id: computer.config_id,
+          start_time,
+          total_duration_hours,
+          deposit,
+          notes
+        };
+
+        fetch("http://localhost/NetMaster/getway/booking/create_booking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        })
+
+        .then(res => res.json())
+        .then(result => {
+          if (result.status === "success") {
+            alert(`✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`);
+          } else {
+            alert(result.message || "Không thể tạo đơn đặt chỗ.");
+          }
+        })
+        .catch(err => {
+          console.error("Lỗi khi gọi API:", err);
+          alert("Đã xảy ra lỗi khi đặt chỗ.");
+        });
       } else {
         alert(data.message || "Không tìm thấy máy phù hợp.");
-        
       }
-    })
-    .catch(error => {
-      console.error("Lỗi khi gọi API:", error);
-      alert("Đã xảy ra lỗi khi tìm máy trống.");
     });
-
 }
+

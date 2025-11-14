@@ -199,6 +199,14 @@ return [
             'action' => 'user_id_by_computer'
         ],
 
+        '/booking/create_booking' => [
+            'service' => 'booking',
+            'path' => 'bookingAPI.php',
+            'dir' => 'booking',
+            'action' => 'create_booking'
+        ],
+
+
     ],
 
 
