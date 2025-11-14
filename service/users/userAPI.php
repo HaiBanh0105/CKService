@@ -99,6 +99,35 @@ try {
             'data' => $user
         ]);
     } 
+    elseif ($method === 'GET' && $action === 'get_customer_by_id') {
+        $user_id = $_GET['user_id'] ?? ''; // Lấy từ query string, không phải body
+
+        if (empty($user_id)) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu user_id trong yêu cầu.'
+            ]);
+            exit;
+        }
+
+        $user = select_customer_by_id($user_id);
+
+        if (!$user) {
+            http_response_code(404);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy người dùng với ID đã cho.'
+            ]);
+            exit;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $user
+        ]);
+    } 
 
     else if ($method === 'GET' && $action === 'get_by_name') {
         $full_name = $_GET['full_name'] ?? null;

@@ -1,3 +1,6 @@
+localStorage.setItem('customerID',localStorage.getItem('userID'));
+
+
 const sectionMap = {
   session: "session-container",
   booking: "booking-container",
@@ -31,11 +34,11 @@ function showSection(sectionName, callback) {
     .then(html => {
       if (targetContainer) targetContainer.innerHTML = html;
 
-      // if (sectionName === "profile") {
-      //   requestAnimationFrame(() => {
-      //     loadUserInfo(localStorage.getItem('userID'));
-      //   });  
-      // }
+      if (sectionName === "profile") {
+        requestAnimationFrame(() => {
+          loadCustomerInfo(localStorage.getItem('customerID'));
+        });  
+      }
       
       // 4. Gọi callback sau khi nội dung đã được gắn
       if (typeof callback === "function") {
@@ -105,6 +108,8 @@ function closeModal(modalId) {
 // 🚀 Khởi tạo khi trang tải
 document.addEventListener("DOMContentLoaded", () => {
   showSection("session");
+
+  loadBalance(localStorage.getItem('customerID'));
 
 //   const userName = localStorage.getItem("userName") || "Khách";
 //   const userRole = localStorage.getItem("userRole") || "customer";

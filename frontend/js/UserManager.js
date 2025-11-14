@@ -123,7 +123,7 @@ function loadUserInfo(userId) {
         document.getElementById("fullname").value = user.full_name || "";
         document.getElementById("phone").value = user.phone_number || "";
         document.getElementById("email").value = user.email || "";
-
+        
         // Lưu dữ liệu gốc để so sánh sau
         originalUserData = {
           user_id: user.user_id,

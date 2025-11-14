@@ -82,6 +82,27 @@ function select_user_by_id($user_id)
     return user_db_query_one($sql, $user_id);
 }
 
+//Lấy thông tin khách hàng theo user_id
+function select_customer_by_id($user_id)
+{
+    $sql = "SELECT 
+                u.user_id, 
+                u.role_name, 
+                u.full_name, 
+                u.phone_number, 
+                u.email,
+                m.current_balance,
+                m.membership_level,
+                m.status,
+                m.last_topup_date
+            FROM users u
+            LEFT JOIN membership_accounts m ON u.user_id = m.user_id
+            WHERE u.user_id = ?";
+
+    return user_db_query_one($sql, $user_id);
+}
+
+
 //Lấy thông tin người dùng theo full_name
 function get_user_by_full_name($full_name){
     $sql = "SELECT * FROM users WHERE full_name = ?";
