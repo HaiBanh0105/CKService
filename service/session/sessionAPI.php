@@ -44,6 +44,7 @@ try {
         $full_name = $input_data['full_name'] ?? null;
         $start_time = $input_data['start_time'] ?? null;
         $status = $input_data['status'] ?? null;
+        $reservation_id = $input_data['reservation_id'] ?? null;
 
         if ($computer_id === null || $start_time === null || $status === null) {
             http_response_code(400);
@@ -51,7 +52,7 @@ try {
             exit();
         }
 
-        $result = add_session($user_id, $computer_id, $full_name, $start_time, $status);
+        $result = add_session($user_id, $computer_id, $full_name, $start_time, $status, $reservation_id);
         if ($result) {
             echo json_encode(['status' => 'success', 'message' => 'Phiên mới đã được thêm thành công.']);
         } else {

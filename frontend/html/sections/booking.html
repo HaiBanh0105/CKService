@@ -44,14 +44,20 @@
       ></textarea>
     </div>
 
-    <button
-      type="button"
-      class="btn"
-      onclick="createBooking()"
-      style="margin-bottom: 30px"
-    >
-      Đặt chỗ
-    </button>
+    <div class="button-row">
+      <button type="button" class="btn" onclick="createBooking()">
+        Đặt chỗ
+      </button>
+      <button
+        id="enterBookingOtpBtn"
+        type="button"
+        class="btn"
+        onclick="handleOtpInput('booking')"
+        style="display: none"
+      >
+        Nhập mã OTP
+      </button>
+    </div>
   </form>
 
   <hr />

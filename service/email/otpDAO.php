@@ -86,3 +86,11 @@ function otp_generate($length = 6)
 {
     return str_pad(random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
 }
+
+// Xóa tất cả OTP chưa sử dụng của một user
+function otp_delete_unused_by_user($user_id) {
+    $sql = "DELETE FROM otp_codes 
+            WHERE user_id = ? 
+              AND is_used = 0";
+    return otp_db_execute($sql, $user_id);
+}

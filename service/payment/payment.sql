@@ -56,4 +56,30 @@ CREATE TABLE transactions (
     
     FOREIGN KEY (reference_invoice_id) REFERENCES invoices(invoice_id),
     INDEX idx_user_id (user_id)
+
+
+--     CREATE TABLE session_payments (
+--     payment_id INT AUTO_INCREMENT PRIMARY KEY,
+--     session_id INT NOT NULL,
+--     user_id INT NULL,
+--     is_guest TINYINT(1) DEFAULT 0,
+--     guest_name VARCHAR(100),
+--     guest_email VARCHAR(100),
+--     computer_id INT NOT NULL,
+--     config_id INT NOT NULL,
+--     start_time DATETIME NOT NULL,
+--     end_time DATETIME,
+--     total_duration_hours INT NOT NULL,
+--     deposit_amount INT DEFAULT 0,
+--     total_amount INT NOT NULL,
+--     paid_amount INT DEFAULT 0,
+--     payment_method ENUM('cash','card','momo','zalopay') NOT NULL,
+--     payment_status ENUM('pending','paid','failed','refunded') DEFAULT 'pending',
+--     transaction_id VARCHAR(100),
+--     otp_id INT,
+--     notes TEXT,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
+
 );

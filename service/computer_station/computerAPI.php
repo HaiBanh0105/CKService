@@ -124,9 +124,10 @@ try {
         // --- ROUTE: /computers/update_status ---
         $computer_id = $input_data['computer_id'] ?? null;
         $status = $input_data['current_status'] ?? '';
+        $reservation_id = $input_data['reservation_id'] ?? 0;
 
         try {
-            dao_update_computer_status($computer_id, $status);
+            dao_update_computer_status($computer_id, $status,$reservation_id);
             http_response_code(200);
             echo json_encode([
                 'status' => 'success',

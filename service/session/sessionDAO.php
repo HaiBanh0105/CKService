@@ -63,9 +63,9 @@ function get_user_id_by_computer_id($computer_id)
 }
 
 //Hàm thêm phiên mới
-function add_session($user_id, $computer_id, $full_name, $start_time, $status)
+function add_session($user_id, $computer_id, $full_name, $start_time, $status, $reservation_id)
 {
-    $sql = "INSERT INTO sessions (user_id, computer_id, full_name ,start_time, status) 
-            VALUES (?, ?, ? ,?, ?)";
-    return session_db_execute($sql, $user_id, $computer_id, $full_name, $start_time, 'actived');
+    $sql = "INSERT INTO sessions (user_id, computer_id, full_name ,start_time, status, reservation_id) 
+            VALUES (?, ?, ? ,?, ?,?)";
+    return session_db_execute($sql, $user_id, $computer_id, $full_name, $start_time, 'actived', $reservation_id);
 }

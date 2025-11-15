@@ -127,12 +127,12 @@ function get_computer_by_id($computer_id)
 }
 
 //Cập nhật trạng thái máy tính
-function dao_update_computer_status($computer_id, $status)
+function dao_update_computer_status($computer_id, $status, $reservation_id)
 {
     $sql = "UPDATE computers 
-            SET current_status = ?
+            SET current_status = ?, reservation_id =?
             WHERE computer_id = ?";
-    return computer_db_execute($sql, $status, $computer_id);
+    return computer_db_execute($sql, $status, $reservation_id, $computer_id);
 }
 
 //lấy thông tin cấu hình theo tên

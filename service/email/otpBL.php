@@ -7,6 +7,8 @@ require_once 'otpDAO.php';
 // Sinh, lưu và gửi OTP
 function bl_send_otp($user_id, $user_email, $purpose)
 {
+    // Xóa OTP cũ chưa dùng
+    otp_delete_unused_by_user($user_id);
     // Sinh OTP
     $otp_code = otp_generate();
     $expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));

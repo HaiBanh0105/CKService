@@ -209,6 +209,7 @@ async function startSession(){
     if (status === "reserved") {
       const userName = await fetchUserNameByComputerId_Booking(computerId);
       const userId = await fetchUserIdByComputerId_Booking(computerId);
+      // const $reservation_id = 
       
       const startTime = getCurrentTimeICT();
 
@@ -216,7 +217,7 @@ async function startSession(){
 
       if (success) {
         alert("Phiên đã được tạo thành công!");
-        const update_status = await updateComputerStatus(computerId, "in_use");
+        const update_status = await updateComputerStatus(computerId, "in_use",null);
         if (update_status) {
           closeModal("editComputerModal");
           loadComputers();
@@ -238,7 +239,7 @@ async function startSession(){
 
             const userId = await getUserIdByFullName(fullName); // Trả về user_id hoặc null
             const startTime = getCurrentTimeICT();
-            const success = await addSession(userId, computerId, fullName, startTime, "active");
+            const success = await addSession(userId, computerId, fullName, startTime, "active",null);
 
             if (success) {
               alert(`✅ Phiên đã được tạo cho khách hàng: ${fullName}`);
@@ -259,12 +260,13 @@ async function startSession(){
 }
 
 
-async function updateComputerStatus(computerId, status) {
+async function updateComputerStatus(computerId, status, reservation_id) {
   const url = "http://localhost/NetMaster/getway/computers/update_status";
 
   const payload = {
     computer_id: computerId,
-    current_status: status
+    current_status: status,
+    reservation_id: reservation_id
   };
 
   try {
@@ -497,7 +499,7 @@ async function getComputerStatus(computer_id) {
 }
 
 
-async function addSession(user_id, computer_id, full_name ,start_time, status) {
+async function addSession(user_id, computer_id, full_name ,start_time, status, $reservation_id) {
   const url = "http://localhost/NetMaster/getway/session/add_session";
 
   const payload = {
@@ -505,7 +507,8 @@ async function addSession(user_id, computer_id, full_name ,start_time, status) {
     computer_id,
     full_name,
     start_time,
-    status
+    status,
+    $reservation_id
   };
 
   try {

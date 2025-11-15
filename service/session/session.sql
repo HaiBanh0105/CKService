@@ -5,6 +5,7 @@ USE session_management;
 CREATE TABLE sessions (
   session_id BIGINT PRIMARY KEY AUTO_INCREMENT,
   user_id INT,
+  reservation_id INT,
   computer_id INT NOT NULL,
   full_name VARCHAR(255) NOT NULL, 
   start_time DATETIME NOT NULL,

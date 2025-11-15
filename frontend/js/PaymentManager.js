@@ -6,18 +6,29 @@ function loadComputersToPayment() {
         const computers = response.data;
         const grid = document.getElementById("paymentGrid");
         grid.innerHTML = "";
-
+        
+        
         computers.forEach(pc => {
           const card = document.createElement("div");
           card.className = `computer-card ${pc.current_status}`;
 
-          card.innerHTML = `
+          let html = `
             <div class="computer-icon">
               <i class="fas fa-desktop"></i>
             </div>
             <div class="computer-name">${pc.computer_name}</div>
-            <div class="computer-status">Đang sử dụng</div>
-          `;
+            <div class="computer-status">Đang sử dụng</div>`;
+
+          fetchUserNameByComputerId_Session(pc.computer_id).then(data => {
+            const userText = data ? data : "";
+            html += `
+              <div class="user-id" style="color: #666; font-weight: 500;">
+                Người dùng: <span style="color: #000; font-weight: normal;">${userText}</span>
+              </div>
+            `;
+            card.innerHTML = html;
+          });
+
           // card.addEventListener("click", () => {
           //   openModal('updateUser');
           //   });

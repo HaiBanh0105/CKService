@@ -102,56 +102,86 @@ function updateDeposit() {
   document.getElementById("depositPreview").value = deposit.toLocaleString() + " VNĐ";
 }
 
-//Nạp tiền
-// function processRecharge() {
-//   const user_id = localStorage.getItem("customerID");
-//   const amountText = document.getElementById("rechargeAmount").value; 
-//   const amount = parseInt(amountText.replace(/\D/g, "")) || 0;
 
-//   if (amount <= 0) {
-//     alert("⚠️ Vui lòng nhập số tiền hợp lệ để nạp.");
-//     return;
-//   }
-//   else{
-//     changeBalance(user_id, amount);
-//     alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(amount)} đ`);
-//     closeModal('rechargeModal');
-//     loadBalance(user_id);
-//   }
-  
-// }
+let rechargeAmount = 0;
+
 async function processRecharge() {
   const user_id = localStorage.getItem("customerID");
   const user_email = localStorage.getItem("customerEmail");
-  const amountText = document.getElementById("rechargeAmount").value; 
-  const amount = parseInt(amountText.replace(/\D/g, "")) || 0;
+  const amountText = document.getElementById("rechargeAmount").value;
+  rechargeAmount = parseInt(amountText.replace(/\D/g, "")) || 0;
 
-  if (amount <= 0) {
-    alert("⚠️ Vui lòng nhập số tiền hợp lệ để nạp.");
+  if (rechargeAmount < 10000) {
+    alert("⚠️ Vui lòng nhập số tiền hợp lệ (tối thiểu 10.000đ).");
     return;
   }
 
-  // 1. Gửi OTP
-  let createRes = await callCreateOtp(user_id, user_email, "recharge");
-  if (createRes.status !== "success") {
-    alert("❌ Không thể gửi OTP.");
-    return;
-  }
+  const submitBtn = document.getElementById("submitBtn");
 
-  // 2. Người dùng nhập OTP
-  const otp_input = prompt("📩 Vui lòng nhập mã OTP đã gửi tới email của bạn:");
+  // Đổi text + màu khi đang gửi OTP
+  submitBtn.textContent = "📨 Mã OTP đang được gửi đến bạn...";
+  submitBtn.style.backgroundColor = "orange";
+  submitBtn.style.color = "white";
+
+  const res = await callCreateOtp(user_id, user_email, "recharge");
+
+  if (res.status === "success") {
+    alert("📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận!");
+    submitBtn.textContent = "🔄 Gửi lại OTP";
+    submitBtn.style.backgroundColor = "green";
+    submitBtn.style.color = "white";
+    document.getElementById("enterOtpBtn").style.display = "block";
+  } else {
+    alert("❌ Không thể gửi OTP. Vui lòng thử lại.");
+    submitBtn.textContent = "Xác nhận nạp tiền";
+    submitBtn.style.backgroundColor = "#007bff"; // màu xanh mặc định
+    submitBtn.style.color = "white";
+  }
+}
+
+
+
+// async function handleOtpInput() {
+//   const user_id = localStorage.getItem("customerID");
+//   const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
+
+//   if (!otp_input) {
+//     alert("⚠️ Bạn chưa nhập mã OTP.");
+//     return;
+//   }
+
+//   const confirmRes = await callConfirmOtp(user_id, otp_input, "recharge");
+//   if (confirmRes.status === "success") {
+//     changeBalance(user_id, rechargeAmount);
+//     alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(rechargeAmount)} đ`);
+//     closeModal('rechargeModal');
+//     loadBalance(user_id);
+//     document.getElementById("enterOtpBtn").style.display = "none";
+//   } else {
+//     alert("❌ OTP không hợp lệ hoặc đã hết hạn.");
+//   }
+// }
+
+async function handleOtpInput(purpose) {
+  const user_id = localStorage.getItem("customerID");
+  const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
+
   if (!otp_input) {
-    alert("⚠️ Bạn chưa nhập OTP.");
+    alert("⚠️ Bạn chưa nhập mã OTP.");
     return;
   }
 
-  // 3. Xác nhận OTP
-  let confirmRes = await callConfirmOtp(user_id, otp_input, "recharge");
+  const confirmRes = await callConfirmOtp(user_id, otp_input, purpose);
   if (confirmRes.status === "success") {
-    changeBalance(user_id, amount);
-    alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(amount)} đ`);
-    closeModal('rechargeModal');
-    loadBalance(user_id);
+    if (purpose === "recharge") {
+      changeBalance(user_id, rechargeAmount);
+      alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(rechargeAmount)} đ`);
+      closeModal('rechargeModal');
+      loadBalance(user_id);
+    } else if (purpose === "booking") {
+      // Sau khi OTP hợp lệ thì tiến hành tạo booking
+      await finalizeBooking(user_id);
+    }
   } else {
     alert("❌ OTP không hợp lệ hoặc đã hết hạn.");
   }
@@ -159,72 +189,116 @@ async function processRecharge() {
 
 
 
-
-function createBooking() {
+async function createBooking() {
+  const user_id = localStorage.getItem("customerID");
+  const user_email = localStorage.getItem("customerEmail");
   const type = document.getElementById("bookingType").value;
-  const user_id = localStorage.getItem("customerID"); 
-  const start_time_raw = document.getElementById("bookingTime").value;
-  const start_time = start_time_raw ? start_time_raw.replace("T", " ") + ":00" : "";
-  const total_duration_hours = document.getElementById("bookingHours").value;
-  const notes = document.getElementById("bookingNotes").value;
-
-  // Lấy deposit từ giao diện (ô depositPreview)
+  const start_time = document.getElementById("bookingTime").value;
+  const total_duration_hours = parseInt(document.getElementById("bookingHours").value);
   const depositText = document.getElementById("depositPreview").value;
   const deposit = parseInt(depositText.replace(/\D/g, "")) || 0;
+  const notes = document.getElementById("bookingNotes").value;
 
+  if (!type || !start_time || !total_duration_hours) {
+    alert("⚠️ Vui lòng nhập đầy đủ thông tin.");
+    return;
+  }
 
-  // Gọi API lấy máy trống
-   fetch(`http://localhost/NetMaster/getway/computers/get_available_by_config?config_name=${type}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "success") {
-        const computer = data.data;
+  // Kiểm tra số dư trước khi gửi OTP
+  if (currentBalance < deposit) {
+    alert("⚠️ Số dư không đủ để đặt chỗ. Vui lòng nạp thêm tiền.");
+    return;
+  }
 
-        const payload = {
-          user_id,
-          computer_id: computer.computer_id,
-          config_id: computer.config_id,
-          start_time,
-          total_duration_hours,
-          deposit,
-          notes
-        };
+  // 1) Gọi API lấy máy trống theo config
+  let computer;
+  try {
+    const res = await fetch(`http://localhost/NetMaster/getway/computers/get_available_by_config?config_name=${type}`);
+    const data = await res.json();
 
-        if(currentBalance < deposit){
-            alert("⚠️ Số dư không đủ để đặt chỗ. Vui lòng nạp thêm tiền.");
-        }
-        else{
-        fetch("http://localhost/NetMaster/getway/booking/create_booking", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        })
+    if (data.status !== "success" || !data.data) {
+      alert(data.message || "Không tìm thấy máy phù hợp.");
+      return;
+    }
+    computer = data.data;
+  } catch (err) {
+    console.error("Lỗi khi lấy máy trống:", err);
+    alert("❌ Không thể lấy danh sách máy trống.");
+    return;
+  }
 
-        .then(res => res.json())
-        .then(result => {
-          if (result.status === "success") {
-            alert(`✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`);
-            updateComputerStatus(computer.computer_id, "reserved");
-            changeBalance(user_id,-deposit);
-            loadBalance(user_id);
-            loadBookingHistory(user_id);
-            document.getElementById("bookingForm").reset();
-          } else {
-            alert(result.message || "Không thể tạo đơn đặt chỗ.");
-          }
-        })
-        .catch(err => {
-          console.error("Lỗi khi gọi API:", err);
-          alert("Đã xảy ra lỗi khi đặt chỗ.");
-        });
-      }
-      } else {
-        alert(data.message || "Không tìm thấy máy phù hợp.");
-      }
-    });
+  // 2) Gửi OTP cho mục đích booking
+  try {
+    const otpRes = await callCreateOtp(user_id, user_email, "booking");
+    if (otpRes.status === "success") {
+      alert("📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận đặt chỗ!");
+
+      // Hiện nút nhập OTP
+      const btn = document.getElementById("enterBookingOtpBtn");
+      btn.style.display = "block";
+
+      // Lưu tạm payload để xác nhận sau khi OTP hợp lệ
+      window.bookingPayload = {
+        user_id,
+        computer_id: computer.computer_id,
+        config_id: computer.config_id,
+        start_time,
+        total_duration_hours,
+        deposit,
+        notes
+      };
+    } else {
+      alert(otpRes.message || "❌ Không thể gửi OTP. Vui lòng thử lại.");
+    }
+  } catch (err) {
+    console.error("Lỗi khi gửi OTP:", err);
+    alert("❌ Đã xảy ra lỗi khi gửi OTP. Vui lòng thử lại.");
+  }
 }
+
+
+
+async function finalizeBooking(user_id) {
+  const payload = window.bookingPayload;
+  if (!payload) {
+    alert("⚠️ Không tìm thấy thông tin đặt chỗ.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost/NetMaster/getway/booking/create_booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const result = await res.json();
+
+    if (result.status === "success" && result.data && result.data.computer_id) {
+      alert(`✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`);
+      updateComputerStatus(result.data.computer_id, "reserved",result.data.reservation_id);
+      changeBalance(user_id, -payload.deposit);
+      loadBalance(user_id);
+      loadBookingHistory(user_id);
+      document.getElementById("bookingForm").reset();
+      document.getElementById("enterBookingOtpBtn").style.display = "none";
+    } else {
+      alert(result.message || "Không thể tạo đơn đặt chỗ.");
+    }
+  } catch (err) {
+    console.error("Lỗi khi gọi API booking:", err);
+    alert("❌ Đã xảy ra lỗi khi tạo đơn đặt chỗ. Vui lòng thử lại.");
+  }
+}
+
+
+
+
+
 
 
 async function loadBookingHistory(userId) {

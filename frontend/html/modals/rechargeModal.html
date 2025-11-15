@@ -1,20 +1,67 @@
 <div class="modal-content">
   <div class="modal-header">
     <h2>Nạp tiền vào tài khoản</h2>
-    <span class="close-modal" onclick="closeModal('rechargeModal')">&times;</span>
+    <span class="close-modal" onclick="closeModal('rechargeModal')"
+      >&times;</span
+    >
   </div>
   <div class="form-group">
     <label>Số tiền nạp</label>
-    <input type="number" id="rechargeAmount" placeholder="Nhập số tiền" min="10000" step="10000" />
+    <input
+      type="number"
+      id="rechargeAmount"
+      placeholder="Nhập số tiền"
+      min="10000"
+      step="10000"
+    />
   </div>
   <div class="form-group">
     <label>Phương thức thanh toán</label>
     <div class="payment-methods">
-      <div class="payment-method" data-method="cash" onclick="selectPaymentMethod('cash')">💵 Tiền mặt</div>
-      <div class="payment-method" data-method="card" onclick="selectPaymentMethod('card')">💳 Thẻ ngân hàng</div>
-      <div class="payment-method" data-method="momo" onclick="selectPaymentMethod('momo')">📱 MoMo</div>
-      <div class="payment-method" data-method="zalopay" onclick="selectPaymentMethod('zalopay')">💙 ZaloPay</div>
+      <div
+        class="payment-method"
+        data-method="cash"
+        onclick="selectPaymentMethod('cash')"
+      >
+        💵 Tiền mặt
+      </div>
+      <div
+        class="payment-method"
+        data-method="card"
+        onclick="selectPaymentMethod('card')"
+      >
+        💳 Thẻ ngân hàng
+      </div>
+      <div
+        class="payment-method"
+        data-method="momo"
+        onclick="selectPaymentMethod('momo')"
+      >
+        📱 MoMo
+      </div>
+      <div
+        class="payment-method"
+        data-method="zalopay"
+        onclick="selectPaymentMethod('zalopay')"
+      >
+        💙 ZaloPay
+      </div>
     </div>
   </div>
-  <button class="btn" onclick="processRecharge()" style="width: 100%; margin-top: 20px;">Xác nhận nạp tiền</button>
+  <button
+    id="submitBtn"
+    class="btn"
+    onclick="processRecharge()"
+    style="width: 100%; margin-top: 20px"
+  >
+    Xác nhận nạp tiền
+  </button>
+  <button
+    id="enterOtpBtn"
+    class="btn"
+    onclick="handleOtpInput('recharge')"
+    style="width: 100%; margin-top: 10px; display: none"
+  >
+    Nhập mã OTP
+  </button>
 </div>
