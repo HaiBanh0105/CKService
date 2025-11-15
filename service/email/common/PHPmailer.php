@@ -16,15 +16,15 @@ function sendEmail($to, $subject, $bodyHtml)
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';   // Gmail SMTP
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'vodathai91thcsduclap.com';   // Gmail của bạn
-        $mail->Password   = 'itdf agvx ehmc rtup';     // App Password đã tạo
+        $mail->Username   = 'vodathai91thcsduclap@gmail.com';   // Gmail của bạn
+        $mail->Password   = 'evxb qnnf tist kvzi';     // App Password đã tạo
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         $mail->CharSet = "UTF-8";
         $mail->Encoding = "base64";
 
         // Recipients
-        $mail->setFrom('vodathai91thcsduclap.com', 'NetMaster');
+        $mail->setFrom('vodathai91thcsduclap@gmail.com', 'NetMaster');
         $mail->addAddress($to);
 
         // Content

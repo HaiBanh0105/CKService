@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         }, 1000);
                     } else if (userData.role_name === 'customer') {
                         localStorage.setItem('customerID', userData.user_id);
+                        localStorage.setItem('customerEmail', userData.email);
+                        
                         setTimeout(() => {
                             window.location.href = './userIndex.html';
                         }, 1000);

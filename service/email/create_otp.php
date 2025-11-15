@@ -38,39 +38,7 @@ if ($userId <= 0 || $studentId === '' || $amount <= 0 || $userEmail === '') {
 
 try {
 
-    // Vô hiệu hóa OTP chưa dùng của sinh viên của user đang tạo (nếu có)
-    $disableStmt = $paymentPdo->prepare("
-    UPDATE OTPs 
-    JOIN Payment ON OTPs.PaymentID = Payment.PaymentID
-    SET OTPs.IsUsed = 3
-    WHERE OTPs.IsUsed = 0 
-    AND Payment.StudentID = :sid 
-    AND Payment.UserID = :uid
-    ");
-    $disableStmt->execute([
-        ':sid' => $studentId,
-        ':uid' => $userId
-    ]);
-
-    // Tạo bản ghi thanh toán và OTP
-    $paymentPdo->beginTransaction();
-    $stmt = $paymentPdo->prepare("INSERT INTO Payment(UserID, StudentID, Amount) VALUES (:uid, :sid, :amt)");
-    $stmt->execute([':uid' => $userId, ':sid' => $studentId, ':amt' => $amount]);
-    $paymentId = (int)$paymentPdo->lastInsertId();
-
-    $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    $stmt2 = $paymentPdo->prepare("INSERT INTO OTPs(PaymentID, Code, ExpiredAt) VALUES (:pid, :code, DATE_ADD(NOW(), INTERVAL 5 miNUTE))");
-    $stmt2->execute([':pid' => $paymentId, ':code' => $otp]);
-
-    $paymentPdo->commit();
-
-    // Cập nhật trạng thái học phí sang "Processing"
-    $updateUrl = "http://localhost/GKService/getway/tuition/update_status";
-    $updatePayload = json_encode([
-        'studentId' => $studentId,
-        'newStatus' => 'Processing'
-    ]);
-
+   
     $ch = curl_init($updateUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);

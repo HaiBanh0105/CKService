@@ -222,7 +222,20 @@ return [
             'action' => 'load_booking'
         ],
 
-
+        //tạo otp
+        '/otp/create' => [
+            'service' => 'email',
+            'path'    => 'otpAPI.php',
+            'dir'     => 'email',
+            'action'  => 'create'
+        ],
+        //xác nhận otp
+        '/otp/confirm' => [
+            'service' => 'email',
+            'path'    => 'otpAPI.php',
+            'dir'     => 'email',
+            'action'  => 'confirm'
+        ]
     ],
 
 
@@ -236,5 +249,6 @@ return [
 
         'booking' => '8004',
 
+        'email' => '8005',
     ]
 ];

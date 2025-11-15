@@ -38,7 +38,7 @@ $dir = $serviceInfo['dir'] ?? $serviceName;
 
 
 $port = $config['ports'][$serviceName];
-// $targetUrl = "http://localhost:$port/NetMaster/service/$dir/{$serviceInfo['path']}"; 
+
 $targetUrl = "http://localhost:$port/{$serviceInfo['path']}";
 
 // 3. Xử lý logic Action (Gắn tham số action vào query string)

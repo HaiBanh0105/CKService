@@ -103,8 +103,26 @@ function updateDeposit() {
 }
 
 //Nạp tiền
-function processRecharge() {
+// function processRecharge() {
+//   const user_id = localStorage.getItem("customerID");
+//   const amountText = document.getElementById("rechargeAmount").value; 
+//   const amount = parseInt(amountText.replace(/\D/g, "")) || 0;
+
+//   if (amount <= 0) {
+//     alert("⚠️ Vui lòng nhập số tiền hợp lệ để nạp.");
+//     return;
+//   }
+//   else{
+//     changeBalance(user_id, amount);
+//     alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(amount)} đ`);
+//     closeModal('rechargeModal');
+//     loadBalance(user_id);
+//   }
+  
+// }
+async function processRecharge() {
   const user_id = localStorage.getItem("customerID");
+  const user_email = localStorage.getItem("customerEmail");
   const amountText = document.getElementById("rechargeAmount").value; 
   const amount = parseInt(amountText.replace(/\D/g, "")) || 0;
 
@@ -112,14 +130,33 @@ function processRecharge() {
     alert("⚠️ Vui lòng nhập số tiền hợp lệ để nạp.");
     return;
   }
-  else{
+
+  // 1. Gửi OTP
+  let createRes = await callCreateOtp(user_id, user_email, "recharge");
+  if (createRes.status !== "success") {
+    alert("❌ Không thể gửi OTP.");
+    return;
+  }
+
+  // 2. Người dùng nhập OTP
+  const otp_input = prompt("📩 Vui lòng nhập mã OTP đã gửi tới email của bạn:");
+  if (!otp_input) {
+    alert("⚠️ Bạn chưa nhập OTP.");
+    return;
+  }
+
+  // 3. Xác nhận OTP
+  let confirmRes = await callConfirmOtp(user_id, otp_input, "recharge");
+  if (confirmRes.status === "success") {
     changeBalance(user_id, amount);
     alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(amount)} đ`);
     closeModal('rechargeModal');
     loadBalance(user_id);
+  } else {
+    alert("❌ OTP không hợp lệ hoặc đã hết hạn.");
   }
-  
 }
+
 
 
 
