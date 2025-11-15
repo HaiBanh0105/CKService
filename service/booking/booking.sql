@@ -30,11 +30,4 @@ CREATE TABLE reservation_details (
 );
 
 
-INSERT INTO reservations (user_id, booking_time, start_time, total_duration_hours, status, deposit, notes)
-VALUES
-(2, '2025-11-12 10:00:00', '2025-11-13 08:00:00', 4.0, 'confirmed', 100.00, 'Khách yêu cầu máy cấu hình cao')
-
-INSERT INTO reservation_details (reservation_id, computer_id, config_id)
-VALUES
-(1, 25, 1);
 

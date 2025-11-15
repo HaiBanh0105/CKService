@@ -279,7 +279,22 @@ try {
                 'message' => 'Lỗi khi lấy lịch sử giao dịch: ' . $e->getMessage()
             ]);
         }
-    } else {
+    } 
+    else if($method === 'POST' && $action === 'change_balance') {
+        $user_id = $input_data['user_id'] ?? null;
+        $amount = $input_data['amount'] ?? null;
+
+        if (!$user_id || $amount === null) {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Thiếu thông tin bắt buộc"]);
+            exit();
+        }
+
+        $result = change_balance($user_id, $amount);
+        echo json_encode($result);
+        exit();
+    }
+    else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

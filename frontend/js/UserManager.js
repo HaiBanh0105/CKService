@@ -10,16 +10,18 @@ function loadCustomerList() {
 
         customers.forEach(c => {
           const row = document.createElement("tr");
+          const formattedBalance = new Intl.NumberFormat("vi-VN").format(c.current_balance);
           row.innerHTML = `
             <td>${c.user_id}</td>
             <td>${c.full_name}</td>
             <td>${c.phone_number}</td>
             <td>${c.email}</td>
-            <td>${c.current_balance.toLocaleString()} đ</td>
+            <td>${`${formattedBalance} đ`}</td>
             <td>${c.status}</td>
             <td>
             <button class="btn btn-sm btn-info view-history-btn" data-id="${c.user_id}">Xem lịch sử</button>
             <button class="btn btn-sm btn-info updateUser" data-id="${c.user_id}">Chỉnh sửa</button>
+            <button class="btn btn-sm btn-info addBalance" data-id="${c.user_id}">Nạp tiền</button>
             </td> 
             ` 
           tableBody.appendChild(row);
@@ -44,6 +46,14 @@ function loadCustomerList() {
             openModal('updateUser', () => {
                 loadUserInfo(userId);
               });
+          });
+        });
+        // Gắn sự kiện cho nút "Nạp tiền"
+        document.querySelectorAll(".addBalance").forEach(button => {
+          button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-id");
+            // Gọi hàm mở modal và truyền userId nếu cần 
+            openModal('rechargeModal');
           });
         });
 
@@ -308,6 +318,20 @@ function handleUpdateUser() {
       alert("Đã xảy ra lỗi khi gửi yêu cầu cập nhật.");
     });
 }
+
+//Hàm cập nhật số dư
+async function changeBalance(userId, amount) {
+  const response = await fetch("http://localhost/NetMaster/getway/users/change_balance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, amount: amount })
+  });
+
+  const result = await response.json();
+  console.log(result);
+
+}
+
 
 
 

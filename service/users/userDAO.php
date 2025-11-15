@@ -104,7 +104,8 @@ function select_customer_by_id($user_id)
 
 
 //Lấy thông tin người dùng theo full_name
-function get_user_by_full_name($full_name){
+function get_user_by_full_name($full_name)
+{
     $sql = "SELECT * FROM users WHERE full_name = ?";
     return user_db_query($sql, $full_name);
 }
@@ -210,3 +211,32 @@ function is_phone_number_exists($phone_number, $exclude_user_id = null)
     return $count > 0;
 }
 
+
+// Cập nhật số dư tài khoản thành viên
+function dao_update_balance($user_id, $new_balance, $isTopup = false)
+{
+    if ($isTopup) {
+        $sql = "UPDATE membership_accounts 
+                SET current_balance = ?, last_topup_date = NOW() 
+                WHERE user_id = ?";
+    } else {
+        $sql = "UPDATE membership_accounts 
+                SET current_balance = ? 
+                WHERE user_id = ?";
+    }
+    user_db_execute($sql, $new_balance, $user_id);
+}
+
+// Lấy số dư hiện tại
+function dao_get_balance($user_id)
+{
+    $sql = "SELECT current_balance FROM membership_accounts WHERE user_id = ?";
+    return user_db_query_value($sql, $user_id);
+}
+
+// Lấy account_id từ user_id (để ghi giao dịch)
+function dao_get_account_id($user_id)
+{
+    $sql = "SELECT account_id FROM membership_accounts WHERE user_id = ?";
+    return user_db_query_value($sql, $user_id);
+}

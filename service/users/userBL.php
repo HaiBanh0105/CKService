@@ -66,3 +66,30 @@ function update_user_info($user_id, $full_name, $phone_number, $email)
     dao_update_user($user_id, $full_name, $phone_number, $email);
 }
 
+// thay đổi số dư
+function change_balance($user_id, $amount)
+{
+    $current_balance = dao_get_balance($user_id);
+    if ($current_balance === null) {
+        return ["status" => "error", "message" => "Không tìm thấy tài khoản"];
+    }
+
+    $new_balance = $current_balance + $amount;
+    if ($new_balance < 0) {
+        return ["status" => "error", "message" => "Số dư không đủ để thực hiện giao dịch"];
+    }
+
+    // Cập nhật số dư
+    dao_update_balance($user_id, $new_balance, $amount > 0);
+
+    // Ghi giao dịch
+    $account_id = dao_get_account_id($user_id);
+    $type = $amount > 0 ? 'topup' : 'deduct';
+    dao_insert_transaction($account_id, $amount, $type);
+
+    return [
+        "status" => "success",
+        "message" => "Số dư đã được cập nhật",
+        "new_balance" => $new_balance
+    ];
+}

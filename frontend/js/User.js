@@ -1,5 +1,3 @@
-localStorage.setItem('customerID',localStorage.getItem('userID'));
-
 
 const sectionMap = {
   session: "session-container",
@@ -39,7 +37,12 @@ function showSection(sectionName, callback) {
           loadCustomerInfo(localStorage.getItem('customerID'));
         });  
       }
-      
+
+      if (sectionName === "booking") {
+        requestAnimationFrame(() => {
+          loadBookingHistory(localStorage.getItem('customerID'));
+        });  
+      }
       // 4. Gọi callback sau khi nội dung đã được gắn
       if (typeof callback === "function") {
         requestAnimationFrame(() => callback());

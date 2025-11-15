@@ -470,3 +470,31 @@ tr:hover {
   color: #666;
   font-weight: 500;
 }
+
+.close-modal {
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.payment-method {
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.payment-method:hover,
+.payment-method.selected {
+  border-color: #667eea;
+  background: #f0f3ff;
+}

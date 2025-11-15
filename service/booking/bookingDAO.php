@@ -79,3 +79,14 @@ function insert_reservation_detail($reservation_id, $computer_id, $config_id)
             VALUES (?, ?, ?)";
     return booking_db_execute($sql, $reservation_id, $computer_id, $config_id);
 }
+
+// Lấy lịch sử đặt chỗ theo user_id
+function dao_get_reservations_by_user($user_id) {
+    $sql = "SELECT reservation_id, user_id, booking_time, start_time, 
+                   total_duration_hours, status, deposit, notes
+            FROM reservations
+            WHERE user_id = ?
+            ORDER BY booking_time DESC";
+    return booking_db_query($sql, $user_id);
+}
+

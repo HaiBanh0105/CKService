@@ -91,7 +91,37 @@ try {
                 'message' => 'Lỗi xử lý: ' . $e->getMessage()
             ]);
         }
-    } else {
+    }
+    else if ($method === 'GET' && $action === 'load_booking') {
+        $user_id = $_GET['user_id'] ?? null;
+
+        if ($user_id === null) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu user_id.'
+            ]);
+            exit();
+        }
+
+        // Gọi trực tiếp DAO
+        $reservations = dao_get_reservations_by_user($user_id);
+
+        // Kiểm tra kết quả
+        if ($reservations && count($reservations) > 0) {
+            echo json_encode([
+                'status' => 'success',
+                'data' => $reservations
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không có lịch sử đặt chỗ cho user này.'
+            ]);
+        }
+        exit();
+}
+     else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userData = result.data;
                     
                     // Lưu Token và Role vào localStorage
-                    localStorage.setItem('userID', userData.user_id);
                     localStorage.setItem('userName', userData.full_name);
                     localStorage.setItem('userRole', userData.role_name);
                     
@@ -79,10 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Chuyển hướng đến trang Admin chính
                     if (userData.role_name === 'admin' || userData.role_name === 'staff') {
+                        localStorage.setItem('userID', userData.user_id);
                         setTimeout(() => {
                             window.location.href = './index.html';
                         }, 1000);
                     } else if (userData.role_name === 'customer') {
+                        localStorage.setItem('customerID', userData.user_id);
                         setTimeout(() => {
                             window.location.href = './userIndex.html';
                         }, 1000);

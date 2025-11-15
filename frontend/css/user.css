@@ -345,3 +345,14 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.booking-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+.booking-item p {
+  margin: 4px 0;
+}

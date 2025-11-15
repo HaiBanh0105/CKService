@@ -49,6 +49,15 @@ return [
             'action' => 'update_user'
         ],
 
+        // Endpoint thay đổi số dư
+        '/users/change_balance' => [
+            'service' => 'users',
+            'path' => 'userAPI.php',
+            'dir' => 'users',
+            'action' => 'change_balance'
+        ],
+
+
         // endpoint lấy lịch sử giao dịch của khách hàng
         '/users/transactions' => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'transactions'],
 
@@ -80,7 +89,7 @@ return [
             'dir' => 'computer_station',
             'action' => 'get_available_by_config'
         ],
-        
+
         // Endpoint lấy tất cả máy tính đang sử dụng
         '/computers/active' => [
             'service' => 'computers',
@@ -204,6 +213,13 @@ return [
             'path' => 'bookingAPI.php',
             'dir' => 'booking',
             'action' => 'create_booking'
+        ],
+
+        '/booking/load_booking' => [
+            'service' => 'booking',
+            'path' => 'bookingAPI.php',
+            'dir' => 'booking',
+            'action' => 'load_booking'
         ],
 
 
