@@ -23,21 +23,29 @@ try {
     $action = $_GET['action'] ?? null;
 
 
-    if ($method === 'GET' && $action === 'user_id_by_computer') {
+    if ($method === 'GET' && $action === 'latest_by_computer_id') {
         $computer_id = $_GET['computer_id'] ?? null;
         if ($computer_id === null) {
             http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'Thiếu computer_id.']);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu computer_id.'
+            ]);
             exit();
         }
 
-        $user_id = get_user_id_by_computer_id($computer_id);
-        if ($user_id !== null) {
-            echo json_encode(['status' => 'success', 'user_id' => $user_id]);
+        $session = get_latest_session_by_computer_id($computer_id);
+        if ($session !== null) {
+            echo json_encode([
+                'status' => 'success',
+                'session' => $session
+            ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy phiên hoạt động cho computer_id đã cho.']);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy phiên hoạt động cho computer_id đã cho.'
+            ]);
         }
-        
     } else if ($method === 'POST' && $action === 'add_session') {
         $user_id = $input_data['user_id'] ?? null;
         $computer_id = $input_data['computer_id'] ?? null;

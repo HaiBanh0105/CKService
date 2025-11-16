@@ -153,6 +153,9 @@ function openModal(modalId, callback) {
     case "rechargeModal":
       modalPath = "/NetMaster/frontend/html/modals/rechargeModal.html";
       break;
+    case "paymentModal":
+      modalPath = "/NetMaster/frontend/html/modals/payment-modal.html";
+      break;  
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";
       return;

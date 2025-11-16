@@ -154,6 +154,7 @@ if ((pc.current_status === "reserved" || pc.current_status === "available") && !
 
   // Lưu ID máy để cập nhật
   document.getElementById("editComputerModal").dataset.computerId = pc.computer_id;
+  document.getElementById("editComputerModal").dataset.reservation_id = pc.reservation_id;
 }
 
 function submitComputerUpdate() {
@@ -194,6 +195,7 @@ function submitComputerUpdate() {
 
 async function startSession(){
   const computerId = document.getElementById("editComputerModal").dataset.computerId;
+  const reservation_id = document.getElementById("editComputerModal").dataset.reservation_id;
   if (!computerId) {
     alert("Không tìm thấy ID máy tính.");
     return;
@@ -213,10 +215,11 @@ async function startSession(){
       
       const startTime = getCurrentTimeICT();
 
-      const success = await addSession(userId, computerId, userName, startTime, "active");
+      const success = await addSession(userId, computerId, userName, startTime, "active",reservation_id);
 
       if (success) {
         alert("Phiên đã được tạo thành công!");
+        updateBookingStatus(reservation_id,"confirmed");
         const update_status = await updateComputerStatus(computerId, "in_use",null);
         if (update_status) {
           closeModal("editComputerModal");
@@ -243,7 +246,8 @@ async function startSession(){
 
             if (success) {
               alert(`✅ Phiên đã được tạo cho khách hàng: ${fullName}`);
-              await updateComputerStatus(computerId, "in_use");
+              await updateComputerStatus(computerId, "in_use",null);
+              updateBookingStatus(reservation_id,"confirmed");
               closeModal("guestName");
               loadComputers();
             } else {
@@ -399,45 +403,31 @@ async function fetchUserIdByComputerId(computerId) {
 }
 
 
-// Hàm lấy user_id từ computer_id qua session
+// Hàm lấy user_id từ session mới nhất theo computer_id
 async function fetchUserIdByComputerId_Session(computerId) {
-  const url = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${encodeURIComponent(computerId)}`;
+  const session = await fetchByComputerId_Session(computerId);
 
-  try {
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (result.status === "success" && result.user_id) {
-      return result.user_id;
-    } else {
-      console.warn("Không tìm thấy phiên hoạt động:", result.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy user_id từ session:", error);
+  if (session && session.user_id) {
+    return session.user_id;
+  } else {
+    console.warn("Không tìm thấy user_id cho máy:", computerId);
     return null;
   }
 }
+
 
 // Hàm lấy user_id từ computer_id qua booking
 async function fetchUserIdByComputerId_Booking(computerId) {
-  const url = `http://localhost/NetMaster/getway/booking/user_id_by_computer?computer_id=${encodeURIComponent(computerId)}`;
+  const booking = await fetchByComputerId_Booking(computerId);
 
-  try {
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (result.status === "success" && result.user_id) {
-      return result.user_id;
-    } else {
-      console.warn("Không tìm thấy phiên hoạt động:", result.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy user_id:", error);
+  if (booking && booking.user_id) {
+    return booking.user_id;
+  } else {
+    console.warn("Không tìm thấy user_id cho máy:", computerId);
     return null;
   }
 }
+
 
 // Hàm lấy full_name từ user_id
 async function fetchUserNameByUserId(userId) {
@@ -499,7 +489,7 @@ async function getComputerStatus(computer_id) {
 }
 
 
-async function addSession(user_id, computer_id, full_name ,start_time, status, $reservation_id) {
+async function addSession(user_id, computer_id, full_name ,start_time, status, reservation_id) {
   const url = "http://localhost/NetMaster/getway/session/add_session";
 
   const payload = {
@@ -508,7 +498,7 @@ async function addSession(user_id, computer_id, full_name ,start_time, status, $
     full_name,
     start_time,
     status,
-    $reservation_id
+    reservation_id
   };
 
   try {

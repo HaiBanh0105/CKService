@@ -98,3 +98,16 @@ function handle_add_new_config($config_name)
 }
 
 
+function bl_update_computer_status($computer_id, $status, $reservation_id = null)
+{
+    if ($reservation_id === null) {
+        // Gọi DAO chỉ update trạng thái
+        return dao_update_computer_status_only($computer_id, $status);
+    } else {
+        // Gọi DAO update cả trạng thái và reservation_id
+        return dao_update_computer_status_with_reservation($computer_id, $status, $reservation_id);
+    }
+}
+
+
+

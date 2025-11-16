@@ -24,7 +24,7 @@ try {
     $action = $_GET['action'] ?? null;
 
 
-    if ($method === 'GET' && $action === 'user_id_by_computer') {
+    if ($method === 'GET' && $action === 'latest_by_computer_id') {
         $computer_id = $_GET['computer_id'] ?? null;
         if ($computer_id === null) {
             http_response_code(400);
@@ -32,11 +32,11 @@ try {
             exit();
         }
 
-        $user_id = get_user_id_by_computer_id_in_booking($computer_id);
-        if ($user_id !== null) {
-            echo json_encode(['status' => 'success', 'user_id' => $user_id]);
+        $booking = get_lastest_booking_by_computer_id($computer_id);
+        if ($booking !== null) {
+            echo json_encode(['status' => 'success', 'booking' => $booking]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy user cho computer_id đã cho.']);
+            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy lịch cho computer_id đã cho.']);
         }
     } elseif ($method === 'POST' && $action === 'create_booking') {
         // --- ROUTE: /booking/create_full ---
@@ -120,8 +120,26 @@ try {
             ]);
         }
         exit();
-}
-     else {
+    }
+    else if ($method === 'POST' && $action === 'update_status') {
+        $reservation_id = $data['reservation_id'] ?? null;
+        $status         = $data['status'] ?? null;
+
+        if (!$reservation_id || !$status) {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Thiếu tham số reservation_id hoặc status."
+            ]);
+            exit;
+        }
+
+        // Gọi BL để xử lý
+        $result = bl_update_reservation_status($reservation_id, $status);
+
+        echo json_encode($result);
+        exit;
+    }
+    else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

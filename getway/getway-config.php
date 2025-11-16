@@ -185,11 +185,11 @@ return [
         ],
 
         // Endpoint lấy user_id từ computer_id trong session đang active
-        '/session/user_id_by_computer' => [
+        '/session/latest_by_computer_id' => [
             'service' => 'session',
             'path' => 'sessionAPI.php',
             'dir' => 'session',
-            'action' => 'user_id_by_computer'
+            'action' => 'latest_by_computer_id'
         ],
 
         // Endpoint thêm phiên mới
@@ -201,11 +201,11 @@ return [
         ],
 
         // Endpoint lấy user_id mới nhất từ computer_id trong booking  
-        '/booking/user_id_by_computer' => [
+        '/booking/latest_by_computer_id' => [
             'service' => 'booking',
             'path' => 'bookingAPI.php',
             'dir' => 'booking',
-            'action' => 'user_id_by_computer'
+            'action' => 'latest_by_computer_id'
         ],
 
         '/booking/create_booking' => [
@@ -220,6 +220,13 @@ return [
             'path' => 'bookingAPI.php',
             'dir' => 'booking',
             'action' => 'load_booking'
+        ],
+
+        '/booking/update_status' => [
+            'service' => 'booking',
+            'path' => 'bookingAPI.php',
+            'dir' => 'booking',
+            'action' => 'update_status'
         ],
 
         //tạo otp

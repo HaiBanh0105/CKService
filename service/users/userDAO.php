@@ -75,7 +75,7 @@ function select_all_users()
 //Lấy thông tin người dùng theo user_id
 function select_user_by_id($user_id)
 {
-    $sql = "SELECT user_id, role_name, full_name, phone_number, email 
+    $sql = "SELECT user_id, role_name, full_name, phone_number, email
             FROM users 
             WHERE user_id = ?";
 

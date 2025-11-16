@@ -342,3 +342,58 @@ async function loadBookingHistory(userId) {
 }
 
 
+
+async function updateBookingStatus(reservationId, status) {
+  const url = "http://localhost/NetMaster/getway/booking/update_status";
+
+  const payload = {
+    reservation_id: reservationId,
+    status: status,
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.status === "success") {
+      console.log("✅ Trạng thái đã được cập nhật:", result.message);
+      return true;
+    } else {
+      console.warn("⚠️ Lỗi cập nhật trạng thái:", result.message);
+      return false;
+    }
+  } catch (error) {
+    console.error("❌ Lỗi khi gọi API:", error);
+    return false;
+  }
+}
+
+// Hàm lấy booking mới nhất theo computer_id
+async function fetchByComputerId_Booking(computerId) {
+  const url = `http://localhost/NetMaster/getway/booking/latest_by_computer_id?computer_id=${encodeURIComponent(computerId)}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.booking) {
+      return result.booking; // trả về object booking đầy đủ
+    } else {
+      console.warn("Không tìm thấy booking:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy booking:", error);
+    return null;
+  }
+}
+
+
+

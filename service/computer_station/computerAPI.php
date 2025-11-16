@@ -68,8 +68,7 @@ try {
                 'message' => $e->getMessage()
             ]);
         }
-    } 
-    elseif ($method === 'GET' && $action === 'get_by_id') {
+    } elseif ($method === 'GET' && $action === 'get_by_id') {
         // --- ROUTE: /computers/get_by_id ---
         $computer_id = $_GET['computer_id'] ?? null;
 
@@ -91,43 +90,42 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi khi lấy thông tin máy tính: ' . $e->getMessage()]);
         }
-
     }
 
 
     //Lấy máy tính trống theo tên cấu hình
     elseif ($method === 'GET' && $action === 'get_available_by_config') {
-    // --- ROUTE: /computers/get_available_by_config ---
-    $config_name = $_GET['config_name'] ?? null;
+        // --- ROUTE: /computers/get_available_by_config ---
+        $config_name = $_GET['config_name'] ?? null;
 
-    if ($config_name === null) {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Thiếu config_name.']);
-        exit();
-    }
-
-    try {
-        $computer = get_available_by_config($config_name);
-
-        if ($computer) {
-            echo json_encode(['status' => 'success', 'data' => $computer]);
-        } else {
-            http_response_code(404);
-            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy máy trống phù hợp với cấu hình "' . $config_name . '".']);
+        if ($config_name === null) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu config_name.']);
+            exit();
         }
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Lỗi xử lý: ' . $e->getMessage()]);
-    }
-}
-    elseif ($method === 'POST' && $action === 'update_status') {
+
+        try {
+            $computer = get_available_by_config($config_name);
+
+            if ($computer) {
+                echo json_encode(['status' => 'success', 'data' => $computer]);
+            } else {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy máy trống phù hợp với cấu hình "' . $config_name . '".']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Lỗi xử lý: ' . $e->getMessage()]);
+        }
+    } elseif ($method === 'POST' && $action === 'update_status') {
         // --- ROUTE: /computers/update_status ---
         $computer_id = $input_data['computer_id'] ?? null;
         $status = $input_data['current_status'] ?? '';
-        $reservation_id = $input_data['reservation_id'] ?? 0;
+        $reservation_id = $input_data['reservation_id'] ?? null;
 
         try {
-            dao_update_computer_status($computer_id, $status,$reservation_id);
+            // dao_update_computer_status($computer_id, $status,$reservation_id);
+            bl_update_computer_status($computer_id, $status, $reservation_id);
             http_response_code(200);
             echo json_encode([
                 'status' => 'success',

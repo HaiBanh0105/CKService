@@ -50,22 +50,26 @@ function session_db_query_value($sql)
 // Phần 2: HÀM NGHIỆP VỤ (BUSINESS LOGIC)
 // ------------------------------------
 
-// Hàm lấy user_id từ computer_id trong session đang active
-function get_user_id_by_computer_id($computer_id)
+// Hàm lấy session từ computer_id trong session đang active
+function get_latest_session_by_computer_id($computer_id)
 {
-    $sql = "SELECT user_id 
+    $sql = "SELECT *
             FROM sessions 
-            WHERE computer_id = ? AND status = 'actived' 
+            WHERE computer_id = ? AND status = 'actived'
             ORDER BY start_time DESC 
             LIMIT 1";
 
-    return session_db_query_value($sql, $computer_id);
+    return session_db_query_one($sql, $computer_id);
 }
+
+
+
+
 
 //Hàm thêm phiên mới
 function add_session($user_id, $computer_id, $full_name, $start_time, $status, $reservation_id)
 {
     $sql = "INSERT INTO sessions (user_id, computer_id, full_name ,start_time, status, reservation_id) 
-            VALUES (?, ?, ? ,?, ?,?)";
+            VALUES (?, ?, ? ,?, ?, ?)";
     return session_db_execute($sql, $user_id, $computer_id, $full_name, $start_time, 'actived', $reservation_id);
 }

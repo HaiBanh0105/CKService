@@ -16,3 +16,30 @@ function create_full_booking($user_id, $computer_id,  $config_id, $start_time, $
 
     return $reservation_id;
 }
+
+// BL: cập nhật trạng thái đặt chỗ
+function bl_update_reservation_status($reservation_id, $status)
+{
+    // Kiểm tra trạng thái hợp lệ
+    $validStatuses = ['pending', 'confirmed', 'cancelled'];
+    if (!in_array($status, $validStatuses)) {
+        return [
+            "status" => "error",
+            "message" => "Trạng thái không hợp lệ."
+        ];
+    }
+
+    $result = dao_update_reservation_status($reservation_id, $status);
+
+    if ($result) {
+        return [
+            "status" => "success",
+            "message" => "Cập nhật trạng thái đặt chỗ thành công."
+        ];
+    } else {
+        return [
+            "status" => "error",
+            "message" => "Không thể cập nhật trạng thái đặt chỗ."
+        ];
+    }
+}

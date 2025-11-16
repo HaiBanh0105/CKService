@@ -126,11 +126,27 @@ function get_computer_by_id($computer_id)
     return computer_db_query_one($sql, $computer_id);
 }
 
-//Cập nhật trạng thái máy tính
-function dao_update_computer_status($computer_id, $status, $reservation_id)
-{
+// //Cập nhật trạng thái máy tính
+// function dao_update_computer_status($computer_id, $status, $reservation_id)
+// {
+//     $sql = "UPDATE computers 
+//             SET current_status = ?, reservation_id =?
+//             WHERE computer_id = ?";
+//     return computer_db_execute($sql, $status, $reservation_id, $computer_id);
+// }
+
+// DAO 1: chỉ update trạng thái
+function dao_update_computer_status_only($computer_id, $status) {
     $sql = "UPDATE computers 
-            SET current_status = ?, reservation_id =?
+            SET current_status = ?
+            WHERE computer_id = ?";
+    return computer_db_execute($sql, $status, $computer_id);
+}
+
+// DAO 2: update cả trạng thái và reservation_id
+function dao_update_computer_status_with_reservation($computer_id, $status, $reservation_id) {
+    $sql = "UPDATE computers 
+            SET current_status = ?, reservation_id = ?
             WHERE computer_id = ?";
     return computer_db_execute($sql, $status, $reservation_id, $computer_id);
 }
