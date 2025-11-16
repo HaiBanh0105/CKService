@@ -1,14 +1,13 @@
 function loadComputersToPayment() {
   fetch("http://localhost/NetMaster/getway/computers/active")
-    .then(res => res.json())
-    .then(response => {
+    .then((res) => res.json())
+    .then((response) => {
       if (response.status === "success") {
         const computers = response.data;
         const grid = document.getElementById("paymentGrid");
         grid.innerHTML = "";
-        
-        
-        computers.forEach(pc => {
+
+        computers.forEach((pc) => {
           const card = document.createElement("div");
           card.className = `computer-card ${pc.current_status}`;
 
@@ -19,8 +18,8 @@ function loadComputersToPayment() {
             <div class="computer-name">${pc.computer_name}</div>
             <div class="computer-status">Đang sử dụng</div>`;
 
-          let userText ="";
-          fetchUserNameByComputerId_Session(pc.computer_id).then(data => {
+          let userText = "";
+          fetchUserNameByComputerId_Session(pc.computer_id).then((data) => {
             userText = data ? data : "";
             html += `
               <div class="user-id" style="color: #666; font-weight: 500;">
@@ -31,45 +30,56 @@ function loadComputersToPayment() {
           });
 
           card.addEventListener("click", () => {
-                openModal('paymentModal', () => {
-                    loadDataToPayment(pc,userText);
-                });
-              //  openModal('paymentModal'); 
+            openModal("paymentModal", () => {
+              loadDataToPayment(pc, userText);
             });
+            //  openModal('paymentModal');
+          });
           grid.appendChild(card);
         });
       } else {
         alert("Không thể tải danh sách máy tính.");
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi gọi API máy tính:", err);
       alert("Đã xảy ra lỗi khi tải máy tính.");
     });
 }
+
+let session;
+let booking;
 
 async function loadDataToPayment(pc, user_name) {
   const computerId = pc.computer_id;
   document.getElementById("paymentComputerName").value = pc.computer_name;
   document.getElementById("paymentUserName").value = user_name;
 
-  const minutes = await calcSessionMinutes(computerId);
+  session = await fetchByComputerId_Session(computerId);
+  booking = await fetchByComputerId_Booking(computerId);
+
+  const times = await calcSessionMinutes(computerId);
   const paymentTimeEl = document.getElementById("paymentTime");
 
-  if (minutes !== null) {
+  if (times !== null) {
     // format ra giờ + phút
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+    const hours = Math.floor(times / 60);
+    const mins = times % 60;
     paymentTimeEl.value =
       hours > 0 ? `${hours} giờ ${mins} phút` : `${mins} phút`;
   } else {
     paymentTimeEl.value = "Không có dữ liệu";
   }
 
+  const price = pc.price_per_hour;
+  const deposit = booking.deposit;
+
+  const totalAmount = (times * price) / 60 - deposit;
+  document.getElementById("paymentAmount").value = Math.round(totalAmount);
 }
 
 async function calcSessionMinutes(computerId) {
-  const session = await fetchByComputerId_Session(computerId);
+  // const session = await fetchByComputerId_Session(computerId);
 
   if (session && session.start_time) {
     const now = Date.now();
@@ -82,3 +92,4 @@ async function calcSessionMinutes(computerId) {
   }
 }
 
+async function confirmPayment() {}

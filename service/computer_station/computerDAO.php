@@ -73,10 +73,11 @@ function get_available_by_config($config_name)
 }
 
 
-//Hàm lấy thông tin máy tính đang sử dụng
+//Hàm lấy thông tin máy tính và cấu hình đang sử dụng
 function get_active_computers()
 {
-    $sql = "SELECT * FROM computers WHERE current_status = 'in_use' AND is_remote_locked = 0";
+    $sql = "SELECT * FROM computers c,computer_configs con 
+    WHERE  c.current_status = 'in_use' AND c.is_remote_locked = 0 and c.config_id = con.config_id";
     return computer_db_query($sql);
 }
 
@@ -154,19 +155,19 @@ function dao_update_computer_status_with_reservation($computer_id, $status, $res
 //lấy thông tin cấu hình theo tên
 function dao_get_config_by_name($config_name)
 {
-    $sql = "SELECT config_id, config_name, cpu_spec, gpu_spec, ram_spec 
+    $sql = "SELECT *
             FROM computer_configs 
             WHERE config_name = ?";
     return computer_db_query_one($sql, $config_name);
 }
 
 //Cập nhật cấu hình theo tên
-function dao_update_config_by_name($config_name, $cpu, $gpu, $ram)
+function dao_update_config_by_name($config_name, $cpu, $gpu, $ram, $price)
 {
     $sql = "UPDATE computer_configs 
-            SET cpu_spec = ?, gpu_spec = ?, ram_spec = ?
+            SET cpu_spec = ?, gpu_spec = ?, ram_spec = ?, price_per_hour = ?, last_update = NOW()
             WHERE config_name = ?";
-    return computer_db_execute($sql, $cpu, $gpu, $ram, $config_name);
+    return computer_db_execute($sql, $cpu, $gpu, $ram, $price, $config_name);
 }
 
 //lấy danh sách config name 

@@ -9,18 +9,18 @@ function handleAddComputer() {
 
   const payload = {
     computer_name: name,
-    config_name: configName
+    config_name: configName,
   };
 
   fetch("http://localhost/NetMaster/getway/computers/add", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
-    .then(res => res.json())
-    .then(response => {
+    .then((res) => res.json())
+    .then((response) => {
       console.log("Phản hồi từ API:", response);
       if (response.status === "success") {
         alert("✅ Máy tính đã được thêm thành công!");
@@ -32,12 +32,11 @@ function handleAddComputer() {
         alert("❌ Lỗi: " + response.message);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi gọi API thêm máy:", err);
       alert("❌ Đã xảy ra lỗi khi thêm máy.");
     });
 }
-
 
 async function loadComputers() {
   try {
@@ -81,8 +80,8 @@ async function loadComputers() {
               statusText = "Tắt máy";
               break;
             case "reserved":
-            statusText = "Đã đặt trước";
-            break;
+              statusText = "Đã đặt trước";
+              break;
           }
         }
 
@@ -93,11 +92,14 @@ async function loadComputers() {
         // }
         let userText = "";
         if (statusText === "Đang sử dụng") {
-          const userName = await fetchUserNameByComputerId_Session(pc.computer_id);
+          const userName = await fetchUserNameByComputerId_Session(
+            pc.computer_id
+          );
           userText = userName ? `${userName}` : "";
-        }
-        else if (statusText === "Đã đặt trước") {
-          const userName = await fetchUserNameByComputerId_Booking(pc.computer_id);
+        } else if (statusText === "Đã đặt trước") {
+          const userName = await fetchUserNameByComputerId_Booking(
+            pc.computer_id
+          );
           userText = userName ? `${userName}` : "";
         }
         // Tạo nội dung HTML
@@ -114,7 +116,6 @@ async function loadComputers() {
         }
 
         card.innerHTML = html;
-      
 
         card.addEventListener("click", () => {
           openModal("editComputerModal", () => {
@@ -133,28 +134,33 @@ async function loadComputers() {
   }
 }
 
-
-
 function openEditComputerModal(pc) {
-document.getElementById("editComputerName").value = pc.computer_name;
-const configMap = {
-  1: "Basic",
-  2: "Gaming",
-  3: "Workstation"
-};
+  document.getElementById("editComputerName").value = pc.computer_name;
+  const configMap = {
+    1: "Basic",
+    2: "Gaming",
+    3: "Workstation",
+  };
 
-document.getElementById("editConfigName").value = configMap[pc.config_id];
-document.getElementById("editStatus").value = pc.current_status;
-document.getElementById("editRemoteLock").checked = Boolean(pc.is_remote_locked)
+  document.getElementById("editConfigName").value = configMap[pc.config_id];
+  document.getElementById("editStatus").value = pc.current_status;
+  document.getElementById("editRemoteLock").checked = Boolean(
+    pc.is_remote_locked
+  );
 
-// Hiển thị nút "Bắt đầu" nếu máy tính đang ở trạng thái "Đã đặt trước"
-if ((pc.current_status === "reserved" || pc.current_status === "available") && !pc.is_remote_locked ) {
-  document.getElementById("btnStart").style.display = "inline";
-}
+  // Hiển thị nút "Bắt đầu" nếu máy tính đang ở trạng thái "Đã đặt trước"
+  if (
+    (pc.current_status === "reserved" || pc.current_status === "available") &&
+    !pc.is_remote_locked
+  ) {
+    document.getElementById("btnStart").style.display = "inline";
+  }
 
   // Lưu ID máy để cập nhật
-  document.getElementById("editComputerModal").dataset.computerId = pc.computer_id;
-  document.getElementById("editComputerModal").dataset.reservation_id = pc.reservation_id;
+  document.getElementById("editComputerModal").dataset.computerId =
+    pc.computer_id;
+  document.getElementById("editComputerModal").dataset.reservation_id =
+    pc.reservation_id;
 }
 
 function submitComputerUpdate() {
@@ -169,16 +175,16 @@ function submitComputerUpdate() {
     computer_name: name,
     config_name: config,
     current_status: status,
-    remote_locked: locked
+    remote_locked: locked,
   };
 
   fetch("http://localhost/NetMaster/getway/computers/update_computer", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload)
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   })
-    .then(res => res.json())
-    .then(response => {
+    .then((res) => res.json())
+    .then((response) => {
       if (response.status === "success") {
         alert("Cập nhật thành công!");
         closeModal("editComputerModal");
@@ -187,20 +193,22 @@ function submitComputerUpdate() {
         alert("Lỗi: " + response.message);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi cập nhật máy:", err);
       alert("Đã xảy ra lỗi khi cập nhật.");
     });
 }
 
-async function startSession(){
-  const computerId = document.getElementById("editComputerModal").dataset.computerId;
-  const reservation_id = document.getElementById("editComputerModal").dataset.reservation_id;
+async function startSession() {
+  const computerId =
+    document.getElementById("editComputerModal").dataset.computerId;
+  const reservation_id =
+    document.getElementById("editComputerModal").dataset.reservation_id;
   if (!computerId) {
     alert("Không tìm thấy ID máy tính.");
     return;
   }
-   try {
+  try {
     const status = await getComputerStatus(computerId);
 
     if (status === null) {
@@ -211,16 +219,27 @@ async function startSession(){
     if (status === "reserved") {
       const userName = await fetchUserNameByComputerId_Booking(computerId);
       const userId = await fetchUserIdByComputerId_Booking(computerId);
-      // const $reservation_id = 
-      
+      // const $reservation_id =
+
       const startTime = getCurrentTimeICT();
 
-      const success = await addSession(userId, computerId, userName, startTime, "active",reservation_id);
+      const success = await addSession(
+        userId,
+        computerId,
+        userName,
+        startTime,
+        "active",
+        reservation_id
+      );
 
       if (success) {
         alert("Phiên đã được tạo thành công!");
-        updateBookingStatus(reservation_id,"confirmed");
-        const update_status = await updateComputerStatus(computerId, "in_use",null);
+        updateBookingStatus(reservation_id, "confirmed");
+        const update_status = await updateComputerStatus(
+          computerId,
+          "in_use",
+          null
+        );
         if (update_status) {
           closeModal("editComputerModal");
           loadComputers();
@@ -228,41 +247,47 @@ async function startSession(){
       } else {
         alert("Tạo phiên thất bại. Vui lòng kiểm tra lại.");
       }
+    } else if (status === "available") {
+      closeModal("editComputerModal");
+      openModal("guestName", () => {
+        const confirmBtn = document.getElementById("confirmGuestName");
+        confirmBtn.onclick = async () => {
+          const fullName = document
+            .getElementById("guestNameInput")
+            .value.trim();
+          if (!fullName) {
+            alert("Vui lòng nhập tên khách hàng.");
+            return;
+          }
+
+          const userId = await getUserIdByFullName(fullName); // Trả về user_id hoặc null
+          const startTime = getCurrentTimeICT();
+          const success = await addSession(
+            userId,
+            computerId,
+            fullName,
+            startTime,
+            "active",
+            null
+          );
+
+          if (success) {
+            alert(`✅ Phiên đã được tạo cho khách hàng: ${fullName}`);
+            await updateComputerStatus(computerId, "in_use", null);
+            updateBookingStatus(reservation_id, "confirmed");
+            closeModal("guestName");
+            loadComputers();
+          } else {
+            alert("❌ Không thể tạo phiên mới.");
+          }
+        };
+      });
     }
-    else if (status === "available") {
-        closeModal("editComputerModal");
-        openModal("guestName", () => {
-          const confirmBtn = document.getElementById("confirmGuestName");
-          confirmBtn.onclick = async () => {
-            const fullName = document.getElementById("guestNameInput").value.trim();
-            if (!fullName) {
-              alert("Vui lòng nhập tên khách hàng.");
-              return;
-            }
-
-            const userId = await getUserIdByFullName(fullName); // Trả về user_id hoặc null
-            const startTime = getCurrentTimeICT();
-            const success = await addSession(userId, computerId, fullName, startTime, "active",null);
-
-            if (success) {
-              alert(`✅ Phiên đã được tạo cho khách hàng: ${fullName}`);
-              await updateComputerStatus(computerId, "in_use",null);
-              updateBookingStatus(reservation_id,"confirmed");
-              closeModal("guestName");
-              loadComputers();
-            } else {
-              alert("❌ Không thể tạo phiên mới.");
-            }
-          };
-        });
-    }
-
   } catch (error) {
     console.error("Lỗi khi bắt đầu phiên:", error);
     alert("Đã xảy ra lỗi khi kiểm tra trạng thái máy tính.");
   }
 }
-
 
 async function updateComputerStatus(computerId, status, reservation_id) {
   const url = "http://localhost/NetMaster/getway/computers/update_status";
@@ -270,16 +295,16 @@ async function updateComputerStatus(computerId, status, reservation_id) {
   const payload = {
     computer_id: computerId,
     current_status: status,
-    reservation_id: reservation_id
+    reservation_id: reservation_id,
   };
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
@@ -301,32 +326,55 @@ function loadConfigDetails() {
   const configName = document.getElementById("configSelector").value;
   if (!configName) return;
 
-  fetch("http://localhost/NetMaster/getway/computers/config_detail?name=" + encodeURIComponent(configName))
-    .then(res => res.json())
-    .then(response => {
+  fetch(
+    "http://localhost/NetMaster/getway/computers/config_detail?name=" +
+      encodeURIComponent(configName)
+  )
+    .then((res) => res.json())
+    .then((response) => {
       if (response.status === "success") {
         const cfg = response.data;
         document.getElementById("cpuSpec").value = cfg.cpu_spec || "";
         document.getElementById("gpuSpec").value = cfg.gpu_spec || "";
         document.getElementById("ramSpec").value = cfg.ram_spec || "";
+        document.getElementById("price").value = cfg.price_per_hour || 0;
       } else {
         alert("❌ Không tìm thấy cấu hình.");
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi gọi API cấu hình:", err);
       alert("❌ Đã xảy ra lỗi khi tải cấu hình.");
     });
 }
 
+//Lấy cấu hình theo tên
+async function fetchConfigDetails(configNamed) {
+  const url = `http://localhost/NetMaster/getway/computers/config_detail?name=${encodeURIComponent(configNamed)}`;
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result) {
+      return result;
+    } else {
+      console.warn("Không tìm thấy cấu hình:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy cấu hình:", error);
+    return null;
+  }
+}
 
 function submitConfigUpdate() {
   const configName = document.getElementById("configSelector").value;
   const cpu = document.getElementById("cpuSpec").value.trim();
   const gpu = document.getElementById("gpuSpec").value.trim();
   const ram = document.getElementById("ramSpec").value.trim();
+  const price = document.getElementById("price").value.trim();
 
-  if (!configName || !cpu || !gpu || !ram) {
+  if (!configName || !cpu || !gpu || !ram || !price) {
     alert("Vui lòng nhập đầy đủ thông tin.");
     return;
   }
@@ -335,16 +383,17 @@ function submitConfigUpdate() {
     config_name: configName,
     cpu_spec: cpu,
     gpu_spec: gpu,
-    ram_spec: ram
+    ram_spec: ram,
+    price: price,
   };
 
   fetch("http://localhost/NetMaster/getway/computers/update_config", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
-    .then(res => res.json())
-    .then(response => {
+    .then((res) => res.json())
+    .then((response) => {
       if (response.status === "success") {
         alert("✅ Cấu hình đã được cập nhật!");
         closeModal("configModal");
@@ -352,7 +401,7 @@ function submitConfigUpdate() {
         alert("❌ Lỗi: " + response.message);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi cập nhật cấu hình:", err);
       alert("❌ Đã xảy ra lỗi khi cập nhật.");
     });
@@ -363,10 +412,10 @@ function loadConfigOptions() {
   select.innerHTML = `<option value="">-- Chọn cấu hình --</option>`;
 
   fetch("http://localhost/NetMaster/getway/computers/config_names")
-    .then(res => res.json())
-    .then(response => {
+    .then((res) => res.json())
+    .then((response) => {
       if (response.status === "success") {
-        response.data.forEach(cfg => {
+        response.data.forEach((cfg) => {
           const opt = document.createElement("option");
           opt.value = cfg.config_name;
           opt.textContent = cfg.config_name;
@@ -376,12 +425,11 @@ function loadConfigOptions() {
         alert("Không thể tải danh sách cấu hình.");
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Lỗi khi tải config_name:", err);
       alert("Đã xảy ra lỗi khi tải cấu hình.");
     });
 }
-
 
 async function fetchUserIdByComputerId(computerId) {
   const url = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
@@ -402,7 +450,6 @@ async function fetchUserIdByComputerId(computerId) {
   }
 }
 
-
 // Hàm lấy user_id từ session mới nhất theo computer_id
 async function fetchUserIdByComputerId_Session(computerId) {
   const session = await fetchByComputerId_Session(computerId);
@@ -414,7 +461,6 @@ async function fetchUserIdByComputerId_Session(computerId) {
     return null;
   }
 }
-
 
 // Hàm lấy user_id từ computer_id qua booking
 async function fetchUserIdByComputerId_Booking(computerId) {
@@ -428,10 +474,11 @@ async function fetchUserIdByComputerId_Booking(computerId) {
   }
 }
 
-
 // Hàm lấy full_name từ user_id
 async function fetchUserNameByUserId(userId) {
-  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(userId)}`;
+  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(
+    userId
+  )}`;
 
   try {
     const response = await fetch(url);
@@ -467,17 +514,21 @@ async function fetchUserNameByComputerId_Booking(computerId) {
   return fullName;
 }
 
-
 // Hàm lấy trạng thái máy tính theo computer_id
 async function getComputerStatus(computer_id) {
-  const url = `http://localhost/NetMaster/getway/computers/get_by_id?computer_id=${encodeURIComponent(computer_id)}`;
+  const url = `http://localhost/NetMaster/getway/computers/get_by_id?computer_id=${encodeURIComponent(
+    computer_id
+  )}`;
 
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const result = await response.json();
-    if (result.status === 'success' && result.data?.current_status !== undefined) {
+    if (
+      result.status === "success" &&
+      result.data?.current_status !== undefined
+    ) {
       return result.data.current_status; // ✅ Lấy đúng trường trạng thái
     } else {
       throw new Error(result.message || "Không tìm thấy trạng thái.");
@@ -488,8 +539,14 @@ async function getComputerStatus(computer_id) {
   }
 }
 
-
-async function addSession(user_id, computer_id, full_name ,start_time, status, reservation_id) {
+async function addSession(
+  user_id,
+  computer_id,
+  full_name,
+  start_time,
+  status,
+  reservation_id
+) {
   const url = "http://localhost/NetMaster/getway/session/add_session";
 
   const payload = {
@@ -498,16 +555,16 @@ async function addSession(user_id, computer_id, full_name ,start_time, status, r
     full_name,
     start_time,
     status,
-    reservation_id
+    reservation_id,
   };
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
@@ -525,18 +582,26 @@ async function addSession(user_id, computer_id, full_name ,start_time, status, r
   }
 }
 
-
 async function getUserIdByFullName(fullName) {
-  const url = `http://localhost/NetMaster/getway/users/get_by_name?full_name=${encodeURIComponent(fullName)}`;
+  const url = `http://localhost/NetMaster/getway/users/get_by_name?full_name=${encodeURIComponent(
+    fullName
+  )}`;
 
   try {
     const response = await fetch(url);
     const result = await response.json();
 
-    if (result.status === "success" && Array.isArray(result.data) && result.data.length > 0) {
+    if (
+      result.status === "success" &&
+      Array.isArray(result.data) &&
+      result.data.length > 0
+    ) {
       return result.data[0].user_id;
     } else {
-      console.warn("Không tìm thấy người dùng:", result.message || "Không có dữ liệu.");
+      console.warn(
+        "Không tìm thấy người dùng:",
+        result.message || "Không có dữ liệu."
+      );
       return null;
     }
   } catch (error) {
@@ -545,19 +610,17 @@ async function getUserIdByFullName(fullName) {
   }
 }
 
-
-
 function getCurrentTimeICT() {
   const now = new Date();
-  const formatter = new Intl.DateTimeFormat('sv-SE', {
-    timeZone: 'Asia/Ho_Chi_Minh',
+  const formatter = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Ho_Chi_Minh",
     hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   });
 
   const parts = formatter.formatToParts(now).reduce((acc, part) => {

@@ -73,13 +73,13 @@ function handle_get_config_detail($config_name)
 }
 
 // Hàm xử lý cập nhật cấu hình
-function handle_update_config($config_name, $cpu, $gpu, $ram)
+function handle_update_config($config_name, $cpu, $gpu, $ram, $price)
 {
-    if (!$config_name || !$cpu || !$gpu || !$ram) {
+    if (!$config_name || !$cpu || !$gpu || !$ram || !$price) {
         throw new Exception("Thiếu thông tin cấu hình.");
     }
 
-    return dao_update_config_by_name($config_name, $cpu, $gpu, $ram);
+    return dao_update_config_by_name($config_name, $cpu, $gpu, $ram, $price);
 }
 
 // Hàm xử lý thêm tên cấu hình mới

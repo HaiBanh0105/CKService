@@ -25,10 +25,23 @@
     <input type="text" id="ramSpec" placeholder="Nhập thông số RAM" />
   </div>
 
-  <div class="modal-actions">
-    <button class="btn btn-secondary" onclick="closeModal('configModal')">
-      Đóng
-    </button>
-    <button class="btn btn-primary" onclick="submitConfigUpdate()">Lưu</button>
+  <div class="form-group">
+    <label>Giá theo giờ</label>
+    <input
+      type="number"
+      id="price"
+      placeholder="Nhập số tiền"
+      min="10000"
+      step="10000"
+    />
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('configModal')">
+        Đóng
+      </button>
+      <button class="btn btn-primary" onclick="submitConfigUpdate()">
+        Lưu
+      </button>
+    </div>
   </div>
 </div>

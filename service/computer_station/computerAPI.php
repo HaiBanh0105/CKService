@@ -154,9 +154,10 @@ try {
         $cpu = $input['cpu_spec'] ?? '';
         $gpu = $input['gpu_spec'] ?? '';
         $ram = $input['ram_spec'] ?? '';
+        $price= $input['price'] ?? 0;
 
         try {
-            handle_update_config($config_name, $cpu, $gpu, $ram);
+            handle_update_config($config_name, $cpu, $gpu, $ram, $price);
             echo json_encode(['status' => 'success', 'message' => 'Cấu hình đã được cập nhật.']);
         } catch (Exception $e) {
             http_response_code(400);

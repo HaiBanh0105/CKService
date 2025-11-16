@@ -64,9 +64,7 @@ CREATE TABLE transactions (
 --     user_id INT NULL,
 --     is_guest TINYINT(1) DEFAULT 0,
 --     guest_name VARCHAR(100),
---     guest_email VARCHAR(100),
 --     computer_id INT NOT NULL,
---     config_id INT NOT NULL,
 --     start_time DATETIME NOT NULL,
 --     end_time DATETIME,
 --     total_duration_hours INT NOT NULL,
@@ -76,10 +74,8 @@ CREATE TABLE transactions (
 --     payment_method ENUM('cash','card','momo','zalopay') NOT NULL,
 --     payment_status ENUM('pending','paid','failed','refunded') DEFAULT 'pending',
 --     transaction_id VARCHAR(100),
---     otp_id INT,
 --     notes TEXT,
 --     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
---     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 -- );
 
 );

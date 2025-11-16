@@ -12,7 +12,8 @@ CREATE TABLE computer_configs (
     cpu_spec VARCHAR(100), 
     gpu_spec VARCHAR(100), 
     ram_spec VARCHAR(100), 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    price_per_hour DECIMAL(10, 2) NOT NULL, 
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 2. Bảng computers (Máy Trạm)
@@ -29,22 +30,12 @@ CREATE TABLE computers (
     FOREIGN KEY (config_id) REFERENCES computer_configs(config_id)
 );
 
--- 3. Bảng computer_prices (Giá Dịch Vụ)
-CREATE TABLE computer_prices (
-    price_id INT PRIMARY KEY AUTO_INCREMENT, 
-    config_id INT UNIQUE, 
-    price_per_hour DECIMAL(10, 2) NOT NULL, 
-    effective_date DATE NOT NULL, 
-    notes VARCHAR(255), 
 
-    FOREIGN KEY (config_id) REFERENCES computer_configs(config_id)
-);
-
-INSERT INTO computer_configs (config_name, cpu_spec, gpu_spec, ram_spec)
+INSERT INTO computer_configs (config_name, cpu_spec, gpu_spec, ram_spec,price_per_hour)
 VALUES 
-  ('Basic', 'Intel Core i3-10100', 'Intel UHD 630', '8GB DDR4'),
-  ('Gaming', 'Intel Core i7-12700K', 'NVIDIA RTX 3060', '16GB DDR4'),
-  ('Workstation', 'AMD Ryzen 9 7950X', 'NVIDIA Quadro RTX 4000', '32GB DDR5');
+  ('Basic', 'Intel Core i3-10100', 'Intel UHD 630', '8GB DDR4',20000.00),
+  ('Gaming', 'Intel Core i7-12700K', 'NVIDIA RTX 3060', '16GB DDR4',25000.00),
+  ('Workstation', 'AMD Ryzen 9 7950X', 'NVIDIA Quadro RTX 4000', '32GB DDR5',30000.00);
 
 INSERT INTO computers (computer_name, config_id, current_status)
 VALUES 
@@ -80,8 +71,3 @@ VALUES
 ('PC30', 3, 'available');
 
 
-INSERT INTO computer_prices (config_id, price_per_hour, effective_date, notes)
-VALUES
-(1, 15000.00, NOW(), 'Giá cho cấu hình Basic'),
-(2, 30000.00, NOW(), 'Giá cho cấu hình Gaming'),
-(3, 50000.00, NOW(), 'Giá cho cấu hình Workstation');
