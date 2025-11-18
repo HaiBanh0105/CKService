@@ -186,6 +186,7 @@ try {
         $email = $input_data['email'] ?? '';
         $password = $input_data['password'] ?? '';
         $initial_balance = $input_data['initial_balance'] ?? 0.00;
+        $payment_method = $input_data['payment_method'] ?? '';
 
         // Kiểm tra dữ liệu đầu vào
         if (empty($full_name) || empty($phone_number) || empty($password)) {
@@ -195,7 +196,7 @@ try {
         }
 
         try {
-            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'customer', $initial_balance);
+            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'customer', $initial_balance,"cash");
 
             http_response_code(201);
             echo json_encode([
@@ -223,7 +224,7 @@ try {
         }
 
         try {
-            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'staff', 0);
+            $user_id = register_new_user($full_name, $phone_number, $email, $password, 'staff', 0, null);
 
             http_response_code(201);
             echo json_encode([
@@ -283,6 +284,7 @@ try {
     else if($method === 'POST' && $action === 'change_balance') {
         $user_id = $input_data['user_id'] ?? null;
         $amount = $input_data['amount'] ?? null;
+        $payment_method = $input_data['payment_method'] ?? null;
 
         if (!$user_id || $amount === null) {
             http_response_code(400);
@@ -290,7 +292,7 @@ try {
             exit();
         }
 
-        $result = change_balance($user_id, $amount);
+        $result = change_balance($user_id, $amount,$payment_method);
         echo json_encode($result);
         exit();
     }

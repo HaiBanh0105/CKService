@@ -6,7 +6,7 @@ require_once 'userDAO.php';
  * @return int user_id
  * @throws Exception nếu có lỗi
  */
-function register_new_user($full_name, $phone_number, $email, $password, $role_name, $initial_balance)
+function register_new_user($full_name, $phone_number, $email, $password, $role_name, $initial_balance,$payment_method)
 {
     // Kiểm tra trùng lặp trước khi insert
     if (is_phone_number_exists($phone_number)) {
@@ -38,7 +38,7 @@ function register_new_user($full_name, $phone_number, $email, $password, $role_n
 
             // 3. Nếu có số dư ban đầu, tạo giao dịch nạp tiền
             if ($initial_balance > 0) {
-                dao_insert_transaction($account_id, $initial_balance, 'topup');
+                dao_insert_transaction($account_id, $initial_balance, 'topup',$payment_method);
             }
         }
 
@@ -67,7 +67,7 @@ function update_user_info($user_id, $full_name, $phone_number, $email)
 }
 
 // thay đổi số dư
-function change_balance($user_id, $amount)
+function change_balance($user_id, $amount,$payment_method)
 {
     $current_balance = dao_get_balance($user_id);
     if ($current_balance === null) {
@@ -82,11 +82,12 @@ function change_balance($user_id, $amount)
     // Cập nhật số dư
     dao_update_balance($user_id, $new_balance, $amount > 0);
 
-    // Ghi giao dịch
-    $account_id = dao_get_account_id($user_id);
-    $type = $amount > 0 ? 'topup' : 'deduct';
-    dao_insert_transaction($account_id, $amount, $type);
-
+    if($payment_method != null){
+        // Ghi giao dịch
+        $account_id = dao_get_account_id($user_id);
+        $type = $amount > 0 ? 'topup' : 'booking';
+        dao_insert_transaction($account_id, $amount, $type,$payment_method);
+    }
     return [
         "status" => "success",
         "message" => "Số dư đã được cập nhật",

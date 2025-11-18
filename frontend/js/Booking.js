@@ -222,14 +222,17 @@ async function handleOtpInput(purpose) {
   const confirmRes = await callConfirmOtp(user_id, otp_input, purpose);
   if (confirmRes.status === "success") {
     if (purpose === "recharge") {
-      changeBalance(user_id, rechargeAmount);
+      let selectedMethod = document.getElementById(
+        "selectedPaymentMethod"
+      ).value;
+      changeBalance(user_id, rechargeAmount, selectedMethod);
       alert(
         `✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(
           rechargeAmount
         )} đ`
       );
       closeModal("rechargeModal");
-      loadBalance(user_id);
+      // loadBalance(user_id);
     } else if (purpose === "booking") {
       // Sau khi OTP hợp lệ thì tiến hành tạo booking
       await finalizeBooking(user_id);
@@ -357,7 +360,7 @@ async function finalizeBooking(user_id) {
         "reserved",
         result.data.reservation_id
       );
-      changeBalance(user_id, -payload.deposit);
+      changeBalance(user_id, -payload.deposit, "account");
       loadBalance(user_id);
       loadBookingHistory(user_id);
       document.getElementById("bookingForm").reset();

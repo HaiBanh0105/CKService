@@ -153,11 +153,11 @@ function dao_insert_membership_account($user_id, $balance)
 }
 
 // Thêm giao dịch nạp tiền vào tài khoản thành viên
-function dao_insert_transaction($account_id, $amount, $type = 'topup')
+function dao_insert_transaction($account_id, $amount, $type = 'topup',$payment_method)
 {
-    $sql = "INSERT INTO transactions (account_id, amount, transaction_type, transaction_date)
-            VALUES (?, ?, ?, NOW())";
-    user_db_execute($sql, $account_id, $amount, $type);
+    $sql = "INSERT INTO transactions (account_id, amount, transaction_type, transaction_date, payment_method)
+            VALUES (?, ?, ?, NOW(),?)";
+    user_db_execute($sql, $account_id, $amount, $type,$payment_method);
 }
 
 // Hàm lấy lịch sử giao dịch của một tài khoản thành viên

@@ -71,6 +71,9 @@ try {
     else if ($method === 'POST' && $action === 'update_status') {
         $session_id = $input_data['session_id'] ?? null;
         $status     = $input_data['status'] ?? null;
+        $end_time    = $input_data['end_time'] ?? null;
+        $$total_minutes_played    = $input_data['$total_minutes_played'] ?? 0;
+        $total_cost     = $input_data['total_cost'] ?? 0;
 
         if (!$session_id || !$status) {
             http_response_code(400);
@@ -78,7 +81,7 @@ try {
             exit();
         }
 
-        $result = update_status($session_id, $status);
+        $result = update_status($session_id, $status, $end_time, $total_minutes_played, $total_cost);
 
         if ($result > 0) {
             echo json_encode(['status' => 'success', 'message' => 'Cập nhật trạng thái thành công']);

@@ -103,7 +103,7 @@ async function calcSessionMinutes(computerId) {
   // const session = await fetchByComputerId_Session(computerId);
 
   if (session && session.start_time) {
-    const now = Date.now();
+    let now = Date.now();
     const start = new Date(session.start_time.replace(" ", "T")).getTime();
     const diffMs = now - start;
     return Math.floor(diffMs / 60000);
@@ -118,6 +118,9 @@ async function confirmPayment(pc) {
   let result;
   let selectedMethod = document.getElementById("selectedPaymentMethod").value;
 
+  const now = new Date(); // ✅ đối tượng Date
+  const endtime = now.toISOString().slice(0, 19).replace;
+
   //Trường hợp có đặt trước
   if (pc.reservation_id == 1) {
     payload = {
@@ -126,7 +129,7 @@ async function confirmPayment(pc) {
       session_id: session.session_id,
       computer_id: session.computer_id,
       start_time: session.start_time,
-      end_time: Date.now(),
+      end_time: endtime,
       total_duration_hours: times,
       deposit_amount: deposit,
       total_amount: totalAmount,
@@ -145,7 +148,7 @@ async function confirmPayment(pc) {
         session_id: session.session_id,
         computer_id: session.computer_id,
         start_time: session.start_time,
-        end_time: Date.now(),
+        end_time: endtime,
         total_duration_hours: times,
         deposit_amount: deposit,
         total_amount: totalAmount,
@@ -171,7 +174,7 @@ async function confirmPayment(pc) {
         computer_id: session.computer_id,
         guest_name: session.full_name,
         start_time: session.start_time,
-        end_time: Date.now(),
+        end_time: endtime,
         total_duration_hours: times,
         total_amount: totalAmount,
         payment_method: selectedMethod,
@@ -192,11 +195,17 @@ async function confirmPayment(pc) {
 
     // Cập nhật trạng thái máy tính và session
     await updateComputerStatus(session.computer_id, "available", 0);
-    await updateSessionStatus(session.session_id, "ended");
+    await updateSessionStatus(
+      session.session_id,
+      "ended",
+      endtime,
+      total_duration_hours,
+      total_amount
+    );
 
     // Nếu phương thức là tài khoản thì trừ tiền tài khoản
     if (selectedMethod === "account") {
-      changeBalance(session.user_id, -totalAmount);
+      changeBalance(session.user_id, -totalAmount, null);
     }
 
     closeModal("paymentModal");

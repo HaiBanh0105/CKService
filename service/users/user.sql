@@ -24,7 +24,6 @@ CREATE TABLE membership_accounts (
     current_balance DECIMAL(10, 2) DEFAULT 0.00, 
     membership_level VARCHAR(50) DEFAULT 'Standard', 
     status VARCHAR(50) DEFAULT 'active', 
-    last_topup_date DATETIME, 
     INDEX idx_user_id (user_id) 
 );
 
@@ -84,5 +83,7 @@ VALUES (
   'Admin Chính',
   '0900000000',
   'vodathai91thcsduclap@gmail.com',
-  '$2y$10$cmkRPvk2P6y1n4ZZpzOAmuTpajA.lqgOxWuE6dQTzD1EH128KFJBe'  // hai123456
+  '$2y$10$cmkRPvk2P6y1n4ZZpzOAmuTpajA.lqgOxWuE6dQTzD1EH128KFJBe'  
 );
+
+//MK: hai123456

@@ -246,6 +246,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  table-layout: fixed;
 }
 
 thead {
@@ -325,6 +326,7 @@ tr:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-align: center;
 }
 
 .modal-header h3 {

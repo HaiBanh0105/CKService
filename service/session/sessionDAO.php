@@ -72,9 +72,11 @@ function add_session($user_id, $computer_id, $full_name, $start_time, $status, $
 }
 
 //Hàm cập nhật trạng thái phiên
-function update_status($session_id, $status){
+function update_status($session_id, $status, $end_time, $total_minutes_played, $total_cost){
     $sql = "UPDATE sessions
-            SET status = ?
+            SET status = ?, end_time = ?, total_minutes_played = ?, total_cost = ?
             WHERE session_id = ?";
-    return session_db_execute($sql, $status, $session_id);
+    return session_db_execute($sql, $status, $end_time, $total_minutes_played, $total_cost ,$session_id);
 }
+
+

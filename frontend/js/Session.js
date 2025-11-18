@@ -21,7 +21,7 @@ async function fetchByComputerId_Session(computerId) {
 }
 
 //Cập nhật trạng thái
-async function updateSessionStatus(sessionId, status) {
+async function updateSessionStatus(sessionId, status, end_time ,total_minutes_played, total_cost) {
   try {
     const response = await fetch(
       "http://localhost/NetMaster/getway/session/update_status",
@@ -33,6 +33,9 @@ async function updateSessionStatus(sessionId, status) {
         body: JSON.stringify({
           session_id: sessionId,
           status: status,
+          end_time: end_time,
+          total_minutes_played:  total_minutes_played,
+          total_cost: total_cost
         }),
       }
     );

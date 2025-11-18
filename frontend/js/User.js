@@ -34,6 +34,7 @@ function showSection(sectionName, callback) {
       if (sectionName === "profile") {
         requestAnimationFrame(() => {
           loadCustomerInfo(localStorage.getItem("customerID"));
+          loadBalance(localStorage.getItem("customerID"));
         });
       }
 
@@ -42,8 +43,16 @@ function showSection(sectionName, callback) {
           loadBookingHistory(localStorage.getItem("customerID"));
           loadOptionPrices();
           setBookingDateLimits();
+          loadBalance(localStorage.getItem("customerID"));
         });
       }
+
+      if (sectionName === "payment") {
+        requestAnimationFrame(() => {
+          openTransactionHistory(localStorage.getItem("customerID"));
+        });
+      }
+
       // 4. Gọi callback sau khi nội dung đã được gắn
       if (typeof callback === "function") {
         requestAnimationFrame(() => callback());

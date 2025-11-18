@@ -275,6 +275,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .close-modal {
@@ -371,4 +372,31 @@ body {
 
 .button-row .btn {
   flex: 1; /* mỗi nút chiếm đều không gian */
+}
+
+th,
+td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+th {
+  color: #667eea;
+  font-weight: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.modal-content.modal-wide {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
