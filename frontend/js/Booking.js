@@ -1,5 +1,3 @@
-
-
 // function handleProfileTabClick() {
 //   showSection('profile', () => {
 //     loadUserInfo(localStorage.getItem('userID'));
@@ -8,100 +6,171 @@
 // }
 let currentBalance = 0;
 
+//Giới hạn ngày đặt lịch
+async function setBookingDateLimits() {
+  const bookingInput = document.getElementById("bookingTime");
+  if (!bookingInput) return;
+
+  const now = new Date();
+
+  // min = thời điểm hiện tại
+  const minDateTime = now.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+
+  // max = +2 ngày kể từ bây giờ
+  const maxDateObj = new Date(now);
+  maxDateObj.setDate(now.getDate() + 2);
+  const maxDateTime = maxDateObj.toISOString().slice(0, 16);
+
+  bookingInput.min = minDateTime;
+  bookingInput.max = maxDateTime;
+}
+
+// Gọi khi DOM đã load
+document.addEventListener("DOMContentLoaded", setBookingDateLimits);
+
 function loadBalance(userId) {
-  fetch(`http://localhost/NetMaster/getway/users/get_customer_by_id?user_id=${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json"
+  fetch(
+    `http://localhost/NetMaster/getway/users/get_customer_by_id?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-  })
-    .then(response => {
+  )
+    .then((response) => {
       if (!response.ok) {
         throw new Error("Phản hồi không hợp lệ từ server");
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       if (data.status === "success") {
         const user = data.data;
         currentBalance = user.current_balance;
-        const formattedBalance = new Intl.NumberFormat("vi-VN").format(user.current_balance);
-        document.getElementById("userBalance").textContent = `Số dư: ${formattedBalance} đ`;
+        const formattedBalance = new Intl.NumberFormat("vi-VN").format(
+          user.current_balance
+        );
+        document.getElementById(
+          "userBalance"
+        ).textContent = `Số dư: ${formattedBalance} đ`;
 
         // document.getElementById("userBalance").textContent = `Số dư: ${user.current_balance.toLocaleString()} VNĐ`;
-
       } else {
         alert("Không thể tải thông tin người dùng: " + data.message);
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Lỗi khi gọi API:", error);
       alert("Đã xảy ra lỗi khi tải thông tin người dùng.");
     });
 }
 
-
-
-
 function loadCustomerInfo(userId) {
-  fetch(`http://localhost/NetMaster/getway/users/get_customer_by_id?user_id=${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json"
+  fetch(
+    `http://localhost/NetMaster/getway/users/get_customer_by_id?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-  })
-    .then(response => {
+  )
+    .then((response) => {
       if (!response.ok) {
         throw new Error("Phản hồi không hợp lệ từ server");
       }
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       if (data.status === "success") {
         const user = data.data;
         document.getElementById("fullname").value = user.full_name || "";
         document.getElementById("phone").value = user.phone_number || "";
         document.getElementById("email").value = user.email || "";
-        
-        
+
         // Lưu dữ liệu gốc để so sánh sau
         originalUserData = {
           user_id: user.user_id,
           full_name: user.full_name,
           phone_number: user.phone_number,
-          email: user.email
+          email: user.email,
         };
 
         // Lưu userId vào modal để dùng khi cập nhật
         document.getElementById("updateUserForm").dataset.userId = user.user_id;
-
       } else {
         alert("Không thể tải thông tin người dùng: " + data.message);
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Lỗi khi gọi API:", error);
       alert("Đã xảy ra lỗi khi tải thông tin người dùng.");
     });
 }
 
+//Hiển thị giá theo cấu hình
+async function loadOptionPrices() {
+  const basicPrice = await fetchPriceByConfigName("basic");
+  const gamingPrice = await fetchPriceByConfigName("gaming");
+  const workstationPrice = await fetchPriceByConfigName("workstation");
 
+  if (basicPrice !== null) {
+    document.getElementById(
+      "optionBasic"
+    ).textContent = `Máy thường (${parseInt(basicPrice).toLocaleString(
+      "vi-VN"
+    )} VND/giờ)`;
+  }
+  if (gamingPrice !== null) {
+    document.getElementById(
+      "optionGaming"
+    ).textContent = `Máy gaming (${parseInt(gamingPrice).toLocaleString(
+      "vi-VN"
+    )} VND/giờ)`;
+  }
+  if (workstationPrice !== null) {
+    document.getElementById(
+      "optionWorkstation"
+    ).textContent = `Workstation (${parseInt(workstationPrice).toLocaleString(
+      "vi-VN"
+    )} VND/giờ)`;
+  }
+}
 
-function updateDeposit() {
+// Hàm lấy giá theo tên cấu hình
+async function fetchPriceByConfigName(configNamed) {
+  const config = await fetchConfigDetails(configNamed);
+
+  if (config && config.data && config.data.price_per_hour) {
+    return config.data.price_per_hour;
+  } else {
+    console.warn("Không tìm thấy giá cho cấu hình:", configNamed);
+    return null;
+  }
+}
+
+async function updateDeposit() {
   const type = document.getElementById("bookingType").value;
   const hours = parseInt(document.getElementById("bookingHours").value);
   let rate = 0;
 
   switch (type) {
-    case "basic": rate = 20000; break;
-    case "gaming": rate = 30000; break;
-    case "workstation": rate = 35000; break;
+    case "basic":
+      rate = await fetchPriceByConfigName("basic");
+      break;
+    case "gaming":
+      rate = await fetchPriceByConfigName("gaming");
+      break;
+    case "workstation":
+      rate = await fetchPriceByConfigName("workstation");
+      break;
   }
 
-  const deposit = (rate * hours) / 2;
-  document.getElementById("depositPreview").value = deposit.toLocaleString() + " VNĐ";
+  const deposit = rate;
+  document.getElementById("depositPreview").value =
+    parseInt(deposit).toLocaleString("vi-VN") + " VNĐ";
 }
-
 
 let rechargeAmount = 0;
 
@@ -126,7 +195,9 @@ async function processRecharge() {
   const res = await callCreateOtp(user_id, user_email, "recharge");
 
   if (res.status === "success") {
-    alert("📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận!");
+    alert(
+      "📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận!"
+    );
     submitBtn.textContent = "🔄 Gửi lại OTP";
     submitBtn.style.backgroundColor = "green";
     submitBtn.style.color = "white";
@@ -138,29 +209,6 @@ async function processRecharge() {
     submitBtn.style.color = "white";
   }
 }
-
-
-
-// async function handleOtpInput() {
-//   const user_id = localStorage.getItem("customerID");
-//   const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
-
-//   if (!otp_input) {
-//     alert("⚠️ Bạn chưa nhập mã OTP.");
-//     return;
-//   }
-
-//   const confirmRes = await callConfirmOtp(user_id, otp_input, "recharge");
-//   if (confirmRes.status === "success") {
-//     changeBalance(user_id, rechargeAmount);
-//     alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(rechargeAmount)} đ`);
-//     closeModal('rechargeModal');
-//     loadBalance(user_id);
-//     document.getElementById("enterOtpBtn").style.display = "none";
-//   } else {
-//     alert("❌ OTP không hợp lệ hoặc đã hết hạn.");
-//   }
-// }
 
 async function handleOtpInput(purpose) {
   const user_id = localStorage.getItem("customerID");
@@ -175,8 +223,12 @@ async function handleOtpInput(purpose) {
   if (confirmRes.status === "success") {
     if (purpose === "recharge") {
       changeBalance(user_id, rechargeAmount);
-      alert(`✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(rechargeAmount)} đ`);
-      closeModal('rechargeModal');
+      alert(
+        `✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(
+          rechargeAmount
+        )} đ`
+      );
+      closeModal("rechargeModal");
       loadBalance(user_id);
     } else if (purpose === "booking") {
       // Sau khi OTP hợp lệ thì tiến hành tạo booking
@@ -187,14 +239,14 @@ async function handleOtpInput(purpose) {
   }
 }
 
-
-
 async function createBooking() {
   const user_id = localStorage.getItem("customerID");
   const user_email = localStorage.getItem("customerEmail");
   const type = document.getElementById("bookingType").value;
   const start_time = document.getElementById("bookingTime").value;
-  const total_duration_hours = parseInt(document.getElementById("bookingHours").value);
+  const total_duration_hours = parseInt(
+    document.getElementById("bookingHours").value
+  );
   const depositText = document.getElementById("depositPreview").value;
   const deposit = parseInt(depositText.replace(/\D/g, "")) || 0;
   const notes = document.getElementById("bookingNotes").value;
@@ -213,7 +265,9 @@ async function createBooking() {
   // 1) Gọi API lấy máy trống theo config
   let computer;
   try {
-    const res = await fetch(`http://localhost/NetMaster/getway/computers/get_available_by_config?config_name=${type}`);
+    const res = await fetch(
+      `http://localhost/NetMaster/getway/computers/get_available_by_config?config_name=${type}`
+    );
     const data = await res.json();
 
     if (data.status !== "success" || !data.data) {
@@ -229,13 +283,25 @@ async function createBooking() {
 
   // 2) Gửi OTP cho mục đích booking
   try {
+    const subBooking = document.getElementById("btnBooking");
+    subBooking.textContent = "📨 Mã OTP đang được gửi đến bạn...";
+    subBooking.style.backgroundColor = "orange";
+    subBooking.style.color = "white";
+
     const otpRes = await callCreateOtp(user_id, user_email, "booking");
+
     if (otpRes.status === "success") {
-      alert("📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận đặt chỗ!");
+      alert(
+        "📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận đặt chỗ!"
+      );
+
+      subBooking.textContent = "🔄 Gửi lại OTP";
+      subBooking.style.backgroundColor = "green";
+      subBooking.style.color = "white";
 
       // Hiện nút nhập OTP
-      const btn = document.getElementById("enterBookingOtpBtn");
-      btn.style.display = "block";
+      const btnEnter = document.getElementById("enterBookingOtpBtn");
+      btnEnter.style.display = "block";
 
       // Lưu tạm payload để xác nhận sau khi OTP hợp lệ
       window.bookingPayload = {
@@ -245,18 +311,19 @@ async function createBooking() {
         start_time,
         total_duration_hours,
         deposit,
-        notes
+        notes,
       };
     } else {
       alert(otpRes.message || "❌ Không thể gửi OTP. Vui lòng thử lại.");
+      subBooking.textContent = "Xác nhận nạp tiền";
+      subBooking.style.backgroundColor = "#007bff"; // màu xanh mặc định
+      subBooking.style.color = "white";
     }
   } catch (err) {
     console.error("Lỗi khi gửi OTP:", err);
     alert("❌ Đã xảy ra lỗi khi gửi OTP. Vui lòng thử lại.");
   }
 }
-
-
 
 async function finalizeBooking(user_id) {
   const payload = window.bookingPayload;
@@ -266,11 +333,14 @@ async function finalizeBooking(user_id) {
   }
 
   try {
-    const res = await fetch("http://localhost/NetMaster/getway/booking/create_booking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    const res = await fetch(
+      "http://localhost/NetMaster/getway/booking/create_booking",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -279,8 +349,14 @@ async function finalizeBooking(user_id) {
     const result = await res.json();
 
     if (result.status === "success" && result.data && result.data.computer_id) {
-      alert(`✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`);
-      updateComputerStatus(result.data.computer_id, "reserved",result.data.reservation_id);
+      alert(
+        `✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`
+      );
+      updateComputerStatus(
+        result.data.computer_id,
+        "reserved",
+        result.data.reservation_id
+      );
       changeBalance(user_id, -payload.deposit);
       loadBalance(user_id);
       loadBookingHistory(user_id);
@@ -295,21 +371,18 @@ async function finalizeBooking(user_id) {
   }
 }
 
-
-
-
-
-
-
 async function loadBookingHistory(userId) {
   try {
     // Gọi API load_booking
-    const response = await fetch(`http://localhost/NetMaster/getway/booking/load_booking?user_id=${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
+    const response = await fetch(
+      `http://localhost/NetMaster/getway/booking/load_booking?user_id=${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     const result = await response.json();
 
@@ -319,7 +392,7 @@ async function loadBookingHistory(userId) {
 
     // Kiểm tra kết quả
     if (result.status === "success" && result.data.length > 0) {
-      result.data.forEach(b => {
+      result.data.forEach((b) => {
         const item = document.createElement("div");
         item.classList.add("booking-item");
         item.innerHTML = `
@@ -327,7 +400,9 @@ async function loadBookingHistory(userId) {
           <p><strong>Bắt đầu:</strong> ${b.start_time}</p>
           <p><strong>Thời lượng:</strong> ${b.total_duration_hours} giờ</p>
           <p><strong>Trạng thái:</strong> ${b.status}</p>
-          <p><strong>Đặt cọc:</strong> ${new Intl.NumberFormat("vi-VN").format(b.deposit)} VNĐ</p>
+          <p><strong>Đặt cọc:</strong> ${new Intl.NumberFormat("vi-VN").format(
+            b.deposit
+          )} VNĐ</p>
           <p><strong>Ghi chú:</strong> ${b.notes || ""}</p>
         `;
         bookingList.appendChild(item);
@@ -337,11 +412,10 @@ async function loadBookingHistory(userId) {
     }
   } catch (error) {
     console.error("❌ Lỗi khi gọi API:", error);
-    document.getElementById("bookingList").innerHTML = "<p>❌ Không thể tải lịch sử đặt chỗ.</p>";
+    document.getElementById("bookingList").innerHTML =
+      "<p>❌ Không thể tải lịch sử đặt chỗ.</p>";
   }
 }
-
-
 
 async function updateBookingStatus(reservationId, status) {
   const url = "http://localhost/NetMaster/getway/booking/update_status";
@@ -355,9 +429,9 @@ async function updateBookingStatus(reservationId, status) {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
@@ -377,7 +451,9 @@ async function updateBookingStatus(reservationId, status) {
 
 // Hàm lấy booking mới nhất theo computer_id
 async function fetchByComputerId_Booking(computerId) {
-  const url = `http://localhost/NetMaster/getway/booking/latest_by_computer_id?computer_id=${encodeURIComponent(computerId)}`;
+  const url = `http://localhost/NetMaster/getway/booking/latest_by_computer_id?computer_id=${encodeURIComponent(
+    computerId
+  )}`;
 
   try {
     const response = await fetch(url);
@@ -394,6 +470,3 @@ async function fetchByComputerId_Booking(computerId) {
     return null;
   }
 }
-
-
-

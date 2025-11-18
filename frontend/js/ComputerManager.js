@@ -350,7 +350,9 @@ function loadConfigDetails() {
 
 //Lấy cấu hình theo tên
 async function fetchConfigDetails(configNamed) {
-  const url = `http://localhost/NetMaster/getway/computers/config_detail?name=${encodeURIComponent(configNamed)}`;
+  const url = `http://localhost/NetMaster/getway/computers/config_detail?name=${encodeURIComponent(
+    configNamed
+  )}`;
   try {
     const response = await fetch(url);
     const result = await response.json();
@@ -498,11 +500,10 @@ async function fetchUserNameByUserId(userId) {
 
 // Hàm lấy full_name từ computer_id qua session
 async function fetchUserNameByComputerId_Session(computerId) {
-  const userId = await fetchUserIdByComputerId_Session(computerId);
-  if (!userId) return null;
+  const user = await fetchByComputerId_Session(computerId);
+  if (!user) return null;
 
-  const fullName = await fetchUserNameByUserId(userId);
-  return fullName;
+  return user.full_name;
 }
 
 // Hàm lấy full_name từ computer_id qua booking

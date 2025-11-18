@@ -200,6 +200,14 @@ return [
             'action' => 'add_session'
         ],
 
+        // Endpoint cập nhật trạng thái phiên
+        '/session/update_status' => [
+            'service' => 'session',
+            'path' => 'sessionAPI.php',
+            'dir' => 'session',
+            'action' => 'update_status'
+        ],
+
         // Endpoint lấy user_id mới nhất từ computer_id trong booking  
         '/booking/latest_by_computer_id' => [
             'service' => 'booking',
@@ -242,7 +250,23 @@ return [
             'path'    => 'otpAPI.php',
             'dir'     => 'email',
             'action'  => 'confirm'
-        ]
+        ],
+
+        //thêm thanh toán cho khách hàng có account
+        '/payment/add_to_customer' => [
+            'service' => 'payment',
+            'path'    => 'paymentAPI.php',
+            'dir'     => 'payment',
+            'action'  => 'add_to_customer'
+        ],
+
+        //thêm thanh toán cho khách vãng lai
+        '/payment/add_to_guest' => [
+            'service' => 'payment',
+            'path'    => 'paymentAPI.php',
+            'dir'     => 'payment',
+            'action'  => 'add_to_guest'
+        ],
     ],
 
 
@@ -257,5 +281,7 @@ return [
         'booking' => '8004',
 
         'email' => '8005',
+
+        'payment' => '8006'
     ]
 ];

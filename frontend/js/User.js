@@ -1,4 +1,3 @@
-
 const sectionMap = {
   session: "session-container",
   booking: "booking-container",
@@ -15,7 +14,7 @@ const viewMap = {
 
 function showSection(sectionName, callback) {
   // 1. Ẩn tất cả section
-  Object.values(sectionMap).forEach(id => {
+  Object.values(sectionMap).forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.classList.remove("active");
   });
@@ -28,33 +27,35 @@ function showSection(sectionName, callback) {
   // 3. Tải nội dung HTML từ file tương ứng
   const viewPath = viewMap[sectionName];
   fetch(viewPath)
-    .then(res => res.text())
-    .then(html => {
+    .then((res) => res.text())
+    .then((html) => {
       if (targetContainer) targetContainer.innerHTML = html;
 
       if (sectionName === "profile") {
         requestAnimationFrame(() => {
-          loadCustomerInfo(localStorage.getItem('customerID'));
-        });  
+          loadCustomerInfo(localStorage.getItem("customerID"));
+        });
       }
 
       if (sectionName === "booking") {
         requestAnimationFrame(() => {
-          loadBookingHistory(localStorage.getItem('customerID'));
-        });  
+          loadBookingHistory(localStorage.getItem("customerID"));
+          loadOptionPrices();
+          setBookingDateLimits();
+        });
       }
       // 4. Gọi callback sau khi nội dung đã được gắn
       if (typeof callback === "function") {
         requestAnimationFrame(() => callback());
       }
     })
-    .catch(err => {
+    .catch((err) => {
       if (targetContainer)
         targetContainer.innerHTML = `<p style="color:red;">Lỗi khi tải giao diện: ${err.message}</p>`;
     });
 
   // 5. Cập nhật trạng thái tab
-  document.querySelectorAll(".nav-tab").forEach(tab => {
+  document.querySelectorAll(".nav-tab").forEach((tab) => {
     tab.classList.remove("active");
     if (
       tab.getAttribute("onclick") &&
@@ -64,8 +65,6 @@ function showSection(sectionName, callback) {
     }
   });
 }
-
-
 
 function openModal(modalId, callback) {
   const modalContainer = document.getElementById(modalId);
@@ -89,13 +88,13 @@ function openModal(modalId, callback) {
   }
 
   fetch(modalPath)
-    .then(res => res.text())
-    .then(html => {
+    .then((res) => res.text())
+    .then((html) => {
       modalContainer.innerHTML = html;
       modalContainer.classList.add("active");
       if (typeof callback === "function") callback();
     })
-    .catch(err => {
+    .catch((err) => {
       modalContainer.innerHTML = `<p style="color:red;">Lỗi khi tải modal: ${err.message}</p>`;
     });
 }
@@ -112,13 +111,13 @@ function closeModal(modalId) {
 document.addEventListener("DOMContentLoaded", () => {
   showSection("session");
 
-  loadBalance(localStorage.getItem('customerID'));
+  loadBalance(localStorage.getItem("customerID"));
 
-//   const userName = localStorage.getItem("userName") || "Khách";
-//   const userRole = localStorage.getItem("userRole") || "customer";
+  //   const userName = localStorage.getItem("userName") || "Khách";
+  //   const userRole = localStorage.getItem("userRole") || "customer";
 
-//   document.getElementById("userName").textContent = userName;
-//   document.getElementById("userRole").textContent =
-//     userRole === "admin" ? "Quản trị viên" :
-//     userRole === "staff" ? "Nhân viên" : "Khách hàng";
+  //   document.getElementById("userName").textContent = userName;
+  //   document.getElementById("userRole").textContent =
+  //     userRole === "admin" ? "Quản trị viên" :
+  //     userRole === "staff" ? "Nhân viên" : "Khách hàng";
 });

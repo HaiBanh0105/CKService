@@ -23,10 +23,46 @@
     <input type="text" id="paymentAmount" readonly />
   </div>
 
+  <div class="form-group">
+    <label>Phương thức thanh toán</label>
+    <div class="payment-methods">
+      <div
+        class="payment-method"
+        data-method="account"
+        onclick="selectPaymentMethod('account')"
+      >
+        👤 Account
+      </div>
+      <div
+        class="payment-method"
+        data-method="cash"
+        onclick="selectPaymentMethod('cash')"
+      >
+        💵 Tiền mặt
+      </div>
+      <div
+        class="payment-method"
+        data-method="card"
+        onclick="selectPaymentMethod('card')"
+      >
+        💳 Thẻ ngân hàng
+      </div>
+      <div
+        class="payment-method"
+        data-method="momo"
+        onclick="selectPaymentMethod('momo')"
+      >
+        📱 MoMo
+      </div>
+    </div>
+  </div>
+
+  <div id="messageBox"></div>
+
   <div class="modal-actions">
     <button class="btn btn-secondary" onclick="closeModal('paymentModal')">
       Hủy
     </button>
-    <button class="btn btn-primary" onclick="confirmPayment()">Xác nhận</button>
+    <button class="btn btn-primary" id="btnSubPayment">Xác nhận</button>
   </div>
 </div>

@@ -28,15 +28,15 @@ CREATE TABLE membership_accounts (
     INDEX idx_user_id (user_id) 
 );
 
--- 3. Bảng transactions (Giao Dịch Nạp Tiền)
+-- 3. Bảng transactions 
 CREATE TABLE transactions (
     transaction_id INT PRIMARY KEY AUTO_INCREMENT,
     account_id INT NOT NULL, -- Khóa Logic đến membership_accounts
     amount DECIMAL(10, 2) NOT NULL, 
     staff_id INT, -- Khóa Logic đến users
-    transaction_type ENUM('topup', 'adjustment') NOT NULL DEFAULT 'topup',
+    transaction_type ENUM('topup','booking') NOT NULL DEFAULT 'topup',
+    payment_method ENUM('cash','card','momo','zalopay','account') NOT NULL,
     transaction_date DATETIME NOT NULL, 
-
     INDEX idx_account_id (account_id),
     INDEX idx_staff_id (staff_id)
 );

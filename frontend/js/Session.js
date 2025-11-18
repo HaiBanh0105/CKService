@@ -1,12 +1,14 @@
 // Hàm lấy session theo computer_id
 async function fetchByComputerId_Session(computerId) {
-  const url = `http://localhost/NetMaster/getway/session/latest_by_computer_id?computer_id=${encodeURIComponent(computerId)}`;
+  const url = `http://localhost/NetMaster/getway/session/latest_by_computer_id?computer_id=${encodeURIComponent(
+    computerId
+  )}`;
 
   try {
     const response = await fetch(url);
     const result = await response.json();
 
-    if (result.status === "success" && result.session && result.session.user_id) {
+    if (result.status === "success" && result.session) {
       return result.session;
     } else {
       console.warn("Không tìm thấy phiên hoạt động:", result.message);
@@ -15,5 +17,31 @@ async function fetchByComputerId_Session(computerId) {
   } catch (error) {
     console.error("Lỗi khi lấy session:", error);
     return null;
+  }
+}
+
+//Cập nhật trạng thái
+async function updateSessionStatus(sessionId, status) {
+  try {
+    const response = await fetch(
+      "http://localhost/NetMaster/getway/session/update_status",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          status: status,
+        }),
+      }
+    );
+
+    const result = await response.json();
+    console.log("Kết quả cập nhật:", result);
+    return result;
+  } catch (error) {
+    console.error("Lỗi khi gọi API update_status:", error);
+    return { status: "error", message: error.message };
   }
 }

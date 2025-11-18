@@ -49,6 +49,9 @@ function loadComputersToPayment() {
 
 let session;
 let booking;
+let deposit = 0;
+let times;
+let totalAmount;
 
 async function loadDataToPayment(pc, user_name) {
   const computerId = pc.computer_id;
@@ -56,9 +59,15 @@ async function loadDataToPayment(pc, user_name) {
   document.getElementById("paymentUserName").value = user_name;
 
   session = await fetchByComputerId_Session(computerId);
-  booking = await fetchByComputerId_Booking(computerId);
+  if (pc.reservation_id != null) {
+    booking = await fetchByComputerId_Booking(computerId);
+    deposit = booking.deposit;
+  }
+  if (pc.reservation_id == null) {
+    deposit = 0;
+  }
 
-  const times = await calcSessionMinutes(computerId);
+  times = await calcSessionMinutes(computerId);
   const paymentTimeEl = document.getElementById("paymentTime");
 
   if (times !== null) {
@@ -72,10 +81,22 @@ async function loadDataToPayment(pc, user_name) {
   }
 
   const price = pc.price_per_hour;
-  const deposit = booking.deposit;
 
-  const totalAmount = (times * price) / 60 - deposit;
-  document.getElementById("paymentAmount").value = Math.round(totalAmount);
+  //Tối thiểu phải 1 giờ (do đặt cọc trước)
+  totalAmount = deposit;
+
+  if ((times * price) / 60 > deposit) {
+    totalAmount = (times * price) / 60 - deposit;
+  }
+
+  document.getElementById("paymentAmount").value =
+    parseInt(totalAmount).toLocaleString("vi-VN") + " đ";
+  // parseInt(totalAmount).toLocaleString("vi-VN") VND/giờ
+
+  const subpayment = document.getElementById("btnSubPayment");
+  subpayment.addEventListener("click", () => {
+    confirmPayment(pc);
+  });
 }
 
 async function calcSessionMinutes(computerId) {
@@ -92,4 +113,165 @@ async function calcSessionMinutes(computerId) {
   }
 }
 
-async function confirmPayment() {}
+async function confirmPayment(pc) {
+  let payload;
+  let result;
+  let selectedMethod = document.getElementById("selectedPaymentMethod").value;
+
+  //Trường hợp có đặt trước
+  if (pc.reservation_id == 1) {
+    payload = {
+      staff_id: localStorage.getItem("userID"),
+      user_id: session.user_id,
+      session_id: session.session_id,
+      computer_id: session.computer_id,
+      start_time: session.start_time,
+      end_time: Date.now(),
+      total_duration_hours: times,
+      deposit_amount: deposit,
+      total_amount: totalAmount,
+      payment_method: selectedMethod,
+      payment_status: "paid",
+      notes: "Thanh toán qua " + selectedMethod,
+    };
+
+    result = await addToCustomerPayment(payload);
+  } else {
+    //Trường hợp không đặt trước nhưng có tài khoản
+    if (session.user_id != null) {
+      payload = {
+        staff_id: localStorage.getItem("userID"),
+        user_id: session.user_id,
+        session_id: session.session_id,
+        computer_id: session.computer_id,
+        start_time: session.start_time,
+        end_time: Date.now(),
+        total_duration_hours: times,
+        deposit_amount: deposit,
+        total_amount: totalAmount,
+        payment_method: selectedMethod,
+        payment_status: "paid",
+        notes: "Thanh toán qua " + selectedMethod,
+      };
+
+      result = await addToCustomerPayment(payload);
+    }
+    //Trường hợp khách vãng lai
+    else {
+      if (selectedMethod === "account") {
+        msgBox.textContent =
+          "❌ Không có tài khoản vui lòng chọn lại phương thức";
+        msgBox.style.color = "red";
+        return;
+      }
+
+      payload = {
+        staff_id: localStorage.getItem("userID"),
+        session_id: session.session_id,
+        computer_id: session.computer_id,
+        guest_name: session.full_name,
+        start_time: session.start_time,
+        end_time: Date.now(),
+        total_duration_hours: times,
+        total_amount: totalAmount,
+        payment_method: selectedMethod,
+        payment_status: "paid",
+        notes: "Thanh toán qua " + selectedMethod,
+      };
+
+      result = await addToGuestPayment(payload);
+    }
+  }
+
+  msgBox = document.getElementById("messageBox");
+
+  // Hiển thị thông báo ngay trong giao diện
+  if (result.status === "success") {
+    msgBox.textContent = "✅ Thanh toán thành công!";
+    msgBox.style.color = "green";
+
+    // Cập nhật trạng thái máy tính và session
+    await updateComputerStatus(session.computer_id, "available", 0);
+    await updateSessionStatus(session.session_id, "ended");
+
+    // Nếu phương thức là tài khoản thì trừ tiền tài khoản
+    if (selectedMethod === "account") {
+      changeBalance(session.user_id, -totalAmount);
+    }
+
+    closeModal("paymentModal");
+  } else {
+    msgBox.textContent = "❌ Có lỗi: " + result.message;
+    msgBox.style.color = "red";
+  }
+}
+
+async function addToCustomerPayment(payload) {
+  try {
+    const response = await fetch(
+      "http://localhost/NetMaster/getway/payment/add_to_customer",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error calling add_to_customer API:", error);
+    return { status: "error", message: error.message };
+  }
+}
+
+async function addToGuestPayment(payload) {
+  try {
+    const response = await fetch(
+      "http://localhost/NetMaster/getway/payment/add_to_guest",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error calling add_to_guest API:", error);
+    return { status: "error", message: error.message };
+  }
+}
+
+function selectPaymentMethod(method) {
+  // Xóa trạng thái "active" khỏi tất cả các phương thức
+  const methods = document.querySelectorAll(".payment-method");
+  methods.forEach((m) => m.classList.remove("active"));
+
+  // Thêm trạng thái "active" cho phương thức được chọn
+  const selected = document.querySelector(
+    `.payment-method[data-method="${method}"]`
+  );
+  if (selected) {
+    selected.classList.add("active");
+  }
+
+  // Lưu giá trị đã chọn vào một input hidden (nếu cần gửi form)
+  let hiddenInput = document.getElementById("selectedPaymentMethod");
+  if (!hiddenInput) {
+    hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.id = "selectedPaymentMethod";
+    hiddenInput.name = "payment_method";
+    document.querySelector(".form-group").appendChild(hiddenInput);
+  }
+  hiddenInput.value = method;
+
+  // Debug/log ra console
+  console.log("Phương thức thanh toán đã chọn:", method);
+}

@@ -67,7 +67,26 @@ try {
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'Không thể thêm phiên mới.']);
         }
-    } else {
+    } 
+    else if ($method === 'POST' && $action === 'update_status') {
+        $session_id = $input_data['session_id'] ?? null;
+        $status     = $input_data['status'] ?? null;
+
+        if (!$session_id || !$status) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Thiếu tham số session_id hoặc status']);
+            exit();
+        }
+
+        $result = update_status($session_id, $status);
+
+        if ($result > 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Cập nhật trạng thái thành công']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy session hoặc không có thay đổi']);
+        }
+    } 
+    else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
     }

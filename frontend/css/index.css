@@ -322,6 +322,9 @@ tr:hover {
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-header h3 {
@@ -497,4 +500,10 @@ tr:hover {
 .payment-method.selected {
   border-color: #667eea;
   background: #f0f3ff;
+}
+
+.payment-method.active {
+  border-color: #007bff;
+  background-color: #e6f0ff;
+  font-weight: bold;
 }
