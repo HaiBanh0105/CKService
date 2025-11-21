@@ -12,9 +12,7 @@ function loadComputersToPayment() {
           card.className = `computer-card ${pc.current_status}`;
 
           let html = `
-            <div class="computer-icon">
-              <i class="fas fa-desktop"></i>
-            </div>
+            <div class="computer-icon"><i class="fas fa-desktop"></i></div>
             <div class="computer-name">${pc.computer_name}</div>
             <div class="computer-status">Đang sử dụng</div>`;
 
@@ -59,11 +57,11 @@ async function loadDataToPayment(pc, user_name) {
   document.getElementById("paymentUserName").value = user_name;
 
   session = await fetchByComputerId_Session(computerId);
-  if (pc.reservation_id != null) {
+  if (pc.reservation_id != null || pc.reservation_id != 0) {
     booking = await fetchByComputerId_Booking(computerId);
     deposit = booking.deposit;
   }
-  if (pc.reservation_id == null) {
+  if (pc.reservation_id == null || pc.reservation_id == 0) {
     deposit = 0;
   }
 
@@ -83,8 +81,9 @@ async function loadDataToPayment(pc, user_name) {
   const price = pc.price_per_hour;
 
   //Tối thiểu phải 1 giờ (do đặt cọc trước)
-  totalAmount = deposit;
-
+  if (deposit != 0) {
+    totalAmount = deposit;
+  }
   if ((times * price) / 60 > deposit) {
     totalAmount = (times * price) / 60 - deposit;
   }
@@ -117,9 +116,11 @@ async function confirmPayment(pc) {
   let payload;
   let result;
   let selectedMethod = document.getElementById("selectedPaymentMethod").value;
+  if (!selectedMethod) {
+    alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+  }
 
-  const now = new Date(); // ✅ đối tượng Date
-  const endtime = now.toISOString().slice(0, 19).replace;
+  const endtime = getCurrentTimeICT();
 
   //Trường hợp có đặt trước
   if (pc.reservation_id == 1) {
@@ -130,7 +131,7 @@ async function confirmPayment(pc) {
       computer_id: session.computer_id,
       start_time: session.start_time,
       end_time: endtime,
-      total_duration_hours: times,
+      total_duration_minutes: times,
       deposit_amount: deposit,
       total_amount: totalAmount,
       payment_method: selectedMethod,
@@ -149,7 +150,7 @@ async function confirmPayment(pc) {
         computer_id: session.computer_id,
         start_time: session.start_time,
         end_time: endtime,
-        total_duration_hours: times,
+        total_duration_minutes: times,
         deposit_amount: deposit,
         total_amount: totalAmount,
         payment_method: selectedMethod,
@@ -175,7 +176,7 @@ async function confirmPayment(pc) {
         guest_name: session.full_name,
         start_time: session.start_time,
         end_time: endtime,
-        total_duration_hours: times,
+        total_duration_minutes: times,
         total_amount: totalAmount,
         payment_method: selectedMethod,
         payment_status: "paid",
@@ -199,15 +200,14 @@ async function confirmPayment(pc) {
       session.session_id,
       "ended",
       endtime,
-      total_duration_hours,
-      total_amount
+      times,
+      totalAmount
     );
 
     // Nếu phương thức là tài khoản thì trừ tiền tài khoản
     if (selectedMethod === "account") {
       changeBalance(session.user_id, -totalAmount, null);
     }
-
     closeModal("paymentModal");
   } else {
     msgBox.textContent = "❌ Có lỗi: " + result.message;

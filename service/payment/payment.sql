@@ -8,7 +8,7 @@ USE payment;
 
     CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
-    staff_if INT NOT NULL,
+    staff_id INT NOT NULL,
     user_id INT NULL,
     session_id INT NOT NULL,
     is_guest TINYINT(1) DEFAULT 0,
@@ -16,7 +16,7 @@ USE payment;
     computer_id INT NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME,
-    total_duration_hours INT NOT NULL,
+    total_duration_minutes INT NOT NULL,
     deposit_amount INT DEFAULT 0,
     total_amount INT NOT NULL,
     payment_method ENUM('cash','card','momo','zalopay','account') NOT NULL,

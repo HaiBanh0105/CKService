@@ -51,14 +51,14 @@ function payment_db_query_value($sql)
 // ------------------------------------
 
 
-function add_cumstomer_payment(
-    $staff_if,
+function add_customer_payment(
+    $staff_id,
     $user_id,
     $session_id,
     $computer_id,
     $start_time,
     $end_time,
-    $total_duration_hours,
+    $total_duration_minutes,
     $deposit_amount,
     $total_amount,
     $payment_method,
@@ -74,7 +74,7 @@ function add_cumstomer_payment(
                 computer_id,
                 start_time,
                 end_time,
-                total_duration_hours,
+                total_duration_minutes,
                 deposit_amount,
                 total_amount,
                 payment_method,
@@ -86,13 +86,13 @@ function add_cumstomer_payment(
 
     return payment_db_execute(
         $sql,
-        $staff_if,
+        $staff_id,
         $user_id,
         $session_id,
         $computer_id,
         $start_time,
         $end_time,
-        $total_duration_hours,
+        $total_duration_minutes,
         $deposit_amount,
         $total_amount,
         $payment_method,
@@ -105,26 +105,26 @@ function add_cumstomer_payment(
 
 
 function add_guest_payment(
-    $staff_if,
+    $staff_id,
     $session_id,
     $computer_id,
     $guest_name,
     $start_time,
     $end_time,
-    $total_duration_hours,
+    $total_duration_minutes,
     $total_amount,
     $payment_method,
     $payment_status,
     $notes = null
 ) {
     $sql = "INSERT INTO payments (
-                staff_if,
+                staff_id,
                 user_id,
                 session_id,
                 computer_id,
                 start_time,
                 end_time,
-                total_duration_hours,
+                total_duration_minutes,
                 deposit_amount,
                 total_amount,
                 payment_method,
@@ -138,12 +138,12 @@ function add_guest_payment(
 
     return payment_db_execute(
         $sql,
-        $staff_if,
+        $staff_id,
         $session_id,
         $computer_id,
         $start_time,
         $end_time,
-        $total_duration_hours,
+        $total_duration_minutes,
         $total_amount,
         $payment_method,
         $payment_status,

@@ -41,7 +41,7 @@ async function updateSessionStatus(sessionId, status, end_time ,total_minutes_pl
     );
 
     const result = await response.json();
-    console.log("Kết quả cập nhật:", result);
+    console.log("Kết quả cập nhật cho session:", sessionId);
     return result;
   } catch (error) {
     console.error("Lỗi khi gọi API update_status:", error);

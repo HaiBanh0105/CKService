@@ -25,7 +25,7 @@ CREATE TABLE computers (
     maintenance_notes TEXT, 
     is_remote_locked BOOLEAN DEFAULT 0, 
     last_control_time DATETIME, 
-    reservation_id INT,
+    reservation_id INT DEFAULT 0,
 
     FOREIGN KEY (config_id) REFERENCES computer_configs(config_id)
 );

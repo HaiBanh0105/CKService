@@ -184,6 +184,10 @@ async function processRecharge() {
     alert("⚠️ Vui lòng nhập số tiền hợp lệ (tối thiểu 10.000đ).");
     return;
   }
+  let selectedMethod = document.getElementById("selectedPaymentMethod").value;
+  if (!selectedMethod) {
+    alert("Vui lòng chọn phương thức thanh toán");
+  }
 
   const submitBtn = document.getElementById("submitBtn");
 
