@@ -99,3 +99,15 @@ function dao_update_reservation_status($reservation_id, $status)
             WHERE reservation_id = ?";
     return booking_db_execute($sql, $status, $reservation_id);
 }
+
+//Kiểm tra tồn tại 
+function isComputerReserved($computer_id) {
+    $sql = "SELECT COUNT(*) as cnt
+            FROM reservation_details rd
+            JOIN reservations r ON rd.reservation_id = r.reservation_id
+            WHERE rd.computer_id = ?
+              AND r.status IN ('pending','confirmed')";
+    $row = booking_db_query_one($sql, $computer_id);
+    return $row && $row['cnt'] > 0;
+}
+

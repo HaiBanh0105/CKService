@@ -120,11 +120,6 @@ async function loadComputers() {
         card.addEventListener("click", () => {
           openModal("editComputerModal", () => {
             openEditComputerModal(pc);
-            document
-              .querySelectorAll(
-                "#editComputerModal input, #editComputerModal textarea"
-              )
-              .forEach((el) => el.setAttribute("readonly", true));
           });
         });
 
@@ -209,13 +204,18 @@ async function startSession() {
     document.getElementById("editComputerModal").dataset.computerId;
   const reservation_id =
     document.getElementById("editComputerModal").dataset.reservation_id;
+  const status = await getComputerStatus(computerId);
+  if (status != "reserved") {
+    alert("Trạng thái máy không hợp lệ.");
+    closeModal("editComputerModal");
+    loadComputers();
+    return;
+  }
   if (!computerId) {
     alert("Không tìm thấy ID máy tính.");
     return;
   }
   try {
-    const status = await getComputerStatus(computerId);
-
     if (status === null) {
       alert("Không thể lấy trạng thái máy tính. Vui lòng thử lại.");
       return;

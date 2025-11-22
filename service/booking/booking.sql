@@ -12,7 +12,7 @@ CREATE TABLE reservations (
   booking_time DATETIME NOT NULL,
   start_time DATETIME NOT NULL,
   total_duration_hours DOUBLE NOT NULL,
-  status ENUM('pending', 'confirmed', 'cancelled') NOT NULL,
+  status ENUM('pending', 'confirmed', 'completed' ,'cancelled') NOT NULL,
   deposit DECIMAL(10,2) DEFAULT 0.00,
   notes TEXT
 );

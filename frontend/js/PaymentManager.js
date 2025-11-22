@@ -209,6 +209,7 @@ async function confirmPayment(pc) {
 
     // Cập nhật trạng thái máy tính và session
     await updateComputerStatus(session.computer_id, "available", 0);
+    await updateBookingStatus(booking.reservation_id,"complete");
     await updateSessionStatus(
       session.session_id,
       "ended",
@@ -224,6 +225,7 @@ async function confirmPayment(pc) {
     setTimeout(() => {
       closeModal("paymentModal");
     }, 3000);
+    loadComputersToPayment();
   } else {
     msgBox.textContent = "❌ Có lỗi: " + result.message;
     msgBox.style.color = "red";

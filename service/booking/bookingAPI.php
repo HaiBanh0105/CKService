@@ -88,7 +88,7 @@ try {
             http_response_code(500);
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Lỗi xử lý: ' . $e->getMessage()
+                'message' => 'Không thành công: ' . $e->getMessage()
             ]);
         }
     }
