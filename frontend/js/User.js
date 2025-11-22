@@ -33,26 +33,31 @@ function showSection(sectionName, callback) {
 
       if (sectionName === "profile") {
         requestAnimationFrame(() => {
-          loadCustomerInfo(localStorage.getItem("customerID"));
-          loadBalance(localStorage.getItem("customerID"));
+          loadCustomerInfo(sessionStorage.getItem("customerID"));
+          loadBalance(sessionStorage.getItem("customerID"));
         });
       }
 
       if (sectionName === "booking") {
         requestAnimationFrame(() => {
-          loadBookingHistory(localStorage.getItem("customerID"));
+          loadBookingHistory(sessionStorage.getItem("customerID"));
           loadOptionPrices();
           setBookingDateLimits();
-          loadBalance(localStorage.getItem("customerID"));
+          loadBalance(sessionStorage.getItem("customerID"));
         });
       }
 
       if (sectionName === "payment") {
         requestAnimationFrame(() => {
-          openTransactionHistory(localStorage.getItem("customerID"));
+          openTransactionHistory(sessionStorage.getItem("customerID"));
         });
       }
 
+      if (sectionName === "session") {
+        requestAnimationFrame(() => {
+          openSessionHistory(sessionStorage.getItem("customerID"));
+        });
+      }
       // 4. Gọi callback sau khi nội dung đã được gắn
       if (typeof callback === "function") {
         requestAnimationFrame(() => callback());
@@ -120,10 +125,10 @@ function closeModal(modalId) {
 document.addEventListener("DOMContentLoaded", () => {
   showSection("session");
 
-  loadBalance(localStorage.getItem("customerID"));
+  loadBalance(sessionStorage.getItem("customerID"));
 
-  //   const userName = localStorage.getItem("userName") || "Khách";
-  //   const userRole = localStorage.getItem("userRole") || "customer";
+  //   const userName = sessionStorage.getItem("userName") || "Khách";
+  //   const userRole = sessionStorage.getItem("userRole") || "customer";
 
   //   document.getElementById("userName").textContent = userName;
   //   document.getElementById("userRole").textContent =

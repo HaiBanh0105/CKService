@@ -192,6 +192,14 @@ return [
             'action' => 'latest_by_computer_id'
         ],
 
+        // Endpoint lấy danh sách session theo user_id
+        '/session/get_session_by_user_id' => [
+            'service' => 'session',
+            'path' => 'sessionAPI.php',
+            'dir' => 'session',
+            'action' => 'get_session_by_user_id'
+        ],
+
         // Endpoint thêm phiên mới
         '/session/add_session' => [
             'service' => 'session',

@@ -21,16 +21,28 @@ function loadCustomerList() {
             <td>${`${formattedBalance} đ`}</td>
             <td>${c.status}</td>
             <td>
+            <!-- Xem lịch sử -->
             <button class="btn btn-sm btn-info view-history-btn" data-id="${
               c.user_id
-            }">Xem lịch sử</button>
-            <button class="btn btn-sm btn-info updateUser" data-id="${
+            }" title="Xem lịch sử">
+              <i class="fas fa-history"></i>
+            </button>
+
+            <!-- Chỉnh sửa -->
+            <button class="btn btn-sm btn-warning updateUser" data-id="${
               c.user_id
-            }">Chỉnh sửa</button>
-            <button class="btn btn-sm btn-info addBalance" data-id="${
+            }" title="Chỉnh sửa">
+              <i class="fas fa-edit"></i>
+            </button>
+
+            <!-- Nạp tiền -->
+            <button class="btn btn-sm btn-success addBalance" data-id="${
               c.user_id
-            }">Nạp tiền</button>
-            </td> 
+            }" title="Nạp tiền">
+              <i class="fas fa-wallet"></i>
+            </button>
+          </td>
+
             `;
           tableBody.appendChild(row);
         });
@@ -91,7 +103,10 @@ function loadStaffList() {
           <td>${c.phone_number}</td>
           <td>${c.email}</td>
           <td>
-            <button class="btn btn-sm btn-info updateUser" data-id="${c.user_id}">Chỉnh sửa</button>
+            <!-- Chỉnh sửa -->
+            <button class="btn btn-sm btn-warning updateUser" data-id="${c.user_id}" title="Chỉnh sửa">
+              <i class="fas fa-edit"></i>
+            </button>
           </td>
         `;
           tableBody.appendChild(row);
@@ -345,4 +360,54 @@ async function changeBalance(userId, amount, payment_method) {
 
   const result = await response.json();
   console.log(result);
+}
+
+async function getUserIdByFullName(fullName) {
+  const url = `http://localhost/NetMaster/getway/users/get_by_name?full_name=${encodeURIComponent(
+    fullName
+  )}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (
+      result.status === "success" &&
+      Array.isArray(result.data) &&
+      result.data.length > 0
+    ) {
+      return result.data[0].user_id;
+    } else {
+      console.warn(
+        "Không tìm thấy người dùng:",
+        result.message || "Không có dữ liệu."
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API get_by_name:", error);
+    return null;
+  }
+}
+
+// Hàm lấy full_name từ user_id
+async function fetchUserNameByUserId(userId) {
+  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(
+    userId
+  )}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.data?.full_name) {
+      return result.data.full_name;
+    } else {
+      console.warn("Không tìm thấy người dùng:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng:", error);
+    return null;
+  }
 }

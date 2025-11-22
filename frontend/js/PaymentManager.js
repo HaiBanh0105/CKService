@@ -14,14 +14,17 @@ function loadComputersToPayment() {
           let html = `
             <div class="computer-icon"><i class="fas fa-desktop"></i></div>
             <div class="computer-name">${pc.computer_name}</div>
-            <div class="computer-status">Đang sử dụng</div>`;
+            <div class="computer-price" style="color: #666; font-weight: 500;">
+                Giá: <span style="color: #000; font-weight: normal;">${pc.price_per_hour}/giờ<span style="color: #000; font-weight: normal;">
+              </div>
+              `;
 
           let userText = "";
           fetchUserNameByComputerId_Session(pc.computer_id).then((data) => {
             userText = data ? data : "";
             html += `
               <div class="user-id" style="color: #666; font-weight: 500;">
-                Người dùng: <span style="color: #000; font-weight: normal;">${userText}</span>
+                Người dùng: <span style="color: #000; font-weight: normal;">${userText}<span style="color: #000; font-weight: normal;">
               </div>
             `;
             card.innerHTML = html;
@@ -57,12 +60,12 @@ async function loadDataToPayment(pc, user_name) {
   document.getElementById("paymentUserName").value = user_name;
 
   session = await fetchByComputerId_Session(computerId);
-  if (pc.reservation_id != null || pc.reservation_id != 0) {
-    booking = await fetchByComputerId_Booking(computerId);
-    deposit = booking.deposit;
-  }
+
   if (pc.reservation_id == null || pc.reservation_id == 0) {
     deposit = 0;
+  } else {
+    booking = await fetchByComputerId_Booking(computerId);
+    deposit = booking.deposit;
   }
 
   times = await calcSessionMinutes(computerId);
@@ -115,9 +118,19 @@ async function calcSessionMinutes(computerId) {
 async function confirmPayment(pc) {
   let payload;
   let result;
-  let selectedMethod = document.getElementById("selectedPaymentMethod").value;
-  if (!selectedMethod) {
+  // let selectedMethod = document.getElementById("selectedPaymentMethod").value;
+  // if (!selectedMethod) {
+  //   alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+  // }
+
+  let selectedMethod;
+  let element = document.getElementById("selectedPaymentMethod");
+  if (!element) {
+    // Nếu phần tử không tồn tại trong DOM
     alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+    return;
+  } else {
+    selectedMethod = document.getElementById("selectedPaymentMethod").value;
   }
 
   const endtime = getCurrentTimeICT();
@@ -125,7 +138,7 @@ async function confirmPayment(pc) {
   //Trường hợp có đặt trước
   if (pc.reservation_id == 1) {
     payload = {
-      staff_id: localStorage.getItem("userID"),
+      staff_id: sessionStorage.getItem("userID"),
       user_id: session.user_id,
       session_id: session.session_id,
       computer_id: session.computer_id,
@@ -144,7 +157,7 @@ async function confirmPayment(pc) {
     //Trường hợp không đặt trước nhưng có tài khoản
     if (session.user_id != null) {
       payload = {
-        staff_id: localStorage.getItem("userID"),
+        staff_id: sessionStorage.getItem("userID"),
         user_id: session.user_id,
         session_id: session.session_id,
         computer_id: session.computer_id,
@@ -170,7 +183,7 @@ async function confirmPayment(pc) {
       }
 
       payload = {
-        staff_id: localStorage.getItem("userID"),
+        staff_id: sessionStorage.getItem("userID"),
         session_id: session.session_id,
         computer_id: session.computer_id,
         guest_name: session.full_name,
@@ -208,7 +221,9 @@ async function confirmPayment(pc) {
     if (selectedMethod === "account") {
       changeBalance(session.user_id, -totalAmount, null);
     }
-    closeModal("paymentModal");
+    setTimeout(() => {
+      closeModal("paymentModal");
+    }, 3000);
   } else {
     msgBox.textContent = "❌ Có lỗi: " + result.message;
     msgBox.style.color = "red";

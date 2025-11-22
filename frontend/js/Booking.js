@@ -1,6 +1,6 @@
 // function handleProfileTabClick() {
 //   showSection('profile', () => {
-//     loadUserInfo(localStorage.getItem('userID'));
+//     loadUserInfo(sessionStorage.getItem('userID'));
 //   });
 
 // }
@@ -175,8 +175,8 @@ async function updateDeposit() {
 let rechargeAmount = 0;
 
 async function processRecharge() {
-  const user_id = localStorage.getItem("customerID");
-  const user_email = localStorage.getItem("customerEmail");
+  const user_id = sessionStorage.getItem("customerID");
+  const user_email = sessionStorage.getItem("customerEmail");
   const amountText = document.getElementById("rechargeAmount").value;
   rechargeAmount = parseInt(amountText.replace(/\D/g, "")) || 0;
 
@@ -215,7 +215,7 @@ async function processRecharge() {
 }
 
 async function handleOtpInput(purpose) {
-  const user_id = localStorage.getItem("customerID");
+  const user_id = sessionStorage.getItem("customerID");
   const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
 
   if (!otp_input) {
@@ -247,8 +247,8 @@ async function handleOtpInput(purpose) {
 }
 
 async function createBooking() {
-  const user_id = localStorage.getItem("customerID");
-  const user_email = localStorage.getItem("customerEmail");
+  const user_id = sessionStorage.getItem("customerID");
+  const user_email = sessionStorage.getItem("customerEmail");
   const type = document.getElementById("bookingType").value;
   const start_time = document.getElementById("bookingTime").value;
   const total_duration_hours = parseInt(
@@ -357,7 +357,7 @@ async function finalizeBooking(user_id) {
 
     if (result.status === "success" && result.data && result.data.computer_id) {
       alert(
-        `✅ Đặt chỗ thành công! Máy của bạn là: ${result.data.computer_id}`
+        `✅ Đặt chỗ thành công! Máy của bạn là: máy${result.data.computer_id}`
       );
       updateComputerStatus(
         result.data.computer_id,

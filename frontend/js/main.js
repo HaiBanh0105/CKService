@@ -100,13 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
   showSection("dashboard");
   // Hiển thị nút Quản lý nhân viên nếu là Admin
   
-  const userRole = localStorage.getItem("userRole");
+  const userRole = sessionStorage.getItem("userRole");
   const btnStaff = document.getElementById("BtnStaff");
 
   if (btnStaff) {
     btnStaff.style.display = userRole === "admin" ? "inline" : "none";
   }
-  document.getElementById("userName").textContent = localStorage.getItem("userName");
+  document.getElementById("userName").textContent = sessionStorage.getItem("userName");
   if(userRole == "admin"){
   document.getElementById("userRole").textContent = "Quản trị viên";
   }else if(userRole == "staff"){

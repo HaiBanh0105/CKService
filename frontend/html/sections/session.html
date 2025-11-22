@@ -1,6 +1,28 @@
-<div id="session" class="tab-content active">
+<!-- <div id="session" class="tab-content active">
   <h2>Phiên sử dụng hiện tại</h2>
   <div id="currentSession">
-    <p style="text-align: center; color: #999; padding: 50px;">Bạn chưa có phiên sử dụng nào đang hoạt động</p>
+    
+  </div>
+</div> -->
+
+
+<div id="session" class="tab-content active"></div>
+  <div class="modal-content modal-wide">
+    <div class="modal-header">
+      <h3>Phiên sử dụng hiện tại</h3>
+    </div>
+    <div class="modal-body">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Mã máy</th>
+            <th>Thời gian bắt đầu</th>
+            <th>Thời gian kết thúc</th>
+            <th>Tổng tiền</th>
+          </tr>
+        </thead>
+        <tbody id="sessionHistoryBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>

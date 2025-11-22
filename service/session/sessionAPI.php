@@ -46,7 +46,33 @@ try {
                 'message' => 'Không tìm thấy phiên hoạt động cho computer_id đã cho.'
             ]);
         }
-    } else if ($method === 'POST' && $action === 'add_session') {
+    } 
+    else if ($method === 'GET' && $action === 'get_session_by_user_id') {
+        $user_id = $_GET['user_id'] ?? null;
+        if ($user_id === null) {
+            http_response_code(400);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Thiếu user_id.'
+            ]);
+            exit();
+        }
+
+        $session = get_session_by_user_id($user_id);
+        if ($session !== null) {
+            echo json_encode([
+                'status' => 'success',
+                'session' => $session
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Không tìm thấy phiên hoạt động cho user_id đã cho.'
+            ]);
+        }
+    } 
+
+    else if ($method === 'POST' && $action === 'add_session') {
         $user_id = $input_data['user_id'] ?? null;
         $computer_id = $input_data['computer_id'] ?? null;
         $full_name = $input_data['full_name'] ?? null;
@@ -72,7 +98,7 @@ try {
         $session_id = $input_data['session_id'] ?? null;
         $status     = $input_data['status'] ?? null;
         $end_time    = $input_data['end_time'] ?? null;
-        $$total_minutes_played    = $input_data['$total_minutes_played'] ?? 0;
+        $total_minutes_played    = $input_data['$total_minutes_played'] ?? 0;
         $total_cost     = $input_data['total_cost'] ?? 0;
 
         if (!$session_id || !$status) {

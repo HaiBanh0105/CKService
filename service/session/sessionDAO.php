@@ -79,4 +79,11 @@ function update_status($session_id, $status, $end_time, $total_minutes_played, $
     return session_db_execute($sql, $status, $end_time, $total_minutes_played, $total_cost ,$session_id);
 }
 
+// Hàm lấy danh sách tất cả các phiên theo userID
+function get_session_by_user_id($user_id)
+{
+    $sql = "SELECT * FROM sessions where user_id = ?";
+    return session_db_query($sql,$user_id);
+}
+
 

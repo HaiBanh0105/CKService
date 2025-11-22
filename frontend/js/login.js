@@ -70,21 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Đăng nhập thành công
                     const userData = result.data;
                     
-                    // Lưu Token và Role vào localStorage
-                    localStorage.setItem('userName', userData.full_name);
-                    localStorage.setItem('userRole', userData.role_name);
+                    // Lưu Token và Role vào sessionStorage
+                    sessionStorage.setItem('userName', userData.full_name);
+                    sessionStorage.setItem('userRole', userData.role_name);
                     
                     showMessage(successMessage, `Chào mừng ${userData.full_name}!`, false);
                     
                     // Chuyển hướng đến trang Admin chính
                     if (userData.role_name === 'admin' || userData.role_name === 'staff') {
-                        localStorage.setItem('userID', userData.user_id);
+                        sessionStorage.setItem('userID', userData.user_id);
                         setTimeout(() => {
                             window.location.href = './index.html';
                         }, 1000);
                     } else if (userData.role_name === 'customer') {
-                        localStorage.setItem('customerID', userData.user_id);
-                        localStorage.setItem('customerEmail', userData.email);
+                        sessionStorage.setItem('customerID', userData.user_id);
+                        sessionStorage.setItem('customerEmail', userData.email);
                         
                         setTimeout(() => {
                             window.location.href = './userIndex.html';

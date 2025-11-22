@@ -433,24 +433,7 @@ function loadConfigOptions() {
     });
 }
 
-async function fetchUserIdByComputerId(computerId) {
-  const url = `http://localhost/NetMaster/getway/session/user_id_by_computer?computer_id=${computerId}`;
 
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.status === "success") {
-      return data.user_id;
-    } else {
-      console.warn("Không tìm thấy phiên hoạt động:", data.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-    return null;
-  }
-}
 
 // Hàm lấy user_id từ session mới nhất theo computer_id
 async function fetchUserIdByComputerId_Session(computerId) {
@@ -476,27 +459,7 @@ async function fetchUserIdByComputerId_Booking(computerId) {
   }
 }
 
-// Hàm lấy full_name từ user_id
-async function fetchUserNameByUserId(userId) {
-  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(
-    userId
-  )}`;
 
-  try {
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (result.status === "success" && result.data?.full_name) {
-      return result.data.full_name;
-    } else {
-      console.warn("Không tìm thấy người dùng:", result.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy thông tin người dùng:", error);
-    return null;
-  }
-}
 
 // Hàm lấy full_name từ computer_id qua session
 async function fetchUserNameByComputerId_Session(computerId) {
@@ -540,76 +503,9 @@ async function getComputerStatus(computer_id) {
   }
 }
 
-async function addSession(
-  user_id,
-  computer_id,
-  full_name,
-  start_time,
-  status,
-  reservation_id
-) {
-  const url = "http://localhost/NetMaster/getway/session/add_session";
 
-  const payload = {
-    user_id,
-    computer_id,
-    full_name,
-    start_time,
-    status,
-    reservation_id,
-  };
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
 
-    const result = await response.json();
-
-    if (response.ok && result.status === "success") {
-      console.log("✅ Phiên mới đã được thêm:", result.message);
-      return true;
-    } else {
-      console.warn("❌ Không thể thêm phiên:", result.message);
-      return false;
-    }
-  } catch (error) {
-    console.error("Lỗi khi gọi API add_session:", error);
-    return false;
-  }
-}
-
-async function getUserIdByFullName(fullName) {
-  const url = `http://localhost/NetMaster/getway/users/get_by_name?full_name=${encodeURIComponent(
-    fullName
-  )}`;
-
-  try {
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (
-      result.status === "success" &&
-      Array.isArray(result.data) &&
-      result.data.length > 0
-    ) {
-      return result.data[0].user_id;
-    } else {
-      console.warn(
-        "Không tìm thấy người dùng:",
-        result.message || "Không có dữ liệu."
-      );
-      return null;
-    }
-  } catch (error) {
-    console.error("Lỗi khi gọi API get_by_name:", error);
-    return null;
-  }
-}
 
 function getCurrentTimeICT() {
   const now = new Date();
