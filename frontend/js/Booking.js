@@ -175,8 +175,14 @@ async function updateDeposit() {
 let rechargeAmount = 0;
 
 async function processRecharge() {
-  const user_id = sessionStorage.getItem("customerID");
-  const user_email = sessionStorage.getItem("customerEmail");
+  let user_id, user_email;
+  if (sessionStorage.getItem("customerID")) {
+    user_id = sessionStorage.getItem("customerID");
+    user_email = sessionStorage.getItem("customerEmail");
+  } else {
+    user_id = sessionStorage.getItem("userId_recharge");
+    user_email = sessionStorage.getItem("email_recharge");
+  }
   const amountText = document.getElementById("rechargeAmount").value;
   rechargeAmount = parseInt(amountText.replace(/\D/g, "")) || 0;
 
@@ -215,8 +221,15 @@ async function processRecharge() {
 }
 
 async function handleOtpInput(purpose) {
-  const user_id = sessionStorage.getItem("customerID");
   const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
+  let user_id;
+  if (sessionStorage.getItem("userId-recharge")) {
+    ///sửa
+    user_id = sessionStorage.getItem("userId-recharge");
+  } else {
+    user_id = sessionStorage.getItem("customerID");
+  }
+  console.log("user_id: ", user_id);
 
   if (!otp_input) {
     alert("⚠️ Bạn chưa nhập mã OTP.");
@@ -236,7 +249,9 @@ async function handleOtpInput(purpose) {
         )} đ`
       );
       closeModal("rechargeModal");
-      // loadBalance(user_id);
+      if (userBalance) {
+        loadBalance(user_id);
+      }
     } else if (purpose === "booking") {
       // Sau khi OTP hợp lệ thì tiến hành tạo booking
       await finalizeBooking(user_id);

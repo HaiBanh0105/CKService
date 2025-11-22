@@ -14,7 +14,6 @@ function loadCustomerList() {
             c.current_balance
           );
           row.innerHTML = `
-            <td>${c.user_id}</td>
             <td>${c.full_name}</td>
             <td>${c.phone_number}</td>
             <td>${c.email}</td>
@@ -36,9 +35,10 @@ function loadCustomerList() {
             </button>
 
             <!-- Nạp tiền -->
-            <button class="btn btn-sm btn-success addBalance" data-id="${
-              c.user_id
-            }" title="Nạp tiền">
+            <button class="btn btn-sm btn-success addBalance" 
+                    data-id="${c.user_id}" 
+                    data-email="${c.email}" 
+                    title="Nạp tiền">
               <i class="fas fa-wallet"></i>
             </button>
           </td>
@@ -72,8 +72,13 @@ function loadCustomerList() {
         document.querySelectorAll(".addBalance").forEach((button) => {
           button.addEventListener("click", function () {
             const userId = this.getAttribute("data-id");
+            const email = this.getAttribute("data-email");
             // Gọi hàm mở modal và truyền userId nếu cần
-            openModal("rechargeModal");
+
+            openModal("rechargeModal", () => {
+              sessionStorage.setItem("userId_recharge", userId);
+              sessionStorage.setItem("email_recharge", email);
+            });
           });
         });
       } else {
@@ -98,7 +103,6 @@ function loadStaffList() {
         staffs.forEach((c) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-          <td>${c.user_id}</td>
           <td>${c.full_name}</td>
           <td>${c.phone_number}</td>
           <td>${c.email}</td>
@@ -234,11 +238,20 @@ function openTransactionHistory(userId) {
           } else {
             text = "Đặt máy";
           }
+          if (t.payment_method == "cash") {
+            method = "tiền mặt";
+          } else if (t.payment_method == "card") {
+            method = "thẻ ngân hàng";
+          } else if (t.payment_method == "account") {
+            method = "tài khoản cá nhân";
+          } else {
+            method = t.payment_method;
+          }
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td>${t.transaction_id}</td>
             <td>${t.amount.toLocaleString()} đ</td>
             <td>${text}</td>
+            <td>${method}</td>
             <td>${new Date(t.transaction_date).toLocaleString()}</td>
           `;
           historyBody.appendChild(row);

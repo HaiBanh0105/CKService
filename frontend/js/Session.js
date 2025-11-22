@@ -158,12 +158,18 @@ function openSessionHistory(userId) {
         }
 
         sessions.forEach((t) => {
+          if (t.status == "actived") {
+            text = "đang hoạt động";
+          } else {
+            text = "kết thúc";
+          }
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${t.computer_id}</td>
             <td>${new Date(t.start_time).toLocaleString()}</td>
             <td>${new Date(t.end_time).toLocaleString()}</td>
             <td>${t.total_cost.toLocaleString()}đ</td>
+            <td>${text}</td>
           `;
           historyBody.appendChild(row);
         });

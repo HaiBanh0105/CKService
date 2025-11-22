@@ -120,6 +120,11 @@ async function loadComputers() {
         card.addEventListener("click", () => {
           openModal("editComputerModal", () => {
             openEditComputerModal(pc);
+            document
+              .querySelectorAll(
+                "#editComputerModal input, #editComputerModal textarea"
+              )
+              .forEach((el) => el.setAttribute("readonly", true));
           });
         });
 
@@ -433,8 +438,6 @@ function loadConfigOptions() {
     });
 }
 
-
-
 // Hàm lấy user_id từ session mới nhất theo computer_id
 async function fetchUserIdByComputerId_Session(computerId) {
   const session = await fetchByComputerId_Session(computerId);
@@ -458,8 +461,6 @@ async function fetchUserIdByComputerId_Booking(computerId) {
     return null;
   }
 }
-
-
 
 // Hàm lấy full_name từ computer_id qua session
 async function fetchUserNameByComputerId_Session(computerId) {
@@ -502,10 +503,6 @@ async function getComputerStatus(computer_id) {
     return null;
   }
 }
-
-
-
-
 
 function getCurrentTimeICT() {
   const now = new Date();

@@ -164,7 +164,7 @@ function dao_insert_transaction($account_id, $amount, $type = 'topup',$payment_m
 function dao_get_transaction_history($account_id)
 {
     error_log("Truy vấn lịch sử cho account_id = " . $account_id);
-    $sql = "SELECT transaction_id, amount, transaction_type, transaction_date
+    $sql = "SELECT *
             FROM transactions
             WHERE account_id = ?
             ORDER BY transaction_date DESC";
