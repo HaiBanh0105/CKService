@@ -275,6 +275,16 @@ return [
             'dir'     => 'payment',
             'action'  => 'add_to_guest'
         ],
+
+        //Thống kê tổng thu nhập
+        '/payment/revenue' => [
+            'service' => 'payment',
+            'path'    => 'paymentAPI.php',
+            'dir'     => 'payment',
+            'action'  => 'revenue'
+        ],
+
+        
     ],
 
 

@@ -123,8 +123,11 @@ function closeModal(modalId) {
 
 // 🚀 Khởi tạo khi trang tải
 document.addEventListener("DOMContentLoaded", () => {
-  showSection("session");
+  if (!sessionStorage.getItem("userRole")) {
+    window.location.href = "./login.html";
+  }
 
+  showSection("session");
   loadBalance(sessionStorage.getItem("customerID"));
 
   //   const userName = sessionStorage.getItem("userName") || "Khách";

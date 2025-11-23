@@ -424,3 +424,11 @@ async function fetchUserNameByUserId(userId) {
     return null;
   }
 }
+
+function logout() {
+  // Xóa dữ liệu lưu trong localStorage hoặc sessionStorage
+  sessionStorage.clear();
+
+  // Chuyển hướng về trang login
+  window.location.href = "./login.html";
+}

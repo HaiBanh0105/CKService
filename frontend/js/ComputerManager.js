@@ -144,6 +144,17 @@ function openEditComputerModal(pc) {
 
   document.getElementById("editConfigName").value = configMap[pc.config_id];
   document.getElementById("editStatus").value = pc.current_status;
+  if (pc.current_status == "in_use" || pc.current_status == "reserved") {
+    document.getElementById("editStatus").disabled = true;
+    document.getElementById("editConfigName").disabled = true;
+    document.getElementById("editComputerName").readOnly = true;
+  } else {
+    if (pc.current_status == "in_use") {
+      document.getElementById("editStatus").disabled = false;
+      document.getElementById("editConfigName").disabled = false;
+      document.getElementById("editComputerName").readOnly = false;
+    }
+  }
   document.getElementById("editRemoteLock").checked = Boolean(
     pc.is_remote_locked
   );

@@ -220,3 +220,4 @@ function get_total_remote_locked_computers()
     $sql = "SELECT COUNT(*) FROM computers WHERE is_remote_locked = 1";
     return computer_db_query_value($sql);
 }
+

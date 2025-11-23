@@ -82,8 +82,14 @@ function update_status($session_id, $status, $end_time, $total_minutes_played, $
 // Hàm lấy danh sách tất cả các phiên theo userID
 function get_session_by_user_id($user_id)
 {
-    $sql = "SELECT * FROM sessions where user_id = ?";
-    return session_db_query($sql,$user_id);
+    $sql = "SELECT * 
+            FROM sessions 
+            WHERE user_id = ? 
+            ORDER BY 
+              CASE WHEN status = 'actived' THEN 0 ELSE 1 END,
+              start_time DESC";
+    return session_db_query($sql, $user_id);
 }
+
 
 

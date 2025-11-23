@@ -152,3 +152,17 @@ function add_guest_payment(
     );
 }
 
+
+//Tổng thu nhập theo ngày, tuần, tháng, năm
+function getRevenueReport() {
+    $sql = "SELECT 
+              SUM(CASE WHEN DATE(created_at) = CURDATE() THEN total_amount ELSE 0 END) AS today_revenue,
+              SUM(CASE WHEN YEARWEEK(created_at,1) = YEARWEEK(CURDATE(),1) THEN total_amount ELSE 0 END) AS week_revenue,
+              SUM(CASE WHEN YEAR(created_at) = YEAR(CURDATE()) AND MONTH(created_at) = MONTH(CURDATE()) THEN total_amount ELSE 0 END) AS month_revenue,
+              SUM(total_amount) AS total_revenue
+            FROM payments
+            WHERE payment_status = 'paid'";
+    return payment_db_query_one($sql);
+}
+
+

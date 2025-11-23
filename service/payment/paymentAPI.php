@@ -89,6 +89,28 @@ try {
 
         echo json_encode(['status' => 'success', 'data' => $result]);
     }
+    else if ($method === 'GET' && $action === 'revenue') {
+    try {
+        $report = getRevenueReport();
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'today_revenue' => intval($report['today_revenue']),
+                'week_revenue'  => intval($report['week_revenue']),
+                'month_revenue' => intval($report['month_revenue']),
+                'total_revenue' => intval($report['total_revenue'])
+            ]
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Không thể lấy báo cáo doanh thu',
+            'error' => $e->getMessage()
+        ]);
+    }
+    }
     else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);
