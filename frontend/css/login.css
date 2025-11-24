@@ -135,6 +135,7 @@ body {
 /* --- 4. BUTTONS & MESSAGES --- */
 .login-btn {
   width: 100%;
+  margin-top: 10px;
   padding: 14px;
   border: none;
   border-radius: 8px;

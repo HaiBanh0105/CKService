@@ -54,11 +54,11 @@ function otp_db_query_value($sql)
 
 
 // Thêm OTP mới
-function otp_insert($user_id, $otp_code, $purpose, $expires_at)
+function otp_insert($user_id, $email ,$otp_code, $purpose, $expires_at)
 {
-    $sql = "INSERT INTO otp_codes (user_id, otp_code, purpose, expires_at) 
-            VALUES (?, ?, ?, ?)";
-    return otp_db_execute($sql, $user_id, $otp_code, $purpose, $expires_at);
+    $sql = "INSERT INTO otp_codes (user_id, email ,otp_code, purpose, expires_at) 
+            VALUES (?, ? ,?, ?, ?)";
+    return otp_db_execute($sql, $user_id, $email ,$otp_code, $purpose, $expires_at);
 }
 
 // Kiểm tra OTP
@@ -88,9 +88,9 @@ function otp_generate($length = 6)
 }
 
 // Xóa tất cả OTP chưa sử dụng của một user
-function otp_delete_unused_by_user($user_id) {
+function otp_delete_unused_by_user($user_id,$email) {
     $sql = "DELETE FROM otp_codes 
-            WHERE user_id = ? 
+            WHERE user_id = ? and email = ?
               AND is_used = 0";
-    return otp_db_execute($sql, $user_id);
+    return otp_db_execute($sql, $user_id, $email);
 }

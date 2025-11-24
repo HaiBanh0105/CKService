@@ -240,3 +240,13 @@ function dao_get_account_id($user_id)
     $sql = "SELECT account_id FROM membership_accounts WHERE user_id = ?";
     return user_db_query_value($sql, $user_id);
 }
+
+
+// Cập nhật mật khẩu mới theo email
+function dao_update_password_by_email($email, $new_password_hash)
+{
+    $sql = "UPDATE users 
+            SET password_hash = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE email = ?";
+    return user_db_execute($sql, $new_password_hash, $email);
+}

@@ -296,6 +296,26 @@ try {
         echo json_encode($result);
         exit();
     }
+    else if ($method === 'POST' && $action === 'change_password') {
+    $email = $input_data['email'] ?? null;
+    $new_password = $input_data['new_password'] ?? null;
+
+    // Kiểm tra dữ liệu bắt buộc
+    if (!$email || !$new_password) {
+        http_response_code(400);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Thiếu thông tin bắt buộc (email hoặc mật khẩu mới)"
+        ]);
+        exit();
+    }
+
+    // Gọi BL đổi mật khẩu theo email
+    $result = change_password_by_email($email, $new_password);
+
+    echo json_encode($result);
+    exit();
+}
     else {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Không tìm thấy action hợp lệ.']);

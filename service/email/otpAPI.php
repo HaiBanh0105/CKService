@@ -26,11 +26,11 @@ try {
     // CREATE OTP
     // -------------------------------
     if ($method === 'POST' && $action === 'create') {
-        $user_id    = $input_data['user_id'] ?? null;
+        $user_id    = $input_data['user_id'] ?? 0;
         $user_email = $input_data['user_email'] ?? null;
         $purpose    = $input_data['purpose'] ?? null;
 
-        if (!$user_id || !$user_email || !$purpose) {
+        if (!$user_email || !$purpose) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Thiếu tham số']);
             exit();
@@ -50,11 +50,11 @@ try {
     // CONFIRM OTP
     // -------------------------------
     else if ($method === 'POST' && $action === 'confirm') {
-        $user_id   = $input_data['user_id'] ?? null;
+        $user_id   = $input_data['user_id'] ?? 0;
         $otp_code  = $input_data['otp_code'] ?? null;
         $purpose   = $input_data['purpose'] ?? null;
 
-        if (!$user_id || !$otp_code || !$purpose) {
+        if (!$otp_code || !$purpose) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Thiếu tham số']);
             exit();

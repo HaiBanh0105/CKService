@@ -94,3 +94,26 @@ function change_balance($user_id, $amount,$payment_method)
         "new_balance" => $new_balance
     ];
 }
+
+function change_password_by_email($email, $new_password)
+{
+    // Kiểm tra email có tồn tại
+    if (!is_email_exists($email)) {
+        return ["status" => "error", "message" => "Email không tồn tại trong hệ thống"];
+    }
+
+    // Hash mật khẩu mới
+    $new_password_hash = password_hash($new_password, PASSWORD_BCRYPT);
+
+    // Cập nhật mật khẩu
+    $sql = "UPDATE users 
+            SET password_hash = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE email = ?";
+    $success = user_db_execute($sql, $new_password_hash, $email);
+
+    if ($success) {
+        return ["status" => "success", "message" => "Đổi mật khẩu thành công"];
+    } else {
+        return ["status" => "error", "message" => "Có lỗi khi cập nhật mật khẩu"];
+    }
+}

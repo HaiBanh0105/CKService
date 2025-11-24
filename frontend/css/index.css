@@ -22,6 +22,20 @@ body {
   backdrop-filter: blur(10px);
   padding: 20px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.sidebar .nav-menu {
+  flex: 1;
+}
+
+.sidebar .btn {
+  align-self: stretch;
+  margin-top: auto;
+  width: 100%;
 }
 
 .logo {

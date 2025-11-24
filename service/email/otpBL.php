@@ -8,13 +8,13 @@ require_once 'otpDAO.php';
 function bl_send_otp($user_id, $user_email, $purpose)
 {
     // Xóa OTP cũ chưa dùng
-    otp_delete_unused_by_user($user_id);
+    otp_delete_unused_by_user($user_id, $user_email);
     // Sinh OTP
     $otp_code = otp_generate();
     $expires_at = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
     // Lưu vào DB
-    otp_insert($user_id, $otp_code, $purpose, $expires_at);
+    otp_insert($user_id, $user_email ,$otp_code, $purpose, $expires_at);
 
     // Gửi email
     $subject = "Mã OTP xác thực";

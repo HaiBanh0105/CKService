@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnStaff = document.getElementById("BtnStaff");
 
   if (btnStaff) {
-    btnStaff.style.display = userRole === "admin" ? "inline" : "none";
+    btnStaff.style.display = userRole === "admin" ? "block" : "none";
   }
   document.getElementById("userName").textContent =
     sessionStorage.getItem("userName");
@@ -165,6 +165,9 @@ function openModal(modalId, callback) {
       break;
     case "paymentModal":
       modalPath = "/NetMaster/frontend/html/modals/payment-modal.html";
+      break;
+    case "forgot_password":
+      modalPath = "/NetMaster/frontend/html/modals/forgot_password.html";
       break;
     default:
       modalContainer.innerHTML = "<p>Không tìm thấy modal phù hợp.</p>";

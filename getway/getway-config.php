@@ -4,6 +4,9 @@ return [
         // Endpoint Đăng nhập mới (trỏ về service: 'users')
         '/users/login'       => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'login'],
 
+        //Đổi mật khẩu
+        '/users/change_password'       => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'change_password'],
+
         // Endpoint Lấy thông tin (trỏ về service: 'users')
         '/users/info'        => ['service' => 'users', 'path' => 'userAPI.php', 'dir' => 'users', 'action' => 'info'],
 
