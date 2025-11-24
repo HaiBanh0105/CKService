@@ -7,7 +7,7 @@ CREATE TABLE otp_codes (
     user_id INT NOT NULL,
     email VARCHAR(255) NOT NULL,
     otp_code VARCHAR(10) NOT NULL,
-    purpose ENUM('booking', 'recharge', 'reset_password') NOT NULL,
+    purpose ENUM('booking', 'recharge', 'reset_password','payment') NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     expires_at DATETIME NOT NULL,
     is_used TINYINT(1) NOT NULL DEFAULT 0

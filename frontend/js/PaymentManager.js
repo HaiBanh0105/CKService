@@ -56,6 +56,7 @@ let totalAmount;
 
 async function loadDataToPayment(pc, user_name) {
   const computerId = pc.computer_id;
+  const confirm_otp = document.getElementById("btnConfirm-otp");
   document.getElementById("paymentComputerName").value = pc.computer_name;
   document.getElementById("paymentUserName").value = user_name;
 
@@ -96,9 +97,72 @@ async function loadDataToPayment(pc, user_name) {
   // parseInt(totalAmount).toLocaleString("vi-VN") VND/giờ
 
   const subpayment = document.getElementById("btnSubPayment");
-  subpayment.addEventListener("click", () => {
-    confirmPayment(pc);
+  const email = await fetchEmailByUserId(session.user_id);
+  subpayment.addEventListener("click", async () => {
+    let selectedMethod;
+    let element = document.getElementById("selectedPaymentMethod");
+    if (!element) {
+      // Nếu phần tử không tồn tại trong DOM
+      alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+      return;
+    } else {
+      selectedMethod = document.getElementById("selectedPaymentMethod").value;
+    }
+    // Gửi otp nếu có tài khoản
+    if (pc.reservation_id == 1 || session.user_id != null) {
+      try {
+        subpayment.textContent = "📨 Mã OTP đang được gửi đến bạn...";
+        subpayment.style.backgroundColor = "orange";
+        subpayment.style.color = "white";
+
+        const otpRes = await callCreateOtp(session.user_id, email, "payment");
+
+        if (otpRes.status === "success") {
+          alert(
+            "📩 OTP đã được gửi đến email của bạn. Vui lòng nhập OTP để xác nhận đặt chỗ!"
+          );
+
+          subpayment.textContent = "🔄 Gửi lại OTP";
+          subpayment.style.backgroundColor = "green";
+          subpayment.style.color = "white";
+
+          // Hiện nút nhập OTP
+          confirm_otp.style.display = "block";
+        } else {
+          alert(otpRes.message || "❌ Không thể gửi OTP. Vui lòng thử lại.");
+          subpayment.textContent = "Xác nhận";
+          subpayment.style.backgroundColor = "#007bff"; // màu xanh mặc định
+          subpayment.style.color = "white";
+        }
+      } catch (err) {
+        console.error("Lỗi khi gửi OTP:", err);
+        alert("❌ Đã xảy ra lỗi khi gửi OTP. Vui lòng thử lại.");
+      }
+    } else {
+      confirmPayment(pc);
+    }
   });
+
+  if (confirm_otp) {
+    confirm_otp.addEventListener("click", async () => {
+      const otp_input = prompt("🔐 Nhập mã OTP đã nhận qua email:");
+
+      if (!otp_input) {
+        alert("⚠️ Bạn chưa nhập mã OTP.");
+        return;
+      }
+      const confirmRes = await callConfirmOtp(
+        session.user_id,
+        otp_input,
+        "payment"
+      );
+      if (confirmRes.status === "success") {
+        confirmPayment(pc);
+      } else {
+        alert("❌ OTP không hợp lệ hoặc đã hết hạn.");
+      }
+    });
+  }
 }
 
 async function calcSessionMinutes(computerId) {
@@ -118,20 +182,7 @@ async function calcSessionMinutes(computerId) {
 async function confirmPayment(pc) {
   let payload;
   let result;
-  // let selectedMethod = document.getElementById("selectedPaymentMethod").value;
-  // if (!selectedMethod) {
-  //   alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
-  // }
-
-  let selectedMethod;
-  let element = document.getElementById("selectedPaymentMethod");
-  if (!element) {
-    // Nếu phần tử không tồn tại trong DOM
-    alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
-    return;
-  } else {
-    selectedMethod = document.getElementById("selectedPaymentMethod").value;
-  }
+  let selectedMethod = document.getElementById("selectedPaymentMethod").value;
 
   const endtime = getCurrentTimeICT();
 
@@ -209,7 +260,10 @@ async function confirmPayment(pc) {
 
     // Cập nhật trạng thái máy tính và session
     await updateComputerStatus(session.computer_id, "available", 0);
-    await updateBookingStatus(booking.reservation_id,"complete");
+    //Nếu có booking thì cập nhật
+    if (pc.reservation_id == 1) {
+      await updateBookingStatus(booking.reservation_id, "completed");
+    }
     await updateSessionStatus(
       session.session_id,
       "ended",
@@ -224,7 +278,7 @@ async function confirmPayment(pc) {
     }
     setTimeout(() => {
       closeModal("paymentModal");
-    }, 3000);
+    }, 1000);
     loadComputersToPayment();
   } else {
     msgBox.textContent = "❌ Có lỗi: " + result.message;

@@ -425,6 +425,28 @@ async function fetchUserNameByUserId(userId) {
   }
 }
 
+// Hàm lấy email từ user_id
+async function fetchEmailByUserId(userId) {
+  const url = `http://localhost/NetMaster/getway/users/get_by_id?user_id=${encodeURIComponent(
+    userId
+  )}`;
+
+  try {
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status === "success" && result.data?.email) {
+      return result.data.email;
+    } else {
+      console.warn("Không tìm thấy người dùng:", result.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng:", error);
+    return null;
+  }
+}
+
 function logout() {
   // Xóa dữ liệu lưu trong localStorage hoặc sessionStorage
   sessionStorage.clear();

@@ -216,7 +216,7 @@ async function startSession() {
   const reservation_id =
     document.getElementById("editComputerModal").dataset.reservation_id;
   const status = await getComputerStatus(computerId);
-  if (status != "reserved") {
+  if (status == "in_use") {
     alert("Trạng thái máy không hợp lệ.");
     closeModal("editComputerModal");
     loadComputers();

@@ -1,6 +1,9 @@
 <div class="modal-content">
   <div class="modal-header">
     <h3>Thanh Toán Phiên Sử Dụng</h3>
+    <span class="close-modal" onclick="closeModal('paymentModal')"
+      >&times;</span
+    >
   </div>
 
   <div class="form-group">
@@ -60,9 +63,9 @@
   <div id="messageBox"></div>
 
   <div class="modal-actions">
-    <button class="btn btn-secondary" onclick="closeModal('paymentModal')">
-      Hủy
-    </button>
     <button class="btn btn-primary" id="btnSubPayment">Xác nhận</button>
+    <button class="btn btn-primary" id="btnConfirm-otp" style="display: none">
+      Nhập otp
+    </button>
   </div>
 </div>

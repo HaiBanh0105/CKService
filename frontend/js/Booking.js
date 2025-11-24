@@ -190,9 +190,14 @@ async function processRecharge() {
     alert("⚠️ Vui lòng nhập số tiền hợp lệ (tối thiểu 10.000đ).");
     return;
   }
-  let selectedMethod = document.getElementById("selectedPaymentMethod").value;
-  if (!selectedMethod) {
-    alert("Vui lòng chọn phương thức thanh toán");
+  let selectedMethod;
+  let element = document.getElementById("selectedPaymentMethod");
+  if (!element) {
+    // Nếu phần tử không tồn tại trong DOM
+    alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+    return;
+  } else {
+    selectedMethod = document.getElementById("selectedPaymentMethod").value;
   }
 
   const submitBtn = document.getElementById("submitBtn");
@@ -239,9 +244,15 @@ async function handleOtpInput(purpose) {
   const confirmRes = await callConfirmOtp(user_id, otp_input, purpose);
   if (confirmRes.status === "success") {
     if (purpose === "recharge") {
-      let selectedMethod = document.getElementById(
-        "selectedPaymentMethod"
-      ).value;
+      let selectedMethod;
+      let element = document.getElementById("selectedPaymentMethod");
+      if (!element) {
+        // Nếu phần tử không tồn tại trong DOM
+        alert("Vui lòng chọn phương thức thanh toán trước khi tiếp tục.");
+        return;
+      } else {
+        selectedMethod = document.getElementById("selectedPaymentMethod").value;
+      }
       changeBalance(user_id, rechargeAmount, selectedMethod);
       alert(
         `✅ Nạp thành công ${new Intl.NumberFormat("vi-VN").format(
